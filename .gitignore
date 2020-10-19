@@ -183,7 +183,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# This is used for the c++ project
+# lib/
 lib64/
 parts/
 sdist/
