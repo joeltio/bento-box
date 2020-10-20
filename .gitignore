@@ -330,4 +330,6 @@ tags
 [._]*.un~
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,python,clion,vim,macos
+.vim/
+.ccls-cache/
 
