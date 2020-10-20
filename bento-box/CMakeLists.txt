@@ -1,12 +1,23 @@
 cmake_minimum_required(VERSION 3.17)
-project(learngl)
+project(bentobox)
 
+# Source files
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+set(SOURCES "${SRC_DIR}/main.cpp")
+
+# Executable
+add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(learngl src/main.cpp)
-
-
-add_library(glad lib/glad.c)
+# GLFW
 find_package(glfw3 3.3 REQUIRED)
-target_link_libraries(learngl PRIVATE glad)
-target_link_libraries(learngl PRIVATE glfw)
+target_link_libraries(bentobox PRIVATE glfw)
+
+# GLAD
+set(GLAD_DIR "${LIB_DIR}/glad")
+add_library(glad "${GLAD_DIR}/src/glad.c")
+target_include_directories(glad PRIVATE "${GLAD_DIR}/include")
+target_include_directories(${PROJECT_NAME} PRIVATE "${GLAD_DIR}/include")
+target_link_libraries(${PROJECT_NAME} PRIVATE glad)
