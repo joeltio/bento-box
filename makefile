@@ -3,25 +3,34 @@
 # project makefile
 #
 
-.PHONY: build test clean run
-
-TARGET:=bentobox
-TEST_TARGET:=bentobox_test
-BUILD_DIR:=build
-SRC_DIR:=bento-box/
-
+# command aliases
 CMAKE:=cmake
 RM:=rm -rf
 
-build:
-	$(CMAKE) -S $(SRC_DIR) -B $(BUILD_DIR)
-	$(CMAKE) --build $(BUILD_DIR)
+.PHONY: build test clean run
 
-test: build
-	$(BUILD_DIR)/$(TEST_TARGET)
+build: build-sim
 
-run: build
-	$(BUILD_DIR)/$(TARGET)
+test: test-sim
 
-clean:
-	$(RM) $(BUILD_DIR)
+clean: clean-sim
+
+## Bento Box: Simulator component 
+SIM_TARGET:=bentobox
+SIM_TEST:=bentobox_test
+SIM_SRC:=sim
+SIM_BUILD_DIR:=sim/build
+
+.PHONY: build-sim test-sim clean-sim
+build-sim:
+	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR)
+	$(CMAKE) --build $(SIM_BUILD_DIR)
+
+test-sim: build-sim
+	$(SIM_BUILD_DIR)/$(SIM_TEST)
+
+run-sim: build-sim
+	$(SIM_BUILD_DIR)/$(SIM_TARGET)
+
+clean-sim:
+	$(RM) $(SIM_BUILD_DIR)
