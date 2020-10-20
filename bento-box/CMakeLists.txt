@@ -12,8 +12,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
 set(CMAKE_CXX_STANDARD 20)
 
 # GLFW
-find_package(glfw3 3.3 REQUIRED)
-target_link_libraries(bentobox PRIVATE glfw)
+find_package(glfw3 3.2.1 REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 
 # GLAD
 set(GLAD_DIR "${LIB_DIR}/glad")
@@ -21,3 +21,7 @@ add_library(glad "${GLAD_DIR}/src/glad.c")
 target_include_directories(glad PRIVATE "${GLAD_DIR}/include")
 target_include_directories(${PROJECT_NAME} PRIVATE "${GLAD_DIR}/include")
 target_link_libraries(${PROJECT_NAME} PRIVATE glad)
+# On non-windows systems, GLAD requires libdl to be linked
+if(NOT WIN32)
+target_link_libraries(${PROJECT_NAME} PRIVATE dl)
+endif(NOT WIN32)
