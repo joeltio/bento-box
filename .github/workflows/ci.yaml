@@ -21,4 +21,4 @@ jobs:
           docker build -t bentobox-sim -f infra/docker/sim/Dockerfile .
       - name: "Unit Test bentobox-sim"
         run: |
-          docker run -it bentobox-sim make test-sim
+          docker run bentobox-sim make test-sim
