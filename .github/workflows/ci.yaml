@@ -1,0 +1,24 @@
+#
+# bento-box
+# continous integration (ci) pipeline
+# 
+
+name: "CI Pipeline"
+on: [push, pull_request]
+
+env:
+  DOCKER_BUILDKIT: 1
+    
+jobs:
+  build-sim:
+    runs-on: ubuntu-latest
+    name: "Build & Test bentobox-sim" 
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Build bentobox-sim"
+        run: |
+          docker build -t bentobox-sim -f infra/docker/sim/Dockerfile .
+      - name: "Unit Test bentobox-sim"
+        run: |
+          docker run -it bentobox-sim make test-sim
