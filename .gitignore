@@ -308,6 +308,7 @@ dmypy.json
 .prof
 
 ### Vim ###
+.vim/
 # Swap
 [._]*.s[a-v][a-z]
 !*.svg  # comment out if you don't need vector files
@@ -328,5 +329,10 @@ tags
 # Persistent undo
 [._]*.un~
 
+# ccls lang server cache
+.ccls-cache/
+
 # End of https://www.toptal.com/developers/gitignore/api/c++,python,clion,vim,macos
+.vim/
+.ccls-cache/
 
