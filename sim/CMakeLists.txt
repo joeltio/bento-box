@@ -8,10 +8,10 @@ set(SOURCES "${SRC_DIR}/main.cpp")
 set(TESTS "${SRC_DIR}/test.cpp")
 
 # Executable
+set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} ${SOURCES})
 add_executable("${PROJECT_NAME}_test" ${TESTS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
-set(CMAKE_CXX_STANDARD 20)
 
 ## Dependencies
 # GLFW
