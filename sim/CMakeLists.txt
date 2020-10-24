@@ -16,7 +16,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
 
 ## Dependencies
 # GLFW
-find_package(glfw3 3.2.1 REQUIRED)
+find_package(glfw3 3 REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 
 # GLAD
