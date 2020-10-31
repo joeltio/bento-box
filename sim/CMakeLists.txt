@@ -4,8 +4,16 @@ project(bentobox)
 # Source files
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-set(SOURCES "${SRC_DIR}/main.cpp")
-set(TESTS "${SRC_DIR}/test.cpp")
+set(ICS_DIR "${SRC_DIR}/ics")
+set(UTIL_DIR "${SRC_DIR}/util")
+
+set(SOURCES
+    "${SRC_DIR}/main.cpp"
+)
+set(TESTS
+    "${SRC_DIR}/test.cpp"
+    "${UTIL_DIR}/typeMap.test.cpp"
+)
 
 # Executable
 set(CMAKE_CXX_STANDARD 20)
