@@ -11,7 +11,7 @@ namespace ics {
             && std::same_as<decltype(T::isActive), bool>;
 
     struct DefaultComponent {
-        bool isActive;
+        bool isActive = true;
         bool operator==(const DefaultComponent&) const = default;
     };
 }

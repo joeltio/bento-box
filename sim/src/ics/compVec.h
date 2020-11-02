@@ -5,6 +5,7 @@
 #include <queue>
 #include <memory>
 #include <typeindex>
+#include <iostream>
 
 #include "component.h"
 
@@ -15,8 +16,8 @@ namespace ics {
         typedef typename std::vector<C>::size_type size_type;
     private:
         std::type_index initType = std::type_index(typeid(C));
-        std::unique_ptr<std::queue<size_type>> inactiveCompIdx;
-        std::unique_ptr<std::vector<C>> vecPtr;
+        std::unique_ptr<std::queue<size_type>> inactiveCompIdx = std::make_unique<std::queue<size_type>>();
+        std::unique_ptr<std::vector<C>> vecPtr = std::make_unique<std::vector<C>>();
     public:
         size_type add(const C& val);
         C& at(size_type idx) const;
