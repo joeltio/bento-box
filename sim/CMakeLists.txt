@@ -13,6 +13,7 @@ set(SOURCES
 set(TESTS
     "${SRC_DIR}/test.cpp"
     "${UTIL_DIR}/typeMap.test.cpp"
+    "${ICS_DIR}/component.test.cpp"
 )
 
 # Executable
