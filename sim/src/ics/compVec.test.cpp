@@ -14,11 +14,11 @@ struct ChildComp : public ParentComp {
     int width;
 };
 
-TEST(TEST_SUITE, CastToParentRetainsSize) {
+TEST(TEST_SUITE, StoreAndRetrieve) {
     auto vec = CompVec<ChildComp>();
     vec.add(ChildComp { true, 1, 2 });
 
-    ics::Component auto value = vec.at(0);
+    ChildComp value = vec.at(0);
     ASSERT_EQ(value.height, 1);
     ASSERT_EQ(value.width, 2);
 }
