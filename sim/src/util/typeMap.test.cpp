@@ -15,7 +15,7 @@ struct Derived : public Base {
 };
 
 TEST(TEST_SUITE, InsertAndRetrieveFromTypeMap) {
-    auto map = typeMap<Base>();
+    auto map = TypeMap<Base>();
     auto d = Derived { 1, 2 };
     EXPECT_EQ(d.x, 1);
     EXPECT_EQ(d.y, 2);

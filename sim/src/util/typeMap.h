@@ -7,7 +7,7 @@
 namespace util {
 
     template<typename V>
-    class typeMap {
+    class TypeMap {
     private:
         std::unordered_map<std::type_index, V> map;
     public:
