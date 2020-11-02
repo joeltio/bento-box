@@ -7,15 +7,14 @@ set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(ICS_DIR "${SRC_DIR}/ics")
 set(UTIL_DIR "${SRC_DIR}/util")
 
+set_property(GLOBAL PROPERTY hello "hello world")
+
 set(SOURCES
     "${SRC_DIR}/main.cpp"
-    "${ICS_DIR}/compVec.cpp"
 )
+
 set(TESTS
-    "${SRC_DIR}/test.cpp"
-    "${ICS_DIR}/component.test.cpp"
-    "${ICS_DIR}/compVec.test.cpp"
-    "${UTIL_DIR}/typeMap.test.cpp"
+    "${SRC_DIR}/main.test.cpp"
 )
 
 # Executable
@@ -24,7 +23,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(${PROJECT_NAME} ${SOURCES})
 add_executable("${PROJECT_NAME}_test" ${TESTS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
-target_include_directories("${PROJECT_NAME}_test" PRIVATE ${SRC_DIR})
+
+# Link libraries
+foreach (lib IN ITEMS util ics)
+    add_subdirectory("${SRC_DIR}/${lib}")
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${lib})
+    target_link_libraries(${PROJECT_NAME}_test PRIVATE -Wl,--whole-archive ${lib}-test -Wl,--no-whole-archive)
+endforeach()
 
 ## Dependencies
 # GLFW
@@ -48,8 +53,11 @@ endif(NOT WIN32)
 
 ## Test Dependencies
 # Google test
+set(GOOGLETEST_VERSION 1.8.1)
 add_subdirectory(
     "${LIB_DIR}/googletest/googletest"
     "${LIB_DIR}/googletest/googlemock"
-    EXCLUDE_FROM_ALL)
+    EXCLUDE_FROM_ALL
+)
+
 target_link_libraries("${PROJECT_NAME}_test" PRIVATE gtest_main)
