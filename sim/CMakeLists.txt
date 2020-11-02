@@ -9,11 +9,13 @@ set(UTIL_DIR "${SRC_DIR}/util")
 
 set(SOURCES
     "${SRC_DIR}/main.cpp"
+    "${ICS_DIR}/compVec.cpp"
 )
 set(TESTS
     "${SRC_DIR}/test.cpp"
-    "${UTIL_DIR}/typeMap.test.cpp"
     "${ICS_DIR}/component.test.cpp"
+    "${ICS_DIR}/compVec.test.cpp"
+    "${UTIL_DIR}/typeMap.test.cpp"
 )
 
 # Executable
@@ -22,6 +24,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(${PROJECT_NAME} ${SOURCES})
 add_executable("${PROJECT_NAME}_test" ${TESTS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
+target_include_directories("${PROJECT_NAME}_test" PRIVATE ${SRC_DIR})
 
 ## Dependencies
 # GLFW
