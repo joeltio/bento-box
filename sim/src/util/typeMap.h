@@ -1,31 +1,27 @@
 #ifndef BENTOBOX_TYPEMAP_H
 #define BENTOBOX_TYPEMAP_H
 
+#include <any>
 #include <unordered_map>
 #include <typeindex>
 
 namespace util {
-
-    template<typename V>
     class TypeMap {
     private:
-        std::unordered_map<std::type_index, V> map;
+        std::unordered_map<std::type_index, std::any> map;
     public:
         template<typename T>
-        requires std::derived_from<T, V>
-        T at() {
+        T at() const {
             auto type = std::type_index(typeid(T));
-            return static_cast<T>(map.at(type));
+            return std::any_cast<T>(map.at(type));
         };
 
         template<typename T>
-        requires std::derived_from<T, V>
-        void insert(T value) {
+        void insert(const T& value) {
             auto type = std::type_index(typeid(T));
             map.insert(std::make_pair(type, value));
         }
     };
-
 }
 
 
