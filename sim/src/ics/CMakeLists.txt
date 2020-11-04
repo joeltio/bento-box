@@ -1,6 +1,6 @@
 SET(LIB_NAME ics)
-SET(SOURCES component.h compVec.h)
-SET(TESTS component.test.cpp compVec.test.cpp)
+SET(SOURCES component.h compVec.h index.h)
+SET(TESTS component.test.cpp compVec.test.cpp index.test.cpp)
 
 add_library(
     ${LIB_NAME}
