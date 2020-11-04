@@ -21,12 +21,11 @@ namespace ics {
         void isActiveCheck(size_type idx) const;
     public:
         size_type add(const C& val);
+        void remove(size_type idx);
 
         C& at(size_type idx) const;
         C& operator[](size_type idx);
         const C& operator[](size_type idx) const;
-
-        void remove(size_type idx);
     };
 
     template<Component C>
@@ -51,6 +50,13 @@ namespace ics {
     }
 
     template<Component C>
+    void CompVec<C>::remove(size_type idx) {
+        // Mark component as deleted
+        this->vecPtr->at(idx).isActive = false;
+        this->inactiveCompIdx->push(idx);
+    }
+
+    template<Component C>
     C& CompVec<C>::at(CompVec<C>::size_type idx) const {
         this->isActiveCheck(idx);
         return this->vecPtr->at(idx);
@@ -64,13 +70,6 @@ namespace ics {
     template<Component C>
     C& CompVec<C>::operator[](size_type idx) {
         return this->at(idx);
-    }
-
-    template<Component C>
-    void CompVec<C>::remove(size_type idx) {
-        // Mark component as deleted
-        this->vecPtr->at(idx).isActive = false;
-        this->inactiveCompIdx->push(idx);
     }
 }
 
