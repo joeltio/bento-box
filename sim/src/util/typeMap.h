@@ -21,6 +21,12 @@ namespace util {
             auto type = std::type_index(typeid(T));
             map.insert(std::make_pair(type, value));
         }
+
+        template<typename T>
+        bool has() const {
+            auto type = std::type_index(typeid(T));
+            return map.find(type) != map.end();
+        }
     };
 }
 
