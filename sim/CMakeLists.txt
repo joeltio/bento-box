@@ -11,6 +11,7 @@ set_property(GLOBAL PROPERTY hello "hello world")
 
 set(SOURCES
     "${SRC_DIR}/main.cpp"
+    "${SRC_DIR}/Manager.h"
 )
 
 set(TESTS
