@@ -6,9 +6,6 @@
 
 using namespace ics;
 
-template<Index T>
-void isIndex(T a) {}
-
 class CorrectIndex {
 public:
     template<Component C>
@@ -19,8 +16,7 @@ public:
 };
 
 TEST(TEST_SUITE, HasAddAndRemoveComponent) {
-    auto x = CorrectIndex();
-    isIndex(x);
+    ASSERT_TRUE(Index<CorrectIndex>);
 }
 
 class IncorrectUnconstrainedIndex {
@@ -32,14 +28,8 @@ public:
     void removeComponent(C c) {};
 };
 
-// Requires manual testing, throws compilation error
-// Last tested Nov 5 2020, 10:55pm
 TEST(TEST_SUITE, DISABLED_DisallowsUnconstrainedTypenames) {
-    // The type parameters should only allow components
-    auto x = IncorrectUnconstrainedIndex();
-    isIndex(x);
-    FAIL();
-    SUCCEED();
+    ASSERT_FALSE(Index<IncorrectUnconstrainedIndex>);
 }
 
 template<Component C>
@@ -50,12 +40,6 @@ public:
     void removeComponent(C c) {};
 };
 
-// Requires manual testing, throws compilation error
-// Last tested Nov 5 2020, 10:55pm
 TEST(TEST_SUITE, DisallowsNonTemplateMethods) {
-//    // The methods should have type parameters
-//    auto x = IncorrectNoTemplateMethodsIndex<DefaultComponent>();
-//    isIndex(x);
-//    FAIL();
-    SUCCEED();
+    ASSERT_FALSE(Index<IncorrectNoTemplateMethodsIndex<DefaultComponent>>);
 }

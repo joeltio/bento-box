@@ -5,13 +5,16 @@
 
 using namespace ics;
 
-template<Component T>
-void DefaultComponentFulfillsConcept(T val) noexcept {}
-
 TEST(TEST_SUITE, DefaultComponentFulfillsConcept) {
-    auto x = DefaultComponent {};
-    // Compilation will fail if DefaultComponent does not fulfill the concept
-    DefaultComponentFulfillsConcept(x);
+    ASSERT_TRUE(Component<DefaultComponent>);
+}
+
+struct IncorrectNoIsactiveComponent {
+    bool operator==(const IncorrectNoIsactiveComponent&) const = default;
+};
+
+TEST(TEST_SUITE, RequireIsactive) {
+    ASSERT_FALSE(Component<IncorrectNoIsactiveComponent>);
 }
 
 struct DerivedComp : public DefaultComponent {

@@ -5,9 +5,7 @@
 
 namespace ics {
     template<class T>
-    concept Component = std::movable<T>
-            && std::copyable<T>
-            && std::equality_comparable<T>
+    concept Component = std::semiregular<T>
             && std::same_as<decltype(T::isActive), bool>;
 
     // Needed for Index concept
