@@ -32,7 +32,7 @@ public:
         }
     }
 
-    template<ics::Component C, ics::Index<C> I>
+    template<ics::Component C, ics::Index I>
     void addIndex(I i) {
         if (indexes->has<I>()) {
             // TODO: Make a better error
