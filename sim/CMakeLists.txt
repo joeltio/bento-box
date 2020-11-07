@@ -7,8 +7,6 @@ set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(ICS_DIR "${SRC_DIR}/ics")
 set(UTIL_DIR "${SRC_DIR}/util")
 
-set_property(GLOBAL PROPERTY hello "hello world")
-
 set(SOURCES
     "${SRC_DIR}/main.cpp"
     "${SRC_DIR}/Manager.h"
