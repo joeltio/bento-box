@@ -1,0 +1,73 @@
+//
+// Bentobox
+// Proto
+// Services
+//
+
+syntax = "proto3";
+package bento;
+
+import "values.proto";
+import "references.proto";
+import "sim.proto";
+
+service SimulationService {
+    // Create, Update, Get, List and Delete Simulations
+    rpc ApplySimulation(ApplySimulationReq) returns (ApplySimulationResp);
+    rpc GetSimulation(GetSimulationReq) returns (GetSimulationResp);
+    rpc ListSimulation(ListSimulationReq) returns (ListSimulationResp);
+    rpc DropSimulation(DropSimulationReq) returns (DropSimulationResp);
+
+    // Run on step of the simulation
+    rpc StepSimulation(StepSimulationReq) returns (StepSimulationResp);
+
+    // Set, Get component's Attributes
+    rpc GetAttribute(GetAttributeReq) returns (GetAttributeResp);
+    rpc SetAttribute(SetAttributeReq) returns (SetAttributeResp);
+}
+
+message ApplySimulationReq {
+    // Definition of the simulation to create or apply
+    SimulationDef simulation = 1;
+}
+message ApplySimulationResp {}
+
+message GetSimulationReq {
+    // Name of the simulation to get
+    string name = 1;
+}
+message GetSimulationResp {
+    SimulationDef simulation = 1;
+}
+
+message ListSimulationReq {}
+message ListSimulationResp {
+    // list of names representing all the currently registered simulations 
+    repeated string sim_names = 1;
+}
+
+message DropSimulationReq {
+    // Name of the simulation to drop
+    string name = 1;
+}
+message DropSimulationResp {}
+
+message StepSimulationReq {}
+message StepSimulationResp {}
+
+message GetAttributeReq {
+    // Reference to the attribute to retrieve
+    AttributeRef attribute = 1;
+}
+message GetAttributeResp {
+    // Stored value of the requested attribute
+    Value value = 1;
+}
+
+message SetAttributeReq {
+    // Reference to the target attribute to set
+    AttributeRef attribute = 1;
+    // The value to the set the target attribute to
+    Value value = 2;
+}
+message SetAttributeResp {}

@@ -1,0 +1,36 @@
+//
+// Bentobox
+// Proto
+// Value
+//
+
+syntax = "proto3";
+package bento;
+
+import "types.proto";
+
+message Value {
+    // Data type held by this value
+    Type type = 1;
+
+    // Defines a value of the primative kind
+    message Primative {
+        oneof value {
+            // primative values
+            int32 int_32 = 1;
+            int64 int_64 = 2;
+            float float_33 = 3;
+            double float_64 = 4;
+            string str = 5;
+        }
+    }
+    // Defines a value of the array kind
+    message Array {
+        repeated Primative values = 1;
+    }
+    
+    oneof kind {
+        Primative primative = 2;
+        Array array = 3;
+    }
+}
