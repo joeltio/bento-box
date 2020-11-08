@@ -1,5 +1,5 @@
-#ifndef BENTOBOX_MANAGER_H
-#define BENTOBOX_MANAGER_H
+#ifndef BENTOBOX_ICSMANAGER_H
+#define BENTOBOX_ICSMANAGER_H
 
 #include <memory>
 #include <ics/index.h>
@@ -12,7 +12,7 @@ namespace {
     using CompContainer = ics::CompVec<C>;
 }
 
-class Manager {
+class ICSManager {
 private:
     std::unique_ptr<util::TypeMap> indexes;
     std::unique_ptr<util::TypeMap> components;
@@ -36,11 +36,11 @@ public:
     void addIndex(I i) {
         if (indexes->has<I>()) {
             // TODO: Make a better error
-            throw std::logic_error("Manager::addIndex: attempting to replace existing index");
+            throw std::logic_error("ICSManager::addIndex: attempting to replace existing index");
         } else {
             indexes->insert(i);
         }
     }
 };
 
-#endif //BENTOBOX_MANAGER_H
+#endif //BENTOBOX_ICSMANAGER_H
