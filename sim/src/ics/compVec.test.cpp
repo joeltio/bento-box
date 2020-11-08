@@ -6,25 +6,20 @@
 
 using namespace ics;
 
-struct ParentComp : public DefaultComponent {
+struct TestComp : public DefaultComponent {
     int height;
 };
 
-struct ChildComp : public ParentComp {
-    int width;
-};
-
 TEST(TEST_SUITE, StoreAndRetrieve) {
-    auto vec = CompVec<ChildComp>();
-    vec.add(ChildComp { true, 1, 2 });
+    auto vec = CompVec<TestComp>();
+    vec.add(TestComp { true, 3 });
 
-    ChildComp value = vec.at(0);
-    ASSERT_EQ(value.height, 1);
-    ASSERT_EQ(value.width, 2);
+    TestComp value = vec.at(0);
+    ASSERT_EQ(value.height, 3);
 }
 
 TEST(TEST_SUITE, RetrieveNonExistentComponent) {
-    auto vec = CompVec<ChildComp>();
+    auto vec = CompVec<TestComp>();
     EXPECT_THROW(
         vec.at(0),
         std::out_of_range
@@ -32,17 +27,17 @@ TEST(TEST_SUITE, RetrieveNonExistentComponent) {
 }
 
 TEST(TEST_SUITE, ReuseDeletedComponent) {
-    auto vec = CompVec<ChildComp>();
+    auto vec = CompVec<TestComp>();
 
     // Create two elements
-    auto firstElementIdx = vec.add(ChildComp{true, 1, 2});
-    vec.add(ChildComp{true, 1, 2});
+    auto firstElementIdx = vec.add(TestComp{ true, 3 });
+    vec.add(TestComp{ true, 3 });
 
     // Remove the first
     vec.remove(firstElementIdx);
 
     // The first element's memory location should be reused
-    auto newElement = ChildComp { true, 3, 4 };
+    auto newElement = TestComp { true, 3 };
     auto newInsertIndex = vec.add(newElement);
     ASSERT_EQ(firstElementIdx, newInsertIndex);
 
@@ -50,12 +45,11 @@ TEST(TEST_SUITE, ReuseDeletedComponent) {
     ics::Component auto firstElement = vec.at(firstElementIdx);
     ASSERT_EQ(firstElement, newElement);
     ASSERT_EQ(firstElement.height, 3);
-    ASSERT_EQ(firstElement.width, 4);
 }
 
 TEST(TEST_SUITE, RetrieveDeletedComponent) {
-    auto vec = CompVec<ChildComp>();
-    auto idx = vec.add(ChildComp{true, 1, 2});
+    auto vec = CompVec<TestComp>();
+    auto idx = vec.add(TestComp{ true, 3 });
     vec.remove(idx);
     EXPECT_THROW(
         vec.at(idx),
