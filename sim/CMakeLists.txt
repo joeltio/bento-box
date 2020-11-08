@@ -52,10 +52,8 @@ endif(NOT WIN32)
 
 ## Test Dependencies
 # Google test
-set(GOOGLETEST_VERSION 1.8.1)
 add_subdirectory(
-    "${LIB_DIR}/googletest/googletest"
-    "${LIB_DIR}/googletest/googlemock"
+    "${LIB_DIR}/googletest"
     EXCLUDE_FROM_ALL
 )
 
