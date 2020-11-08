@@ -4,8 +4,17 @@ project(bentobox)
 # Source files
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-set(SOURCES "${SRC_DIR}/main.cpp")
-set(TESTS "${SRC_DIR}/test.cpp")
+set(ICS_DIR "${SRC_DIR}/ics")
+set(UTIL_DIR "${SRC_DIR}/util")
+
+set(SOURCES
+    "${SRC_DIR}/main.cpp"
+    "${SRC_DIR}/ICSManager.h"
+)
+
+set(TESTS
+    "${SRC_DIR}/main.test.cpp"
+)
 
 # Executable
 set(CMAKE_CXX_STANDARD 20)
@@ -13,6 +22,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(${PROJECT_NAME} ${SOURCES})
 add_executable("${PROJECT_NAME}_test" ${TESTS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
+
+# Link libraries
+foreach (lib IN ITEMS util ics)
+    add_subdirectory("${SRC_DIR}/${lib}")
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${lib})
+    target_link_libraries(${PROJECT_NAME}_test PRIVATE -Wl,--whole-archive ${lib}-test -Wl,--no-whole-archive)
+endforeach()
 
 ## Dependencies
 # GLFW
@@ -37,7 +53,8 @@ endif(NOT WIN32)
 ## Test Dependencies
 # Google test
 add_subdirectory(
-    "${LIB_DIR}/googletest/googletest"
-    "${LIB_DIR}/googletest/googlemock"
-    EXCLUDE_FROM_ALL)
+    "${LIB_DIR}/googletest"
+    EXCLUDE_FROM_ALL
+)
+
 target_link_libraries("${PROJECT_NAME}_test" PRIVATE gtest_main)
