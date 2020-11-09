@@ -13,14 +13,17 @@ jobs:
   build-protos:
     runs-on: ubuntu-latest
     name: "Build bentobox Protos"
+    env:
+      PROTO_DIR: protos
     steps:
       - uses: actions/checkout@v2
       - name: "Install protoc"
         run: |
-          make dep-protoc
+          mkdir -p bin
+          make BIN_DIR=bin dep-protoc
       - name: "Compile Protos with protoc"
         run: |
-          protoc -I protos --cpp_out=/tmp/
+          ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/*.proto
         
   # build & unit tests simlulator in docker container
   build-sim:

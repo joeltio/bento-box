@@ -20,6 +20,7 @@ clean: clean-sim
 	
 # deps: convience rules for installing dependencies
 ARCH:=$(shell uname -i)
+BIN_DIR:=/usr/local/bin
 deps: dep-protoc
 
 PROTOC_VERSION:=3.13.0
@@ -27,7 +28,7 @@ PROTOC_VERSION:=3.13.0
 dep-protoc:
 	curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
 	unzip -d /tmp/protoc protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
-	$(MV) /tmp/protoc/bin/* /usr/local/bin 
+	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
 
 ## Protobuf/GRPC API
