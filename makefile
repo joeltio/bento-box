@@ -8,14 +8,27 @@ CMAKE:=cmake
 RM:=rm -rf
 PROTOC:=protoc
 MKDIR:=mkdir -p
+MV:=mv -f
 
-.PHONY: build test clean run
+.PHONY: deps build test clean run
 
 build: build-sim
 
 test: test-sim
 
 clean: clean-sim
+	
+# deps: convience rules for installing dependencies
+ARCH:=$(shell uname -i)
+deps: dep-protoc
+
+PROTOC_VERSION:=3.13.0
+
+dep-protoc:
+	curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
+	unzip -d /tmp/protoc protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
+	$(MV) /tmp/protoc/bin/* /usr/local/bin 
+	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
 
 ## Protobuf/GRPC API
 PROTOS_DIR:=protos
