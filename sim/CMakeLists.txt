@@ -6,31 +6,27 @@ set(FETCHCONTENT_QUIET OFF)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(bentobox)
 
-# Source files
+## Source files
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(ICS_DIR "${SRC_DIR}/ics")
 set(UTIL_DIR "${SRC_DIR}/util")
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-set(PROTOS_DIR "${CMAKE_CURRENT_BINARY_DIR}/protos")
-
-file(GLOB PROTO_SOURCES "${PROTOS_DIR}/protos/*.pb.cc")
-set(SOURCES
+set(SOURCES 
     "${SRC_DIR}/main.cpp"
-    ${PROTO_SOURCES}
 )
-set(TESTS
+set(TESTS 
     "${SRC_DIR}/main.test.cpp"
-    ${PROTO_SOURCES}
 )
 
-# Executable
+## Executable
+set(TARGETS ${PROJECT_NAME} "${PROJECT_NAME}_test")
+# target bento simulator's executables to c++ 20
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(${PROJECT_NAME} ${SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR} ${PROTOS_DIR})
 add_executable("${PROJECT_NAME}_test" ${TESTS})
-target_include_directories("${PROJECT_NAME}_test" PRIVATE ${SRC_DIR} ${PROTOS_DIR})
-
+foreach(target IN ITEMS ${TARGETS})
+    target_include_directories(${target} PRIVATE ${SRC_DIR})
+endforeach()
 # Link subdir modules
 foreach (lib IN ITEMS util ics)
     add_subdirectory("${SRC_DIR}/${lib}")
@@ -39,6 +35,8 @@ foreach (lib IN ITEMS util ics)
 endforeach()
 
 ## Library Dependencies
+# target library dependencies to c++ 17
+set(CMAKE_CXX_STANDARD 17)
 # GLFW
 find_package(glfw3 3 REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
@@ -47,34 +45,69 @@ target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 set(GLAD_DIR "${LIB_DIR}/glad")
 add_library(glad "${GLAD_DIR}/src/glad.c")
 target_include_directories(glad PRIVATE "${GLAD_DIR}/include")
-target_include_directories(${PROJECT_NAME} PRIVATE "${GLAD_DIR}/include")
-target_link_libraries(${PROJECT_NAME} PRIVATE glad)
-target_include_directories("${PROJECT_NAME}_test" PRIVATE "${GLAD_DIR}/include")
-target_link_libraries("${PROJECT_NAME}_test" PRIVATE glad)
+foreach(target IN ITEMS ${TARGETS})
+    target_include_directories(${target} PRIVATE "${GLAD_DIR}/include")
+    target_link_libraries(${target} PRIVATE glad)
+    # On non-windows systems, GLAD requires libdl to be linked
+    if(NOT WIN32)
+        target_link_libraries(${target} PRIVATE dl)
+    endif(NOT WIN32)
+endforeach()
 
-# Protobuf
-set(PROTOBUF_DIR "{LIB_DIR}/protobuf")
-# disable redudant building of unused dependencies
-set(protobuf_BUILD_TESTS FALSE)
-set(protobuf_BUILD_EXAMPLES FALSE)
-set(protobuf_BUILD_CONFORMANCE FALSE)
-set(protobuf_BUILD_LIBPROTOC FALSE)
-set(protobuf_BUILD_PROTOC_BINARIES FALSE)
-set(protobuf_BUILD_SHARED_LIBS FALSE)
-add_subdirectory(
-    "${LIB_DIR}/protobuf/cmake"
-    EXCLUDE_FROM_ALL
+# GRPC/Protobuf
+FetchContent_Declare(
+    grpc
+    GIT_REPOSITORY https://github.com/grpc/grpc.git
+    GIT_TAG        v1.33.2
+    GIT_PROGRESS   TRUE
 )
-target_include_directories(${PROJECT_NAME} PRIVATE "${PROTOBUF_DIR}/src")
-target_link_libraries(${PROJECT_NAME} PRIVATE libprotobuf)
-target_include_directories("${PROJECT_NAME}_test" PRIVATE "${PROTOBUF_DIR}/src")
-target_link_libraries("${PROJECT_NAME}_test" PRIVATE libprotobuf)
+# disable redudant dependencies targets
+# disable unused protobuf targets
+set(protobuf_BUILD_TESTS OFF)
+# disable unused grpc plugin targets
+set(gRPC_BUILD_CSHARP_EXT OFF)
+set(gRPC_BUILD_GRPC_CSHARP_PLUGIN OFF)
+set(gRPC_BUILD_GRPC_NODE_PLUGIN OFF)
+set(gRPC_BUILD_GRPC_OBJECTIVE_C_PLUGIN OFF)
+set(gRPC_BUILD_GRPC_PHP_PLUGIN OFF)
+set(gRPC_BUILD_GRPC_PYTHON_PLUGIN OFF)
+set(gRPC_BUILD_GRPC_RUBY_PLUGIN OFF)
+# disable abseil tests targets
+set(BUILD_TESTING OFF)
+FetchContent_MakeAvailable(grpc)
+# link protobuf/grpc libraries
+foreach(target IN ITEMS ${TARGETS})
+    target_include_directories(${target} PRIVATE "${PROTOBUF_DIR}/src")
+    target_link_libraries(${target} PRIVATE libprotobuf grpc++ grpc++_reflection)
+endforeach()
 
-# On non-windows systems, GLAD requires libdl to be linked
-if(NOT WIN32)
-target_link_libraries(${PROJECT_NAME} PRIVATE dl)
-target_link_libraries("${PROJECT_NAME}_test" PRIVATE dl)
-endif(NOT WIN32)
+# Compile and link protobuf c++ bindings from protobuf defitions
+get_filename_component(PROTOS_DIR "../protos" ABSOLUTE)
+# target directory to write protobuf bindings to
+set(PROTO_BINDS_DIR "${CMAKE_CURRENT_BINARY_DIR}/protos")
+file(MAKE_DIRECTORY ${PROTO_BINDS_DIR})
+# list protobuf defintions in protos/
+file(GLOB PROTO_DEFS "${PROTOS_DIR}/*.proto")
+# replace .proto with .pb.cc and .pb.h
+string(REPLACE "${PROTOS_DIR}" "${PROTO_BINDS_DIR}" PROTO_BINDS "${PROTO_DEFS}")
+string(REPLACE ".proto" ".pb.cc" PROTO_BIND_SOURCES "${PROTO_BINDS}")
+string(REPLACE ".proto" ".pb.h" PROTO_BIND_HEADERS "${PROTO_BINDS}")
+# run protoc with grpc_cpp_plugin to generate c++ bindings
+add_custom_command(
+    OUTPUT "${PROTO_BIND_SOURCES}"
+    COMMAND $<TARGET_FILE:protoc>
+    ARGS 
+        -I ${PROTOS_DIR}
+        --grpc_out ${PROTO_BINDS_DIR}
+        --cpp_out ${PROTO_BINDS_DIR}
+        --plugin=protoc-gen-grpc=$<TARGET_FILE:grpc_cpp_plugin>
+        ${PROTO_DEFS}
+    DEPENDS ${PROTO_DEFS} $<TARGET_FILE:protoc> $<TARGET_FILE:grpc_cpp_plugin>
+)
+foreach(target IN ITEMS ${TARGETS})
+    target_sources(${target} PRIVATE ${PROTO_BIND_SOURCES})
+    target_include_directories(${target} PRIVATE ${PROTO_BINDS_DIR})
+endforeach()
 
 ## Test Dependencies
 # Google test

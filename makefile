@@ -39,15 +39,10 @@ SIM_TARGET:=bentobox
 SIM_TEST:=bentobox_test
 SIM_SRC:=sim
 SIM_BUILD_DIR:=sim/build
-SIM_PROTOS_DIR:=$(SIM_BUILD_DIR)/protos/protos
 
-.PHONY: build-sim test-sim clean-sim build-protos-sim
+.PHONY: build-sim test-sim clean-sim
 
-$(SIM_PROTOS_DIR): $(PROTOS_DIR)
-	$(MKDIR) $(SIM_PROTOS_DIR)
-	$(PROTOC) -I=$(PROTOS_DIR) --cpp_out=$(SIM_PROTOS_DIR) $(PROTOS)
-
-build-sim:  $(SIM_PROTOS_DIR)
+build-sim:
 	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR)
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all)
 

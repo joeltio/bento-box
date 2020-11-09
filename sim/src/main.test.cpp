@@ -1,7 +1,7 @@
 #include <string>
 #include <gtest/gtest.h>
 #include <google/protobuf/util/message_differencer.h>
-#include "protos/test.pb.h"
+#include "test.pb.h"
 
 using namespace std;
 
