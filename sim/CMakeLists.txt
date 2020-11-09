@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
+include(FetchContent)
+# show progress for when fetching FetchContent dependencies
+set(FETCHCONTENT_QUIET OFF)
 # use new policy for options
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(bentobox)
@@ -75,8 +78,11 @@ endif(NOT WIN32)
 
 ## Test Dependencies
 # Google test
-add_subdirectory(
-    "${LIB_DIR}/googletest"
-    EXCLUDE_FROM_ALL
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        release-1.10.0
+  GIT_PROGRESS   TRUE
 )
+FetchContent_MakeAvailable(googletest)
 target_link_libraries("${PROJECT_NAME}_test" PRIVATE gtest_main)
