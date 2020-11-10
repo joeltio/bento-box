@@ -9,10 +9,10 @@ env:
   DOCKER_BUILDKIT: 1
     
 jobs:
-  # checks that protos can be compiled by protoc
-  build-protos:
+  # quick check that protos can be compiled by protoc
+  check-protos:
     runs-on: ubuntu-latest
-    name: "Build bentobox Protos"
+    name: "Check Protos compilable"
     env:
       PROTO_DIR: protos
     steps:
@@ -27,7 +27,7 @@ jobs:
         
   # build & unit tests simlulator in docker container
   build-sim:
-    needs: build-protos
+    needs: check-protos
     runs-on: ubuntu-latest
     name: "Build & Test bentobox-sim" 
     steps:
