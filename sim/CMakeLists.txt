@@ -9,10 +9,12 @@ set(UTIL_DIR "${SRC_DIR}/util")
 
 set(SOURCES
     "${SRC_DIR}/main.cpp"
+    "src/componentManager.h"
 )
 
 set(TESTS
     "${SRC_DIR}/main.test.cpp"
+    "src/componentManager.test.cpp"
 )
 
 # Executable
