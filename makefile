@@ -10,6 +10,9 @@ PROTOC:=protoc
 MKDIR:=mkdir -p
 MV:=mv -f
 
+# cmake generator to use.
+CMAKE_GEN:=Unix Makefiles
+
 .PHONY: deps build test clean run
 
 build: build-sim
@@ -44,7 +47,7 @@ SIM_BUILD_DIR:=sim/build
 .PHONY: config-sim build-sim test-sim clean-sim
 
 configure-sim:
-	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR)
+	$(CMAKE) -G "$(CMAKE_GEN)" -S $(SIM_SRC) -B $(SIM_BUILD_DIR)
 
 build-sim: configure-sim
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) \
