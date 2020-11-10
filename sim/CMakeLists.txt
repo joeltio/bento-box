@@ -13,9 +13,11 @@ set(UTIL_DIR "${SRC_DIR}/util")
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(SOURCES 
     "${SRC_DIR}/main.cpp"
+    "src/componentManager.h"
 )
 set(TESTS 
     "${SRC_DIR}/main.test.cpp"
+    "src/componentManager.test.cpp"
 )
 
 ## Executable

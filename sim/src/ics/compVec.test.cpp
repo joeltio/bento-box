@@ -60,3 +60,27 @@ TEST(TEST_SUITE, RetrieveDeletedComponent) {
         std::out_of_range
     );
 }
+
+TEST(TEST_SUITE, RetrieveByReference) {
+    auto vec = CompVec<TestComp>();
+
+    {
+        auto idx = vec.add(TestComp{true, 3});
+
+        TestComp &comp = vec.at(idx);
+        comp.height = 2;
+
+        ics::Component auto vecComp = vec.at(idx);
+        ASSERT_EQ(vecComp.height, 2);
+    }
+
+    {
+        auto idx = vec.add(TestComp{true, 3});
+
+        TestComp &comp = vec[idx];
+        comp.height = 2;
+
+        ics::Component auto vecComp = vec.at(idx);
+        ASSERT_EQ(vecComp.height, 2);
+    }
+}

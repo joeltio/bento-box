@@ -35,3 +35,13 @@ TEST(TEST_SUITE, CheckExistence) {
     map.insert(d);
     EXPECT_TRUE(map.has<TestStruct>());
 }
+
+TEST(TEST_SUITE, RetreiveByReference) {
+    auto map = TypeMap();
+    map.insert(TestStruct { 3 });
+
+    auto& val = map.at<TestStruct>();
+    val.x = 5;
+
+    ASSERT_EQ(map.at<TestStruct>().x, 5);
+}

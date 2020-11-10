@@ -11,9 +11,9 @@ namespace util {
         std::unordered_map<std::type_index, std::any> map;
     public:
         template<typename T>
-        T at() const {
+        T& at() {
             auto type = std::type_index(typeid(T));
-            return std::any_cast<T>(map.at(type));
+            return std::any_cast<T&>(map.at(type));
         };
 
         template<typename T>
