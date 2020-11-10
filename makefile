@@ -41,15 +41,16 @@ SIM_TEST:=bentobox_test
 SIM_SRC:=sim
 SIM_BUILD_DIR:=sim/build
 
-.PHONY: build-sim test-sim clean-sim
+.PHONY: config-sim build-sim test-sim clean-sim
 
 configure-sim:
 	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR)
 
 build-sim: configure-sim
-	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all)
+	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) \
+		--target $(SIM_TARGET) --target $(SIM_TEST)
 
-test-sim: build-sim
+test-sim: build-sim-test
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
 
 run-sim: build-sim
