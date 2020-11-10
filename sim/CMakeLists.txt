@@ -9,7 +9,6 @@ set(UTIL_DIR "${SRC_DIR}/util")
 
 set(SOURCES
     "${SRC_DIR}/main.cpp"
-    "${SRC_DIR}/ICSManager.h"
 )
 
 set(TESTS
