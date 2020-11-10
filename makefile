@@ -43,8 +43,10 @@ SIM_BUILD_DIR:=sim/build
 
 .PHONY: build-sim test-sim clean-sim
 
-build-sim:
+configure-sim:
 	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR)
+
+build-sim: configure-sim
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all)
 
 test-sim: build-sim
