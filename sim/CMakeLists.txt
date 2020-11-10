@@ -94,7 +94,7 @@ string(REPLACE ".proto" ".pb.cc" PROTO_BIND_SOURCES "${PROTO_BINDS}")
 string(REPLACE ".proto" ".pb.h" PROTO_BIND_HEADERS "${PROTO_BINDS}")
 # run protoc with grpc_cpp_plugin to generate c++ bindings
 add_custom_command(
-    OUTPUT "${PROTO_BIND_SOURCES}"
+    OUTPUT ${PROTO_BIND_HEADERS} ${PROTO_BIND_SOURCES}
     COMMAND $<TARGET_FILE:protoc>
     ARGS 
         -I ${PROTOS_DIR}
