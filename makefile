@@ -18,7 +18,7 @@ test: test-sim
 
 clean: clean-sim
 	
-# deps: convience rules for installing dependencies
+# deps: convenience rules for installing dependencies
 ARCH:=$(shell uname -i)
 BIN_DIR:=/usr/local/bin
 deps: dep-protoc
@@ -44,7 +44,7 @@ SIM_BUILD_DIR:=sim/build
 .PHONY: build-sim test-sim clean-sim
 
 build-sim:
-	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR)
+	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) \
 		--target $(SIM_TARGET) --target $(SIM_TEST)
 
