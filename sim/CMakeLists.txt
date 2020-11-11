@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 include(FetchContent)
 # show progress for when fetching FetchContent dependencies
 set(FETCHCONTENT_QUIET OFF)
-# use new policy for options
+# use cmake policy to make option() to honor normal variables
+# http://shadow.nd.rl.ac.uk/ICP_Binaries/CMake/doc/cmake/html/policy/CMP0077.html
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(bentobox)
 
