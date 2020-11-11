@@ -1,0 +1,13 @@
+//
+// bentobox
+// test proto
+// to be replaced with actual protos. these protos are introduced to test protobuf build
+//
+
+syntax = "proto3";
+package test;
+
+message Person {
+    string name = 1;
+    int32 age = 2;
+}

@@ -6,14 +6,34 @@
 # command aliases
 CMAKE:=cmake
 RM:=rm -rf
+PROTOC:=protoc
+MKDIR:=mkdir -p
+MV:=mv -f
 
-.PHONY: build test clean run
+.PHONY: deps build test clean run
 
 build: build-sim
 
 test: test-sim
 
 clean: clean-sim
+	
+# deps: convenience rules for installing dependencies
+ARCH:=$(shell uname -i)
+BIN_DIR:=/usr/local/bin
+deps: dep-protoc
+
+PROTOC_VERSION:=3.13.0
+
+dep-protoc:
+	curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
+	unzip -d /tmp/protoc protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
+	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
+	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
+
+## Protobuf/GRPC API
+PROTOS_DIR:=protos
+PROTOS:=$(wildcard protos/*.proto)
 
 ## Bento Box: Simulator component 
 SIM_TARGET:=bentobox
@@ -22,9 +42,11 @@ SIM_SRC:=sim
 SIM_BUILD_DIR:=sim/build
 
 .PHONY: build-sim test-sim clean-sim
+
 build-sim:
-	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR)
-	$(CMAKE) --build $(SIM_BUILD_DIR)
+	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) \
+		--target $(SIM_TARGET) --target $(SIM_TEST)
 
 test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)

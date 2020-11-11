@@ -5,15 +5,31 @@
 
 name: "CI Pipeline"
 on: push
-
 env:
   DOCKER_BUILDKIT: 1
     
 jobs:
+  # quick check that protos can be compiled by protoc
+  check-protos:
+    runs-on: ubuntu-latest
+    name: "Check Protos compilable"
+    env:
+      PROTO_DIR: protos
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Install protoc"
+        run: |
+          mkdir bin
+          make BIN_DIR=bin dep-protoc
+      - name: "Compile Protos with protoc"
+        run: |
+          ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/*.proto
+        
+  # build & unit tests simlulator in docker container
   build-sim:
+    needs: check-protos
     runs-on: ubuntu-latest
     name: "Build & Test bentobox-sim" 
-
     steps:
       - uses: actions/checkout@v2
       - name: "Build bentobox-sim"
