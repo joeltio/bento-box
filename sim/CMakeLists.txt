@@ -21,19 +21,21 @@ set(TESTS
 )
 
 ## Executable
-set(TARGETS ${PROJECT_NAME} "${PROJECT_NAME}_test")
+set(TARGET_SIM ${PROJECT_NAME})
+set(TARGET_TEST "${PROJECT_NAME}_test")
+set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 # target bento simulator's executables to c++ 20
 set(CMAKE_CXX_STANDARD 20)
-add_executable(${PROJECT_NAME} ${SOURCES})
-add_executable("${PROJECT_NAME}_test" ${TESTS})
+add_executable(${TARGET_SIM} ${SOURCES})
+add_executable(${TARGET_TEST} ${TESTS})
 foreach(target IN ITEMS ${TARGETS})
     target_include_directories(${target} PRIVATE ${SRC_DIR})
 endforeach()
 # Link subdir modules
 foreach (lib IN ITEMS util ics)
     add_subdirectory("${SRC_DIR}/${lib}")
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${lib})
-    target_link_libraries("${PROJECT_NAME}_test" PRIVATE -Wl,--whole-archive ${lib}-test -Wl,--no-whole-archive)
+    target_link_libraries(${TARGET_SIM} PRIVATE ${lib})
+    target_link_libraries(${TARGET_TEST} PRIVATE -Wl,--whole-archive ${lib}-test -Wl,--no-whole-archive)
 endforeach()
 
 ## Library Dependencies
@@ -41,7 +43,7 @@ endforeach()
 set(CMAKE_CXX_STANDARD 17)
 # GLFW
 find_package(glfw3 3 REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+target_link_libraries(${TARGET_SIM} PRIVATE glfw)
 
 # GLAD
 set(GLAD_DIR "${LIB_DIR}/glad")
@@ -120,4 +122,4 @@ FetchContent_Declare(
   GIT_PROGRESS   TRUE
 )
 FetchContent_MakeAvailable(googletest)
-target_link_libraries("${PROJECT_NAME}_test" PRIVATE gtest_main)
+target_link_libraries(${TARGET_TEST} PRIVATE gtest_main)
