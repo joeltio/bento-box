@@ -14,7 +14,8 @@ set(UTIL_DIR "${SRC_DIR}/util")
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(SOURCES
     "${SRC_DIR}/main.cpp"
-    "src/componentManager.h"
+    "${SRC_DIR}/WindowContext.cpp"
+    "${SRC_DIR}/GraphicsContext.cpp"
 )
 set(TESTS
     "${SRC_DIR}/main.test.cpp"
