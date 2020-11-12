@@ -12,9 +12,9 @@ struct TestComp : public DefaultComponent {
 
 TEST(TEST_SUITE, StoreAndRetrieve) {
     auto vec = CompVec<TestComp>();
-    vec.add(TestComp { true, 3 });
+    auto id = vec.add(TestComp { true, 3 });
 
-    TestComp value = vec.at(0);
+    TestComp value = vec.at(id);
     ASSERT_EQ(value.height, 3);
 }
 
@@ -26,37 +26,16 @@ TEST(TEST_SUITE, RetrieveNonExistentComponent) {
     );
 }
 
-TEST(TEST_SUITE, ReuseDeletedComponent) {
-    auto vec = CompVec<TestComp>();
-
-    // Create two elements
-    auto firstElementIdx = vec.add(TestComp{ true, 3 });
-    vec.add(TestComp{ true, 3 });
-
-    // Remove the first
-    vec.remove(firstElementIdx);
-
-    // The first element's memory location should be reused
-    auto newElement = TestComp { true, 3 };
-    auto newInsertIndex = vec.add(newElement);
-    ASSERT_EQ(firstElementIdx, newInsertIndex);
-
-    // The values should be the newly inserted component's values
-    ics::Component auto firstElement = vec.at(firstElementIdx);
-    ASSERT_EQ(firstElement, newElement);
-    ASSERT_EQ(firstElement.height, 3);
-}
-
 TEST(TEST_SUITE, RetrieveDeletedComponent) {
     auto vec = CompVec<TestComp>();
-    auto idx = vec.add(TestComp{ true, 3 });
-    vec.remove(idx);
+    auto id = vec.add(TestComp{ true, 3 });
+    vec.remove(id);
     EXPECT_THROW(
-        vec.at(idx),
+        vec.at(id),
         std::out_of_range
     );
     EXPECT_THROW(
-        vec[idx],
+        vec[id],
         std::out_of_range
     );
 }
