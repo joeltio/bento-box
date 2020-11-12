@@ -14,7 +14,7 @@ import "graph.proto";
 message EntityDef {
     // Unique id that identifies this entity
     // This should be auto assigned by bentobox when first registered.
-    int32 id = 1;
+    uint32 id = 1;
     // list of names of the components types held by this entity
     repeated string components = 2;
 }
@@ -31,7 +31,7 @@ message ComponentDef {
 message SystemDef {
     // Unique id that identifies the system. 
     // This should be auto assigned by bentobox when first registered.
-    int32 id = 1;
+    uint32 id = 1;
     // Computation Graph containing the implementation of the system
     Graph graph = 2;
 }

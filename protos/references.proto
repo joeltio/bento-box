@@ -11,7 +11,7 @@ package bento;
 // Assumes that the component is bound the entity and attribute exists in the component type
 message AttributeRef {
     // id of the entity to the retrieve from
-    int32 entity_id = 1;
+    uint32 entity_id = 1;
     // Name of the component type to retrieve from entity
     string component = 2;
     // Name of the attribute to retrieve from component
