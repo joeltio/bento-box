@@ -14,7 +14,7 @@ import "graph.proto";
 message EntityDef {
     // Unique id that identifies this entity
     // This should be auto assigned by bentobox when first registered.
-    int64 id = 1;
+    int32 id = 1;
     // list of names of the components types held by this entity
     repeated string components = 2;
 }

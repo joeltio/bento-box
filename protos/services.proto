@@ -18,7 +18,7 @@ service SimulationService {
     rpc ListSimulation(ListSimulationReq) returns (ListSimulationResp);
     rpc DropSimulation(DropSimulationReq) returns (DropSimulationResp);
 
-    // Run on step of the simulation
+    // Run one step of the simulation
     rpc StepSimulation(StepSimulationReq) returns (StepSimulationResp);
 
     // Set, Get component's Attributes
