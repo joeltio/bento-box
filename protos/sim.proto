@@ -1,0 +1,22 @@
+//
+// Bentobox
+// Proto
+// Simulation types
+//
+
+syntax = "proto3";
+package bento;
+
+import "ecs.proto";
+
+message SimulationDef {
+    // unique name that identifies this simulation
+    string name = 1;
+    // List of entities to include in this simulation
+    repeated EntityDef entities = 2;
+    // List of component types to include in this simulation
+    repeated ComponentDef components = 3;
+    // List of systems to run in this simulation.
+    // Systems would run in sequentially in the order provided in this list
+    repeated SystemDef systems = 4;
+}

@@ -1,0 +1,20 @@
+//
+// Bentobox
+// Proto
+// References
+//
+
+syntax = "proto3";
+package bento;
+
+// Fully-qualified reference to an component's attribute
+// Assumes that the component is bound the entity and attribute exists in the component type
+message AttributeRef {
+    // id of the entity to the retrieve from
+    uint32 entity_id = 1;
+    // Name of the component type to retrieve from entity
+    string component = 2;
+    // Name of the attribute to retrieve from component
+    string attribute = 3;
+}
+
