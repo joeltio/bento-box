@@ -59,6 +59,7 @@ clean-sim:
 	
 ## Bento - SDK component
 BLACK_FMT:=black
+PYTEST:=pytest
 SDK_SRC:=sdk
 
 .PHONY: format-sdk
@@ -66,3 +67,5 @@ SDK_SRC:=sdk
 format-sdk:
 	$(BLACK_FMT) $(SDK_SRC)
 
+test-sdk:
+	cd $(SDK_SRC) && $(PYTEST)
