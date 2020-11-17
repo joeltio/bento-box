@@ -35,7 +35,7 @@ dep-protoc:
 PROTOS_DIR:=protos
 PROTOS:=$(wildcard protos/*.proto)
 
-## Bento Box: Simulator component 
+## Bento - Simulator component 
 SIM_TARGET:=bentobox
 SIM_TEST:=bentobox_test
 SIM_SRC:=sim
@@ -56,3 +56,13 @@ run-sim: build-sim
 
 clean-sim:
 	$(RM) $(SIM_BUILD_DIR)
+	
+## Bento - SDK component
+BLACK_FMT:=black
+SDK_SRC:=sdk
+
+.PHONY: format-sdk
+
+format-sdk:
+	$(BLACK_FMT) $(SDK_SRC)
+
