@@ -5,9 +5,9 @@
 //
 
 syntax = "proto3";
-package bento;
+package bento.protos; 
 
-import "ecs.proto";
+import "bento/protos/ecs.proto";
 
 message SimulationDef {
     // unique name that identifies this simulation

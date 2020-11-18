@@ -33,7 +33,8 @@ class GenProtos(Command):
         pass
 
     def run(self):
-        proto_paths = [str(p) for p in GenProtos.protos_dir.glob("*.proto")]
+        proto_glob = (GenProtos.protos_dir / "bento" / "protos").glob("*.proto")
+        proto_paths = [str(p) for p in proto_glob]
         os.makedirs(GenProtos.binds_dir, exist_ok=True)
         if self.verbose:
             print(f"compling python protobuf bindings to {GenProtos.binds_dir}")
@@ -42,8 +43,8 @@ class GenProtos(Command):
             [
                 __file__,
                 f"-I{GenProtos.protos_dir}",
-                f"--python_out={GenProtos.binds_dir}",
-                f"--grpc_python_out={GenProtos.binds_dir}",
+                f"--python_out=.",
+                f"--grpc_python_out=.",
             ]
             + proto_paths
         )

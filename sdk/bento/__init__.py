@@ -3,4 +3,4 @@
 # SDK
 #
 
-from bento.protos.sim_pb2 import Simulation
+from bento.protos.sim_pb2 import SimulationDef

@@ -5,10 +5,10 @@
 //
 
 syntax = "proto3";
-package bento;
+package bento.protos;
 
-import "values.proto";
-import "references.proto";
+import "bento/protos/values.proto";
+import "bento/protos/references.proto";
 
 // Node in a executable graph that represents a computable/evaluatable operation.
 message Node {

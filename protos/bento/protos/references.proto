@@ -5,7 +5,7 @@
 //
 
 syntax = "proto3";
-package bento;
+package bento.protos;
 
 // Fully-qualified reference to an component's attribute
 // Assumes that the component is bound the entity and attribute exists in the component type

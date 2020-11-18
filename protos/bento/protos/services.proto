@@ -5,11 +5,11 @@
 //
 
 syntax = "proto3";
-package bento;
+package bento.protos;
 
-import "values.proto";
-import "references.proto";
-import "sim.proto";
+import "bento/protos/values.proto";
+import "bento/protos/references.proto";
+import "bento/protos/sim.proto";
 
 service SimulationService {
     // Create, Update, Get, List and Delete Simulations
