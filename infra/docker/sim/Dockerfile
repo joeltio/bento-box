@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y  --no-install-recommends \
 COPY makefile /repo/makefile
 COPY protos /repo/protos
 COPY sim /repo/sim
-RUN make clean-sim && make build-sim
+RUN make clean-sim build-sim
 
 # run simlulator
 CMD make run-sim
