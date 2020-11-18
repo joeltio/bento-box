@@ -42,6 +42,7 @@ jobs:
   build-test-sdk:
     needs: check-protos
     runs-on: ubuntu-latest
+    name: "Build & Test bentobox-sdk"
     steps:
       - uses: actions/checkout@v2
       - name: "Build bentobox-sdk"
