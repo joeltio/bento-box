@@ -33,10 +33,6 @@ dep-protoc: /usr/local/bin/protoc
 	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
 
-## Protobuf/GRPC API
-PROTOS_DIR:=protos
-PROTOS:=$(wildcard protos/*.proto)
-
 ## Bento - Simulator component 
 SIM_TARGET:=bentobox
 SIM_TEST:=bentobox_test
@@ -66,6 +62,9 @@ SDK_SRC:=sdk
 PYTHON:=python
 
 .PHONY: format-sdk clean-sdk build-sdk python-sdk
+
+build-sdk:
+	cd $(SDK_SRC) && $(PYTHON) setup.py sdist bdist_wheel
 
 format-sdk:
 	$(BLACK_FMT) $(SDK_SRC)
