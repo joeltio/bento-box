@@ -93,14 +93,15 @@ get_filename_component(PROTOS_DIR "../protos" ABSOLUTE)
 set(PROTO_BINDS_DIR "${CMAKE_CURRENT_BINARY_DIR}/protos")
 file(MAKE_DIRECTORY ${PROTO_BINDS_DIR})
 # list protobuf defintions in protos/
-file(GLOB PROTO_DEFS "${PROTOS_DIR}/*.proto")
+file(GLOB PROTO_DEFS "${PROTOS_DIR}/bento/protos/*.proto")
 # replace .proto with .pb.cc and .pb.h
 string(REPLACE "${PROTOS_DIR}" "${PROTO_BINDS_DIR}" PROTO_BINDS "${PROTO_DEFS}")
 string(REPLACE ".proto" ".pb.cc" PROTO_BIND_SOURCES "${PROTO_BINDS}")
+string(REPLACE ".proto" ".grpc.pb.cc" PROTO_GRPC_SROURCES "${PROTO_BINDS}")
 string(REPLACE ".proto" ".pb.h" PROTO_BIND_HEADERS "${PROTO_BINDS}")
 # run protoc with grpc_cpp_plugin to generate c++ bindings
 add_custom_command(
-    OUTPUT ${PROTO_BIND_HEADERS} ${PROTO_BIND_SOURCES}
+    OUTPUT ${PROTO_BIND_HEADERS} ${PROTO_BIND_SOURCES} ${PROTO_GRPC_SROURCES}
     COMMAND $<TARGET_FILE:protoc>
     ARGS 
         -I ${PROTOS_DIR}
@@ -111,7 +112,7 @@ add_custom_command(
     DEPENDS ${PROTO_DEFS} $<TARGET_FILE:protoc> $<TARGET_FILE:grpc_cpp_plugin>
 )
 foreach(target IN ITEMS ${TARGETS})
-    target_sources(${target} PRIVATE ${PROTO_BIND_SOURCES})
+    target_sources(${target} PRIVATE ${PROTO_BIND_SOURCES} ${PROTO_GRPC_SROURCES})
     target_include_directories(${target} PRIVATE ${PROTO_BINDS_DIR})
 endforeach()
 
