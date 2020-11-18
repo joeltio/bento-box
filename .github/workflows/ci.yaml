@@ -57,37 +57,37 @@ jobs:
           python-version: ${{matrix.python}}
 
       - name: "Pull dependencies (Unix)"
-        if: "${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}"
+        if: ${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}
         run: |
           make dep-sdk-dev
       - name: "Pull dependencies (Windows)"
-        if: "${{ startsWith(matrix.os, 'windows') }}"
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           echo TODO
 
       - name: "Lint bentobox-sdk (Unix)"
-        if: "${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}"
+        if: ${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}
         run: |
           make lint-sdk
       - name: "Lint bentobox-sdk (Windows)"
-        if: "${{ startsWith(matrix.os, 'windows') }}"
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           echo TODO
 
       - name: "Build bentobox-sdk (Unix)"
-        if: "${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}"
+        if: ${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}
         run: |
           make build-sdk
       - name: "Build bentobox-sdk (Windows)"
-        if: "${{ startsWith(matrix.os, 'windows') }}"
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           echo TODO
 
       - name: "Unit Test bentobox-sdk (Unix)"
-        if: "${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}"
+        if: ${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}
         run: |
           make test-sdk
       - name: "Unit Test bentobox-sdk (Windows)"
-        if: "${{ startsWith(matrix.os, 'windows') }}"
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           echo TODO

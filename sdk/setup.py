@@ -84,6 +84,9 @@ if __name__ == "__main__":
     # if main required to prevent setup.py from running twice
     setup(
         python_requires=">=3.6",
-        setup_requires=["pbr>=5"],
+        setup_requires=[
+            "pbr>=5",
+            "wheel"
+        ],
         pbr=True,
     )
