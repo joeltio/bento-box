@@ -41,7 +41,7 @@ jobs:
   # build & unit tests sdk component
   build-test-sdk:
     needs: check-protos
-    runs-o
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: "Build bentobox-sdk"
