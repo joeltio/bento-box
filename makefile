@@ -21,7 +21,7 @@ clean: clean-sim
 # deps: convenience rules for installing dependencies
 ARCH:=$(shell uname -i)
 BIN_DIR:=/usr/local/bin
-deps: dep-protoc
+deps: dep-protoc dev-sdk-dev
 
 PROTOC_VERSION:=3.13.0
 
@@ -61,15 +61,23 @@ PYTEST:=pytest
 SDK_SRC:=sdk
 PYTHON:=python
 
-.PHONY: format-sdk clean-sdk build-sdk python-sdk
+.PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk
 
-build-sdk:
+dep-sdk-dev: 
+	pip install -r $(SDK_SRC)/requirements-dev.txt
+
+build-sdk: dep-sdk-dev lint-sdk
 	cd $(SDK_SRC) && $(PYTHON) setup.py sdist bdist_wheel
 
-format-sdk:
-	$(BLACK_FMT) $(SDK_SRC)
+format-sdk: dep-sdk-dev
+	$(BLACK_FMT) $(SDK_SRC)/bento
+	$(BLACK_FMT) $(SDK_SRC)/tests
 
-test-sdk:
+lint-sdk: dep-sdk-dev
+	$(BLACK_FMT) --check $(SDK_SRC)/bento
+	$(BLACK_FMT) --check $(SDK_SRC)/tests
+
+test-sdk: dep-sdk-dev
 	cd $(SDK_SRC) && $(PYTEST)
 	
 clean-sdk:
