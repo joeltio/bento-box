@@ -20,6 +20,7 @@ clean: clean-sim
 	
 # deps: convenience rules for installing dependencies
 ARCH:=$(shell uname -m)
+OS:=$(if $(filter Darwin,$(shell uname -s)),osx,linux)
 BIN_DIR:=/usr/local/bin
 deps: dep-protoc dev-sdk-dev
 
@@ -28,7 +29,7 @@ PROTOC_VERSION:=3.13.0
 dep-protoc: /usr/local/bin/protoc
 
 /usr/local/bin/protoc:
-	curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
+	curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-$(OS)-$(ARCH).zip 
 	unzip -d /tmp/protoc protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
 	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
