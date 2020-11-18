@@ -64,7 +64,7 @@ jobs:
       - name: "Pull dependencies (Windows)"
         if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
-          echo TODO
+          make dep-sdk-dev
 
       - name: "Lint bentobox-sdk (Unix)"
         if: ${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}
@@ -73,7 +73,7 @@ jobs:
       - name: "Lint bentobox-sdk (Windows)"
         if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
-          echo TODO
+          make dep-sdk-dev
 
       - name: "Build bentobox-sdk (Unix)"
         if: ${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}
@@ -82,7 +82,7 @@ jobs:
       - name: "Build bentobox-sdk (Windows)"
         if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
-          echo TODO
+          make build-sdk
 
       - name: "Unit Test bentobox-sdk (Unix)"
         if: ${{ startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu') }}
@@ -91,4 +91,4 @@ jobs:
       - name: "Unit Test bentobox-sdk (Windows)"
         if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
-          echo TODO
+          make test-sdk
