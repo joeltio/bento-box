@@ -24,7 +24,7 @@ jobs:
       - name: "Compile Protos with protoc"
         run: |
           ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/bento/protos/*.proto
-        
+
   # build & unit tests simulator component
   build-test-sim:
     needs: check-protos
@@ -38,7 +38,7 @@ jobs:
       - name: "Unit Test bentobox-sim"
         run: |
           docker run bentobox-sim make test-sim
-        
+
   # build & unit tests sdk component
   build-test-sdk:
     needs: check-protos

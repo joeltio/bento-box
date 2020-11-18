@@ -56,18 +56,24 @@ clean-sim:
 	$(RM) $(SIM_BUILD_DIR)
 	
 ## Bento - SDK component
-BLACK_FMT:=black
-PYTEST:=pytest
 SDK_SRC:=sdk
 PYTHON:=python
+BLACK_FMT:=python -m black
+PYTEST:=python -m pytest
+PDOC:=python -m pdoc
 
-.PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk
+.PHONY: format-sdk clean-sdk build-sdk build-sdk-docs  dep-sdk-dev test-sdk lint-sdk
 
 dep-sdk-dev: 
 	pip install -r $(SDK_SRC)/requirements-dev.txt
 
 build-sdk: dep-sdk-dev lint-sdk
 	cd $(SDK_SRC) && $(PYTHON) setup.py sdist bdist_wheel
+
+build-sdk-docs: $(SDK_SRC)/docs
+
+$(SDK_SRC)/docs: dep-sdk-dev
+	cd $(SDK_SRC) && $(PDOC) --html -o $(notdir $@) bento
 
 format-sdk: dep-sdk-dev
 	$(BLACK_FMT) $(SDK_SRC)/bento

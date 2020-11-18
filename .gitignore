@@ -336,7 +336,8 @@ tags
 .vim/
 .ccls-cache/
 
-# Python SDK: pbr/protos generated files
+# Python SDK: pbr/protos/docs generated files
 sdk/ChangeLog
 sdk/AUTHORS
 sdk/bento/protos/
+sdk/docs/
