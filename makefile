@@ -19,7 +19,7 @@ test: test-sim
 clean: clean-sim
 	
 # deps: convenience rules for installing dependencies
-ARCH:=$(shell uname -i)
+ARCH:=$(shell uname -m)
 BIN_DIR:=/usr/local/bin
 deps: dep-protoc dev-sdk-dev
 
