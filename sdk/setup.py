@@ -7,9 +7,11 @@
 import os
 from setuptools import setup
 from distutils.cmd import Command
+from distutils.command.clean import clean
 from setuptools.command.build_py import build_py
 from pathlib import Path
 from grpc_tools import protoc
+from shutil import rmtree
 
 
 class GenProtos(Command):
@@ -20,31 +22,33 @@ class GenProtos(Command):
     command_name = "build_protos"
     user_options = []
 
+    protos_dir = Path("..") / "protos"
+    binds_dir = Path(".") / "bento" / "protos"
+
+    # Empty implementation to statisfy abstract Command class requirements
     def initialize_options(self):
-        self.protos_dir = str(Path("..") / "protos")
-        self.binds_dir = str(Path(".") / "bento" / "protos")
+        pass
 
     def finalize_options(self):
-        self.protos_dir = Path(self.protos_dir)
-        self.binds_dir = Path(self.binds_dir)
+        pass
 
     def run(self):
-        proto_paths = [str(p) for p in self.protos_dir.glob("*.proto")]
-        os.makedirs(self.binds_dir, exist_ok=True)
+        proto_paths = [str(p) for p in GenProtos.protos_dir.glob("*.proto")]
+        os.makedirs(GenProtos.binds_dir, exist_ok=True)
         if self.verbose:
-            print(f"compling python protobuf bindings to {self.binds_dir}")
+            print(f"compling python protobuf bindings to {GenProtos.binds_dir}")
         # generate python proto bindings with protoc
         protoc.main(
             [
                 __file__,
-                f"-I{self.protos_dir}",
-                f"--python_out={self.binds_dir}",
-                f"--grpc_python_out={self.binds_dir}",
+                f"-I{GenProtos.protos_dir}",
+                f"--python_out={GenProtos.binds_dir}",
+                f"--grpc_python_out={GenProtos.binds_dir}",
             ]
             + proto_paths
         )
         # create a __init__.py to to tell python to treat it as a package
-        (self.binds_dir / "__init__.py").touch()
+        (GenProtos.binds_dir / "__init__.py").touch()
 
 
 class ProtoBuildPy(build_py):
@@ -57,6 +61,21 @@ class ProtoBuildPy(build_py):
     def run(self):
         # run protoc to compile bindings form proto defintions
         self.run_command("build_protos")
+        super().run()
+
+
+class ProtoClean(clean):
+    """
+    Custom Clean step to remove generated protobuf bindings during clean.
+    """
+
+    command_name = "clean"
+
+    def run(self):
+        if os.path.exists(GenProtos.binds_dir):
+            if self.verbose:
+                print(f"removing python protobuf bindings at {GenProtos.binds_dir}")
+            rmtree(GenProtos.binds_dir)
         super().run()
 
 

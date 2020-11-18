@@ -25,7 +25,9 @@ deps: dep-protoc
 
 PROTOC_VERSION:=3.13.0
 
-dep-protoc:
+dep-protoc: /usr/local/bin/protoc
+
+/usr/local/bin/protoc:
 	curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
 	unzip -d /tmp/protoc protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
 	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
@@ -61,11 +63,15 @@ clean-sim:
 BLACK_FMT:=black
 PYTEST:=pytest
 SDK_SRC:=sdk
+PYTHON:=python
 
-.PHONY: format-sdk
+.PHONY: format-sdk clean-sdk build-sdk python-sdk
 
 format-sdk:
 	$(BLACK_FMT) $(SDK_SRC)
 
 test-sdk:
 	cd $(SDK_SRC) && $(PYTEST)
+	
+clean-sdk:
+	cd $(SDK_SRC) && $(PYTHON) setup.py clean --all
