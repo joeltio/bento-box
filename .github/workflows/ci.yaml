@@ -23,10 +23,10 @@ jobs:
           make BIN_DIR=bin dep-protoc
       - name: "Compile Protos with protoc"
         run: |
-          ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/*.proto
+          ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/bento/protos/*.proto
         
-  # build & unit tests simlulator in docker container
-  build-sim:
+  # build & unit tests simulator component
+  build-test-sim:
     needs: check-protos
     runs-on: ubuntu-latest
     name: "Build & Test bentobox-sim" 
@@ -38,3 +38,16 @@ jobs:
       - name: "Unit Test bentobox-sim"
         run: |
           docker run bentobox-sim make test-sim
+        
+  # build & unit tests sdk component
+  build-test-sdk:
+    needs: check-protos
+    runs-o
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Build bentobox-sdk"
+        run: |
+          docker build -t bentobox-sdk -f infra/docker/sdk/Dockerfile .
+      - name: "Unit Test bentobox-sdk"
+        run: |
+          docker run bentobox-sdk make test-sdk
