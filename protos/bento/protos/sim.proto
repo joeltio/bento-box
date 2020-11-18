@@ -5,7 +5,7 @@
 //
 
 syntax = "proto3";
-package bento.protos; 
+package bento.protos;
 
 import "bento/protos/ecs.proto";
 

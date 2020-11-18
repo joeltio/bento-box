@@ -1,13 +1,12 @@
 #
 # bento-box
 # continous integration (ci) pipeline
-# 
+#
 
 name: "CI Pipeline"
 on: push
 env:
   DOCKER_BUILDKIT: 1
-    
 jobs:
   # quick check that protos can be compiled by protoc
   check-protos:
@@ -29,7 +28,7 @@ jobs:
   build-test-sim:
     needs: check-protos
     runs-on: ubuntu-latest
-    name: "Build & Test bentobox-sim" 
+    name: "Build & Test bentobox-sim"
     steps:
       - uses: actions/checkout@v2
       - name: "Build bentobox-sim"

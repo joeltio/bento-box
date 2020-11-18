@@ -33,7 +33,7 @@ dep-protoc: /usr/local/bin/protoc
 	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
 
-## Bento - Simulator component 
+## Bento - Simulator component
 SIM_TARGET:=bentobox
 SIM_TEST:=bentobox_test
 SIM_SRC:=sim
@@ -54,7 +54,7 @@ run-sim: build-sim
 
 clean-sim:
 	$(RM) $(SIM_BUILD_DIR)
-	
+
 ## Bento - SDK component
 SDK_SRC:=sdk
 PYTHON:=python
@@ -64,7 +64,7 @@ PDOC:=python -m pdoc
 
 .PHONY: format-sdk clean-sdk build-sdk build-sdk-docs  dep-sdk-dev test-sdk lint-sdk
 
-dep-sdk-dev: 
+dep-sdk-dev:
 	pip install -r $(SDK_SRC)/requirements-dev.txt
 
 build-sdk: dep-sdk-dev lint-sdk
@@ -85,6 +85,6 @@ lint-sdk: dep-sdk-dev
 
 test-sdk: dep-sdk-dev
 	cd $(SDK_SRC) && $(PYTEST)
-	
+
 clean-sdk:
 	cd $(SDK_SRC) && $(PYTHON) setup.py clean --all

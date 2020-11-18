@@ -1,7 +1,7 @@
 #
 # Bentobox
 # SDK container
-# 
+#
 
 ARG PY_VERSION=3.7.5
 FROM python:$PY_VERSION
