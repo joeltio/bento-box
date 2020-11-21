@@ -5,10 +5,10 @@
 //
 
 syntax = "proto3";
-package bento;
+package bento.protos;
 
-import "types.proto";
-import "graph.proto";
+import "bento/protos/types.proto";
+import "bento/protos/graph.proto";
 
 // EntityDef - registerable defintion for a entity in ECS
 message EntityDef {

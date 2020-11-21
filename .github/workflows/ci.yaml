@@ -1,17 +1,16 @@
 #
 # bento-box
 # continous integration (ci) pipeline
-# 
+#
 
 name: "CI Pipeline"
 on: push
 env:
   DOCKER_BUILDKIT: 1
-    
 jobs:
   # quick check that protos can be compiled by protoc
   check-protos:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: "Check Protos compilable"
     env:
       PROTO_DIR: protos
@@ -23,13 +22,13 @@ jobs:
           make BIN_DIR=bin dep-protoc
       - name: "Compile Protos with protoc"
         run: |
-          ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/*.proto
-        
-  # build & unit tests simlulator in docker container
-  build-sim:
+          ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/bento/protos/*.proto
+
+  # build & unit tests simulator component
+  build-test-sim:
     needs: check-protos
-    runs-on: ubuntu-latest
-    name: "Build & Test bentobox-sim" 
+    runs-on: ubuntu-20.04
+    name: "Build & Test bentobox-sim"
     steps:
       - uses: actions/checkout@v2
       - name: "Build bentobox-sim"
@@ -38,3 +37,34 @@ jobs:
       - name: "Unit Test bentobox-sim"
         run: |
           docker run bentobox-sim make test-sim
+
+  # build & unit tests sdk component
+  build-test-sdk:
+    needs: check-protos
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-20.04
+          - windows-2019
+          - macos-10.15
+        python: [3.6, 3.7, 3.8, 3.9]
+    runs-on: ${{matrix.os}}
+    name: "Build & Test bentobox-sdk (OS: ${{matrix.os}} Python: ${{matrix.python}})"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.python}}
+      - name: "Pull dependencies"
+        run: |
+          make dep-sdk-dev
+      - name: "Lint bentobox-sdk"
+        run: |
+          make lint-sdk
+      - name: "Build bentobox-sdk"
+        run: |
+          make build-sdk
+      - name: "Unit Test bentobox-sdk"
+        run: |
+          make test-sdk

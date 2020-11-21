@@ -5,7 +5,7 @@
 //
 
 syntax = "proto3";
-package bento;
+package bento.protos;
 
 // Wraps data type infomation for all possible kinds of data types
 message Type {
