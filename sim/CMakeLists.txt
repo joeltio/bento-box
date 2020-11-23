@@ -9,17 +9,12 @@ project(bentobox)
 
 ## Source files
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(ICS_DIR "${SRC_DIR}/ics")
-set(UTIL_DIR "${SRC_DIR}/util")
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(SOURCES
     "${SRC_DIR}/main.cpp"
-    "${SRC_DIR}/WindowContext.cpp"
-    "${SRC_DIR}/GraphicsContext.cpp"
 )
 set(TESTS
     "${SRC_DIR}/main.test.cpp"
-    "src/componentManager.test.cpp"
 )
 
 ## Executable
@@ -34,31 +29,15 @@ foreach(target IN ITEMS ${TARGETS})
     target_include_directories(${target} PRIVATE ${SRC_DIR})
 endforeach()
 # Link subdir modules
-foreach (lib IN ITEMS util ics)
+foreach (lib IN ITEMS core)
     add_subdirectory("${SRC_DIR}/${lib}")
     target_link_libraries(${TARGET_SIM} PRIVATE ${lib})
-    target_link_libraries(${TARGET_TEST} PRIVATE -Wl,--whole-archive ${lib}-test -Wl,--no-whole-archive)
+    target_link_libraries(${TARGET_TEST} PRIVATE -Wl,--whole-archive,--as-needed ${lib}-test -Wl,--no-whole-archive,--as-needed)
 endforeach()
 
 ## Library Dependencies
 # target library dependencies to c++ 17
 set(CMAKE_CXX_STANDARD 17)
-# GLFW
-find_package(glfw3 3 REQUIRED)
-target_link_libraries(${TARGET_SIM} PRIVATE glfw)
-
-# GLAD
-set(GLAD_DIR "${LIB_DIR}/glad")
-add_library(glad "${GLAD_DIR}/src/glad.c")
-target_include_directories(glad PRIVATE "${GLAD_DIR}/include")
-foreach(target IN ITEMS ${TARGETS})
-    target_include_directories(${target} PRIVATE "${GLAD_DIR}/include")
-    target_link_libraries(${target} PRIVATE glad)
-    # On non-windows systems, GLAD requires libdl to be linked
-    if(NOT WIN32)
-        target_link_libraries(${target} PRIVATE dl)
-    endif(NOT WIN32)
-endforeach()
 
 # GRPC/Protobuf
 FetchContent_Declare(
@@ -67,7 +46,7 @@ FetchContent_Declare(
     GIT_TAG        v1.33.2
     GIT_PROGRESS   TRUE
 )
-# disable redudant dependencies targets
+# disable redundant dependencies targets
 # disable unused protobuf targets
 set(protobuf_BUILD_TESTS OFF)
 # disable unused grpc plugin targets
@@ -87,7 +66,7 @@ foreach(target IN ITEMS ${TARGETS})
     target_link_libraries(${target} PRIVATE libprotobuf grpc++ grpc++_reflection)
 endforeach()
 
-# Compile and link protobuf c++ bindings from protobuf defitions
+# Compile and link protobuf c++ bindings from protobuf definitions
 get_filename_component(PROTOS_DIR "../protos" ABSOLUTE)
 # target directory to write protobuf bindings to
 set(PROTO_BINDS_DIR "${CMAKE_CURRENT_BINARY_DIR}/protos")
@@ -124,4 +103,4 @@ FetchContent_Declare(
   GIT_PROGRESS   TRUE
 )
 FetchContent_MakeAvailable(googletest)
-target_link_libraries(${TARGET_TEST} PRIVATE gtest_main)
+target_link_libraries(${TARGET_TEST} PRIVATE -Wl,--no-whole-archive gtest_main)

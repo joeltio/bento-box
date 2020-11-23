@@ -2,8 +2,8 @@
 #define BENTOBOX_COMPONENTMANAGER_H
 
 #include <memory>
-#include "ics/component.h"
-#include "ics/compVec.h"
+#include "component.h"
+#include "compVec.h"
 #include "util/typeMap.h"
 
 

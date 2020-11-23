@@ -1,4 +1,4 @@
-#include "GraphicsContext.h"
+#include "graphicsContext.h"
 
 GraphicsContext::GraphicsContext(WindowContext& windowContext) : windowContext(windowContext) {
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {

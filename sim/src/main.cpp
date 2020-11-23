@@ -1,6 +1,5 @@
-#include "WindowContext.h"
-#include "GraphicsContext.h"
-#include <iostream>
+#include "core/windowContext.h"
+#include "core/graphicsContext.h"
 
 int main() {
     WindowContext windowContext = WindowContext(800, 600, "Bento Box");

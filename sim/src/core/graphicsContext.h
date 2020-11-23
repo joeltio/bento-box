@@ -1,7 +1,7 @@
 #ifndef BENTOBOX_GRAPHICSCONTEXT_H
 #define BENTOBOX_GRAPHICSCONTEXT_H
 
-#include "WindowContext.h"
+#include "windowContext.h"
 
 class GraphicsContext {
 public:

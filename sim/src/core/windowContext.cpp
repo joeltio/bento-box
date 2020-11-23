@@ -1,4 +1,4 @@
-#include "WindowContext.h"
+#include "windowContext.h"
 
 namespace {
     void framebufferSizeCallback([[maybe_unused]] GLFWwindow* window, int width, int height) {
