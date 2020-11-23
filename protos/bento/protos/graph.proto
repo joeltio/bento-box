@@ -1,0 +1,208 @@
+//
+// Bentobox
+// Proto
+// Graph
+//
+
+syntax = "proto3";
+package bento.protos;
+
+import "bento/protos/values.proto";
+import "bento/protos/references.proto";
+
+// Node in a executable graph that represents a computable/evaluatable operation.
+message Node {
+    // Constant - node that always outputs its held value
+    message Const {
+        // Value held by this constant
+        Value held_value = 1;
+    }
+
+    /* Component access, mutation */
+    // Retrieve - node that retrieves a value from an entity's component
+    message Retrieve {
+        // Reference to the attribute to retriev
+        AttributeRef retrieve_attr = 1;
+    }
+
+    // Mutate - node mutate the value in an entity's component based 
+    // on value given by a node
+    message Mutate {
+        // node of when evaluated should provide the target value to mutate the
+        // attribute's value to
+        Node target_node = 1;
+
+        // Reference to the attribute to mutate with value
+        AttributeRef mutate_attr = 2;
+    }
+    
+    /* Control flow */
+    // Switch - conditional evaluation based on condition in conditional  node.
+    message Switch {
+        // node that evaluates to a boolean which defines the conditional of the switch
+        Node condition_node = 1;
+        // if false, the switch will continue evaluating on the false node
+        Node false_node = 2;
+        // if true, the switch will continue evaluating on the true node
+        Node true_node = 3;
+    }
+
+    // TODO: note: this a proposal for iteration, which might not required for MVP:
+    /*
+    // Fork - iterate/map over sequence node with map node
+    message Fork {
+        // node that evaluates to a sequence value that is iterable
+        Node sequence_node = 1;
+        // list of nodes that is evaluated for each element of the iterable value
+        // no. of nodes must match up with the no. of elements in the iterable value
+        repeated Node map_node = 2;
+    }
+    // Merge - join multiple nodes of execution by waiting all join nodes before running merged node
+    message Merge {
+        // list of nodes to wait for before executing merged node
+        repeated Node join_nodes = 1;
+        // Node that executes when join nodes finishes executing
+        Node merged_node = 2;
+    }
+    */
+
+    /* Math */
+    // Arithmetic 
+    message Add {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Sub {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Mul {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Div {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Max {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Min {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Abs {
+        Node x = 1;
+    }
+    message Pow {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Mod {
+        Node x = 1;
+        Node y = 2;
+    }
+    // Trigonometry
+    message Sin {
+        Node x = 1;
+    }
+    message ArcSin {
+        Node x = 1;
+    }
+    message Cos {
+        Node x = 1;
+    }
+    message ArcCos {
+        Node x = 1;
+    }
+    message Tan {
+        Node x = 1;
+    }
+    message ArcTan {
+        Node x = 1;
+    }
+    // Random number generation
+    // returns a random float between low and high (inclusive)
+    message Random {
+        Node low = 1;
+        Node high = 2;
+    }
+
+    /* Boolean */
+    message And {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Or {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Not {
+        Node x = 1;
+    }
+    message Eq {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Gt {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Lt {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Ge {
+        Node x = 1;
+        Node y = 2;
+    }
+    message Le {
+        Node x = 1;
+        Node y = 2;
+    }
+    
+    // the operation that this node encapsulates
+    oneof op {
+        Const const_op = 1;
+        Retrieve retrieve_op = 2;
+        Mutate mutate_op = 3;
+        Switch switch_op = 4;
+        //Fork fork_op = 5;
+        //Merge merge_op = 6;
+        Add add_op = 7;
+        Sub sub_op = 8;
+        Mul mul_op = 9;
+        Div div_op = 10;
+        Max max_op = 11;
+        Min min_op = 12;
+        Abs abs_op = 13;
+        Pow pow_op = 14;
+        Mod mod_op = 15;
+        Sin sin_op = 16;
+        ArcSin arcsin_op = 17;
+        Cos cos_op = 18;
+        ArcCos arccos_op = 19;
+        Tan tan_op = 20;
+        ArcTan arctan_op = 21;
+        Random random_op = 22;
+        And and_op = 23;
+        Or or_op = 24;
+        Not not_op = 25;
+        Eq eq_op = 26;
+        Gt gt_op = 27;
+        Lt lt_op = 28;
+        Ge ge_op = 29;
+        Le le_op = 30;
+    }
+}
+
+// Defines a computation/evaluatable graph that takes in inputs from the component state
+// and when evaluated, mutates the component state.
+message Graph {
+    // List of input nodes - retrieved values from component state.
+    // Input nodes must all be reachable from the output nodes
+    repeated Node.Retrieve inputs = 1;
+    // List of output nodes - mutations on the component state
+    repeated Node.Mutate outputs = 2;
+}

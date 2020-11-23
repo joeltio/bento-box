@@ -1,0 +1,37 @@
+//
+// Bentobox
+// Proto
+// Data types
+//
+
+syntax = "proto3";
+package bento.protos;
+
+// Wraps data type infomation for all possible kinds of data types
+message Type {
+    // Defines the data types of the primative kind
+    enum Primative {
+        INVALID = 0;
+        BYTE    = 1;
+        INT32   = 2;
+        INT64   = 3;
+        FLOAT32 = 4;
+        FLOAT64 = 5;
+        BOOL    = 6;
+        STRING  = 7;
+    }
+
+    // Defines a array kind data type that represents an array of primatives
+    // Arrays are iterable.
+    message Array {
+        // The dimensions of the array
+        repeated int64 dimensions = 1;
+        // The primitive data type that is used to store each element
+        Primative element_type = 2;
+    }
+
+    oneof kind {
+        Primative primitive = 1;
+        Array array = 2;
+    }
+}
