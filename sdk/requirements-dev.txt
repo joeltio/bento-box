@@ -2,6 +2,7 @@ appdirs==1.4.4
 attrs==20.3.0
 black==20.8b1
 click==7.1.2
+gast==0.4.0
 grpcio==1.33.2
 grpcio-tools==1.33.2
 importlib-metadata==2.0.0
