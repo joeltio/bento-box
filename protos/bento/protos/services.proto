@@ -42,7 +42,7 @@ message GetSimulationResp {
 
 message ListSimulationReq {}
 message ListSimulationResp {
-    // list of names representing all the currently registered simulations 
+    // list of names representing all the currently registered simulations
     repeated string sim_names = 1;
 }
 

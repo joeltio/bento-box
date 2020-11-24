@@ -25,7 +25,7 @@ message Node {
         AttributeRef retrieve_attr = 1;
     }
 
-    // Mutate - node mutate the value in an entity's component based 
+    // Mutate - node mutate the value in an entity's component based
     // on value given by a node
     message Mutate {
         // node of when evaluated should provide the target value to mutate the
@@ -35,7 +35,7 @@ message Node {
         // Reference to the attribute to mutate with value
         AttributeRef mutate_attr = 2;
     }
-    
+
     /* Control flow */
     // Switch - conditional evaluation based on condition in conditional  node.
     message Switch {
@@ -67,7 +67,7 @@ message Node {
     */
 
     /* Math */
-    // Arithmetic 
+    // Arithmetic
     message Add {
         Node x = 1;
         Node y = 2;
@@ -161,7 +161,7 @@ message Node {
         Node x = 1;
         Node y = 2;
     }
-    
+
     // the operation that this node encapsulates
     oneof op {
         Const const_op = 1;

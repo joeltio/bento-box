@@ -28,7 +28,7 @@ message Value {
     message Array {
         repeated Primative values = 1;
     }
-    
+
     oneof kind {
         Primative primative = 2;
         Array array = 3;

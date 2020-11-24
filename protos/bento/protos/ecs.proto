@@ -29,7 +29,7 @@ message ComponentDef {
 
 // SystemDef - registerable defintion for a system in ECS
 message SystemDef {
-    // Unique id that identifies the system. 
+    // Unique id that identifies the system.
     // This should be auto assigned by bentobox when first registered.
     uint32 id = 1;
     // Computation Graph containing the implementation of the system
