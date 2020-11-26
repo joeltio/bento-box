@@ -65,23 +65,6 @@ def test_analyze_func():
     assert get_fn_ast(analyzed_ast).is_generator
 
 
-# test nesting analyzer
-def test_nesting_analyzer():
-    def top_fn():
-        class MiddleClass:
-            def middle_fn(self):
-                def bottom_fn():
-                    pass
-
-    analyzed_ast = analyze_nesting(parse_ast(top_fn))
-    ast = get_fn_ast(analyzed_ast)
-    expected_nest = 0
-    while ast.body == [Pass()]:
-        assert ast.n_nesting == expected_nest
-        ast = ast.body[0]
-        expected_nest += 1
-
-
 # test convert fn analyzer
 def test_convert_fn_analyzer():
     class NotConvertFn:
@@ -96,9 +79,7 @@ def test_convert_fn_analyzer():
         (convert_fn, True),
     ]
 
-    analyzed_asts = [
-        analyze_convert_fn(analyze_nesting(parse_ast(f[0]))) for f in convert_fns
-    ]
+    analyzed_asts = [analyze_convert_fn(parse_ast(f[0])) for f in convert_fns]
     assert all(
         [
             ast.missing_convert_fn != expected_fn[0]

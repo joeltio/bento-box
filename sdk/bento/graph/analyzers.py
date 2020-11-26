@@ -53,33 +53,6 @@ def analyze_func(ast: AST) -> AST:
     return ast
 
 
-def analyze_nesting(ast: AST) -> AST:
-    """Annotate each AST node with its level of nesting in the given AST tree.
-
-    Walks through each node in the given AST tree and annotates its level of nesting
-    as a number `n_nesting`. Each `ClassDef`, `FunctionDef` and `Lambda` node creates
-    a new layer of nesting.
-
-    Args:
-        ast: AST to scan and annotate nesting of each node in.
-
-    Returns:
-        The given AST with each node annotated  with its level of nesting.
-    """
-
-    def label_nest_recusive(node: AST, n_nesting: int = 0):
-        node.n_nesting = n_nesting
-        # increase nesting count if we encounter class or function nodes
-        if any([isinstance(node, c) for c in [ClassDef, FunctionDef, Lambda]]):
-            n_nesting += 1
-        # recusively label the nesting of child nodes
-        for child_node in gast.iter_child_nodes(node):
-            label_nest_recusive(child_node, n_nesting)
-        return node
-
-    return label_nest_recusive(ast)
-
-
 def analyze_convert_fn(ast: AST) -> AST:
     """Finds and Annotates the target convert function
 
