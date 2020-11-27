@@ -180,14 +180,14 @@ message Node {
         Max max_op = 11;
         Min min_op = 12;
         Abs abs_op = 13;
-        Abs abs_op = 14;
+        Floor floor_op = 14;
         Pow pow_op = 15;
         Mod mod_op = 16;
         Sin sin_op = 17;
         ArcSin arcsin_op = 18;
         Cos cos_op = 19;
         ArcCos arccos_op = 20;
-        Tan tan_op = 20;
+        Tan tan_op = 21;
         ArcTan arctan_op = 22;
         Random random_op = 23;
         And and_op = 24;
