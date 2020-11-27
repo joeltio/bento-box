@@ -68,7 +68,7 @@ def test_analyze_func():
 # test convert fn analyzer
 def test_convert_fn_analyzer():
     class NotConvertFn:
-        def still_not_convert_fn(g):
+        def still_not_convert_fn(self):
             pass
 
     def convert_fn(g):
@@ -82,7 +82,7 @@ def test_convert_fn_analyzer():
     analyzed_asts = [analyze_convert_fn(parse_ast(f[0])) for f in convert_fns]
     assert all(
         [
-            ast.missing_convert_fn != expected_fn[0]
+            (ast.convert_fn is not None) == expected_fn[1]
             for ast, expected_fn in zip(analyzed_asts, convert_fns)
         ]
     )

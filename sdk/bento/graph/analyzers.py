@@ -7,6 +7,7 @@
 import gast
 
 from math import inf
+from typing import List
 from gast import AST, FunctionDef, ClassDef, Lambda, Pass, Expr, Constant
 
 
@@ -56,29 +57,18 @@ def analyze_func(ast: AST) -> AST:
 def analyze_convert_fn(ast: AST) -> AST:
     """Finds and Annotates the target convert function
 
-    Depends on `analyze_nesting` analyzer.
-    Assumes the target convert function to be converted to the computation graph
-    is the first child node of AST.
-    nodes with `is_convert_fn` to mark if it is the target function.
-    Also annotates the top level node with `missing_convert_fn` depending on whether
-    a target function is found at all.
+    Assumes the target convert function is the first child node of AST.
+    Annotates the top level node with the target convert `FunctionDef` node as
+    `convert_fn`, otherwise set to `None`.
 
     Args:
         ast:
             AST to scan and annotate the target convert function.
 
     Returns:
-        The given AST with with the target convert function annoated.
+        The given AST with with the target convert function annotated as `convert_fn`
     """
     # walk through the AST to find the top level node with min nesting
     canidates_fn = [n for n in gast.iter_child_nodes(ast) if isinstance(n, FunctionDef)]
-    convert_fn = canidates_fn[0] if len(canidates_fn) == 1 else None
-
-    # mark ast as missing convert fn if no top node found
-    if convert_fn is None:
-        ast.missing_convert_fn = True
-        return ast
-    # mark top node as target convert fn
-    convert_fn.is_convert_fn = True
-    ast.missing_convert_fn = False
+    ast.convert_fn = canidates_fn[0] if len(canidates_fn) == 1 else None
     return ast
