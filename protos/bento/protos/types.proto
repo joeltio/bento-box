@@ -9,8 +9,8 @@ package bento.protos;
 
 // Wraps data type infomation for all possible kinds of data types
 message Type {
-    // Defines the data types of the primative kind
-    enum Primative {
+    // Defines the data types of the primitive kind
+    enum Primitive {
         INVALID = 0;
         BYTE    = 1;
         INT32   = 2;
@@ -21,17 +21,17 @@ message Type {
         STRING  = 7;
     }
 
-    // Defines a array kind data type that represents an array of primatives
+    // Defines a array kind data type that represents an array of primitives
     // Arrays are iterable.
     message Array {
         // The dimensions of the array
         repeated int64 dimensions = 1;
         // The primitive data type that is used to store each element
-        Primative element_type = 2;
+        Primitive element_type = 2;
     }
 
     oneof kind {
-        Primative primitive = 1;
+        Primitive primitive = 1;
         Array array = 2;
     }
 }
