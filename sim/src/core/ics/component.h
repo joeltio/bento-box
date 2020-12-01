@@ -23,8 +23,13 @@ namespace ics {
         bool isActive = true;
         bool operator==(const DefaultComponent&) const = default;
     };
-
     static_assert(Component<DefaultComponent>);
+
+    struct UnknownComponent {
+        bool isActive = true;
+    };
+    static_assert(Component<UnknownComponent>);
+
 }
 
 #endif //BENTOBOX_COMPONENT_H

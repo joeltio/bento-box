@@ -1,6 +1,7 @@
 #ifndef BENTOBOX_COMPVEC_H
 #define BENTOBOX_COMPVEC_H
 
+#include <any>
 #include <vector>
 #include <queue>
 #include <memory>
@@ -13,19 +14,20 @@ namespace ics {
     template<Component C>
     class CompVec {
     public:
-        typedef typename std::vector<C>::size_type size_type;
+        typedef typename std::vector<std::any>::size_type size_type;
         typedef unsigned int CompId;
     private:
         CompId lastId = 0;
         std::unordered_map<CompId, size_type> idToIndex;
         std::queue<size_type> inactiveCompIdx;
-        std::vector<C> vec;
+        std::vector<std::any> vec;
     protected:
         void isActiveCheck(CompId id) const;
         size_type addToVec(const C& val);
     public:
         CompId add(const C& val);
         void remove(CompId id);
+        size_type size();
 
         C& at(CompId id);
         C& operator[](CompId id);
@@ -35,7 +37,8 @@ namespace ics {
     template<Component C>
     void CompVec<C>::isActiveCheck(CompId id) const {
         auto index = idToIndex.at(id);
-        if (!vec.at(index).isActive) {
+        const auto& comp = std::any_cast<C>(vec.at(index));
+        if (!comp.isActive) {
             // TODO: format the index into the string
             throw std::out_of_range("compVec::isActiveCheck: component at index is inactive");
         }
@@ -68,11 +71,17 @@ namespace ics {
     void CompVec<C>::remove(CompId id) {
         auto index = idToIndex.at(id);
         // Mark component as deleted
-        vec.at(index).isActive = false;
+        auto& comp = std::any_cast<C&>(vec.at(index));
+        comp.isActive = false;
         // Queue the component for reuse
         inactiveCompIdx.push(index);
         // Remove the mapping from idToIdx
         idToIndex.erase(id);
+    }
+
+    template<Component C>
+    typename CompVec<C>::size_type CompVec<C>::size() {
+        return idToIndex.size();
     }
 
     template<Component C>

@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <any>
 #include "component.h"
 #include "compVec.h"
 
@@ -62,4 +63,16 @@ TEST(TEST_SUITE, RetrieveByReference) {
         ics::Component auto vecComp = vec.at(idx);
         ASSERT_EQ(vecComp.height, 2);
     }
+}
+
+TEST(TEST_SUITE, RetrieveAsUnknownComp) {
+    auto vec = CompVec<TestComp>();
+    vec.add(TestComp { true, 3 });
+    vec.add(TestComp { true, 3 });
+    vec.add(TestComp { true, 3 });
+
+    // Use any
+    std::any anyVec = vec;
+    auto anyVecAsUnknown = std::any_cast<CompVec<UnknownComponent>>(anyVec);
+    ASSERT_EQ(anyVecAsUnknown.size(), 3);
 }
