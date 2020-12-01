@@ -1,5 +1,5 @@
 SET(LIB_NAME ics)
-SET(SOURCES component.h componentManager.h compVec.h index.h)
+SET(SOURCES component.h componentManager.h componentSet.h compVec.h index.h)
 SET(TESTS component.test.cpp componentManager.test.cpp compVec.test.cpp index.test.cpp)
 
 add_library(
