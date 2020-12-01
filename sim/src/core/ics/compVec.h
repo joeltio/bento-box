@@ -88,7 +88,7 @@ namespace ics {
     C& CompVec<C>::at(CompId id) {
         isActiveCheck(id);
         auto index = idToIndex.at(id);
-        return vec.at(index);
+        return std::any_cast<C&>(vec.at(index));
     }
 
     template<Component C>
