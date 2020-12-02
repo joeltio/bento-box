@@ -13,7 +13,7 @@ def lint_convert_fn(ast: AST):
 
     Ensures that the target convert function actually present
     Performs the following static checks on the target convert `FunctionDef`:
-    - Check that it has one argument, TODO: if argument type annotation, conforms to Plotter type.
+    - Check that it has one argument: the graph Plotter.
     - Does not produce a generator ie no `yield` statements
 
     Args:
@@ -22,7 +22,7 @@ def lint_convert_fn(ast: AST):
 
     Raises:
         NotImplementedError: If target function could not be found.
-        TypeError: If target function does not have the correct number of arguments, or of the wrong type.
+        TypeError: If target function does not have the correct number of arguments
         ValueError: If the target function is a generator (ie has yield statements).
     """
     if ast.convert_fn is None:

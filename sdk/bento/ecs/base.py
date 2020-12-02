@@ -40,9 +40,9 @@ class Component(ABC):
         """
         pass
 
-    def __setattr__(self, name: str) -> Any:
+    def __setattr__(self, name: str, value: Any) -> Any:
         """ Alias for set_attr() """
-        return self.set_attr(name)
+        return self.set_attr(name, value)
 
 
 class Entity(ABC):
@@ -62,3 +62,4 @@ class Entity(ABC):
 
     def __getitem__(self, name: str) -> Component:
         """Alias for get_component()"""
+        return self.get_component(name)

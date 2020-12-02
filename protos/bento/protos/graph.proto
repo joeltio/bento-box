@@ -30,7 +30,7 @@ message Node {
     message Mutate {
         // node of when evaluated should provide the target value to mutate the
         // attribute's value to
-        Node target_node = 1;
+        Node to_node = 1;
 
         // Reference to the attribute to mutate with value
         AttributeRef mutate_attr = 2;
