@@ -71,7 +71,7 @@ TEST(TEST_SUITE, RetrieveAsUnknownComp) {
     vec.add(TestComp { true, 3 });
     vec.add(TestComp { true, 3 });
 
-    std::any anyVec = vec;
-    auto anyVecAsUnknown = std::any_cast<CompVec<UnknownComponent>>(anyVec);
+    void* anyVec = vec;
+    auto anyVecAsUnknown = reinterpret_cast<CompVec<UnknownComponent>>(anyVec);
     ASSERT_EQ(anyVecAsUnknown.size(), 3);
 }
