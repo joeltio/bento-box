@@ -1,5 +1,6 @@
-# Bentobox SDK - Graph
-# Tests
+#
+# Bentobox
+# SDK - Graph Tests
 # Test graph compilation @graph.compile
 #
 
@@ -11,7 +12,9 @@ from bento.graph.plotter import Plotter
 def test_graph_compile_empty():
     @graph.compile_graph
     def actual_graph(g: Plotter):
-        g.graph
         pass
 
     assert actual_graph == Graph()
+
+
+# TODO: set that constants get converted to nodes
