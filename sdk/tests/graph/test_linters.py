@@ -7,6 +7,7 @@
 from bento.graph.analyzers import *
 from bento.graph.linters import *
 from bento.graph.ast import parse_ast
+from bento.graph.plotter import Plotter
 
 
 def test_lint_convert_fn():
@@ -25,6 +26,9 @@ def test_lint_convert_fn():
     def convert_fn(g):
         pass
 
+    def convert_fn_type(g: Plotter):
+        pass
+
     # define test cases: lint fn to expected error
     lint_fns = [
         (NotConvertFn, NotImplementedError),
@@ -32,6 +36,7 @@ def test_lint_convert_fn():
         (too_many_args, TypeError),
         (generator_fn, ValueError),
         (convert_fn, None),
+        (convert_fn_type, None),
     ]
     # required ast analyzers in order for linting to work
     req_analyzers = [
