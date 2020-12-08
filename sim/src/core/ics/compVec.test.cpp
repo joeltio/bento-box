@@ -65,13 +65,12 @@ TEST(TEST_SUITE, RetrieveByReference) {
     }
 }
 
-TEST(TEST_SUITE, RetrieveAsUnknownComp) {
+TEST(TEST_SUITE, StoreAsUnknownAndRetrieve) {
     auto vec = CompVec<TestComp>();
     vec.add(TestComp { true, 3 });
     vec.add(TestComp { true, 3 });
     vec.add(TestComp { true, 3 });
 
-    void* anyVec = vec;
-    auto anyVecAsUnknown =  (CompVec<UnknownComponent>) anyVec;
-    ASSERT_EQ(anyVecAsUnknown.size(), 3);
+    auto storedVec = dynamic_cast<CompVec<UnknownComponent>>(vec);
+    ASSERT_EQ(storedVec.size(), 3);
 }
