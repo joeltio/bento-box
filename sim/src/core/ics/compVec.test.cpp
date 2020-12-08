@@ -72,6 +72,6 @@ TEST(TEST_SUITE, RetrieveAsUnknownComp) {
     vec.add(TestComp { true, 3 });
 
     void* anyVec = vec;
-    auto anyVecAsUnknown = reinterpret_cast<CompVec<UnknownComponent>>(anyVec);
+    auto anyVecAsUnknown =  (CompVec<UnknownComponent>) anyVec;
     ASSERT_EQ(anyVecAsUnknown.size(), 3);
 }
