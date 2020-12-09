@@ -17,7 +17,7 @@ def analyze_func(ast: AST) -> AST:
     Walks through the `FunctionDef` nodes in given AST and insects annotates
     each node with the following info:
     - `n_args`: the function's arguments count.
-    - `has_docstr`: the function's contains a docstring as its first expression
+    - `docstr`: the function's docstring if present, otherwise None
     - `is_empty`: whether the function is empty.
     - `is_generator`: whether the function produces a generator via `yield`.
     - `is_convert_fn`: whether the conversion.
@@ -33,7 +33,7 @@ def analyze_func(ast: AST) -> AST:
     fn_asts = [n for n in gast.walk(ast) if isinstance(n, FunctionDef)]
     for fn_ast in fn_asts:
         fn_ast.n_args = len(fn_ast.args.args)
-        fn_ast.has_docstr = False if gast.get_docstring(fn_ast) is None else True
+        fn_ast.docstr = gast.get_docstring(fn_ast)
         # detect empty if contains pass and/or just a docstrings
         fn_ast.is_empty = True
         for node in fn_ast.body:

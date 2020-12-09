@@ -55,7 +55,7 @@ def test_analyze_func():
 
     # test docstring detection
     analyzed_ast = analyze_func(parse_ast(empty_fn_docstr))
-    assert get_fn_ast(analyzed_ast).has_docstr
+    assert get_fn_ast(analyzed_ast).docstr is not None
 
     # test generator detection
     def gen_fn():
