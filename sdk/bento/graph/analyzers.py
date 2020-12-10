@@ -72,8 +72,12 @@ def analyze_convert_fn(ast: AST) -> AST:
     """Finds and Annotates the target convert function AST
 
     Assumes the target convert function is the first child node of AST.
+
     Annotates the top level node with the target convert `FunctionDef` node as
     `convert_fn`, otherwise set to `None`.
+
+    Additionally annotates `convert_fn` if present with:
+    - `plotter_name` - name of the plotter instance passed to `convert_fn`
 
     Args:
         ast:
@@ -85,6 +89,11 @@ def analyze_convert_fn(ast: AST) -> AST:
     # walk through the AST to find the top level node with min nesting
     canidates_fn = [n for n in gast.iter_child_nodes(ast) if isinstance(n, FunctionDef)]
     ast.convert_fn = canidates_fn[0] if len(canidates_fn) == 1 else None
+
+    # extract name of plotter argument if present
+    if ast.convert_fn is not None and ast.convert_fn.n_args == 1:
+        ast.convert_fn.plotter_name = ast.convert_fn.args.args[0].id
+
     return ast
 
 
@@ -97,7 +106,7 @@ def analyze_assign(ast: AST) -> AST:
     - `is_unpack`: Whether this assignment unpacks values from a List or Tuple.
     - `is_multi`: Whether this assignment assigns the same value to multiple variables.
     - `n_values`: no. of values this assignment attempts to assign.
-    Annotates assignment's targets and values with reference to assignment `assign`.
+    Annotates assignment's targets and values with reference to assignment `assign`.:w
 
     Args:
         ast:
@@ -167,7 +176,7 @@ def analyze_const(ast: AST) -> AST:
     """
 
     # recursively walk AST to search for constants
-    def walk_const(ast, part_of=None) -> AST:
+    def walk_const(ast, part_of=None):
         iterable_types = (List, Tuple)
         ignore_types = (Load, Store, Del)
 
