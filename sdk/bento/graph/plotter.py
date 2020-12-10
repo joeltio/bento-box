@@ -208,7 +208,9 @@ class GraphComponent(Component):
 
         return Node(retrieve_op=get_op)
 
-    def set_attr(self, name: str, value: Node):
+    def set_attr(self, name: str, value: Any):
+        # wrap native value as a constant node
+        value = self._plotter.const(value) if not isinstance(value, Node) else value
         # Record the attribute set/mutate operation as output graph node
         set_op = Node.Mutate(
             mutate_attr=AttributeRef(
