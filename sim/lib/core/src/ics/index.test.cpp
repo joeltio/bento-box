@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "component.h"
-#include "index.h"
+#include <core/ics/component.h>
+#include <core/ics/index.h>
 
 #define TEST_SUITE Index
 

@@ -7,33 +7,27 @@ set(FETCHCONTENT_QUIET OFF)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(bentobox)
 
-## Source files
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-set(SOURCES
-    "${SRC_DIR}/main.cpp"
-)
-set(TESTS
-    "${SRC_DIR}/main.test.cpp"
-)
-
 ## Executable
 set(TARGET_SIM ${PROJECT_NAME})
-set(TARGET_TEST "${PROJECT_NAME}_test")
+set(TARGET_TEST "${PROJECT_NAME}-test")
 set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 # target bento simulator's executables to c++ 20
 set(CMAKE_CXX_STANDARD 20)
-add_executable(${TARGET_SIM} ${SOURCES})
-add_executable(${TARGET_TEST} ${TESTS})
-foreach(target IN ITEMS ${TARGETS})
-    target_include_directories(${target} PRIVATE ${SRC_DIR})
-endforeach()
-# Link subdir modules
-foreach (lib IN ITEMS core)
-    add_subdirectory("${SRC_DIR}/${lib}")
-    target_link_libraries(${TARGET_SIM} PRIVATE ${lib})
-    target_link_libraries(${TARGET_TEST} PRIVATE -Wl,--whole-archive,--as-needed ${lib}-test -Wl,--no-whole-archive,--as-needed)
-endforeach()
+add_executable(${TARGET_SIM}
+    src/main.cpp
+    src/component/componentStoreFns.cpp
+    src/component/componentStoreFns.h
+    src/component/textureComponent.h
+    src/index/componentType.h
+    src/system/render.h
+    src/system/render.cpp
+)
+add_executable(${TARGET_TEST}
+    src/main.test.cpp
+)
+
+add_subdirectory("lib/core")
+target_link_libraries(${TARGET_SIM} PRIVATE core)
 
 ## Library Dependencies
 # target library dependencies to c++ 17

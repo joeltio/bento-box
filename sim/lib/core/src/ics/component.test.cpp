@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "component.h"
+#include <core/ics/component.h>
 
 #define TEST_SUITE Component
 

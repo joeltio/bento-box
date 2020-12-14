@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "component.h"
-#include "componentManager.h"
+#include <core/ics/component.h>
+#include <core/ics/componentManager.h>
 
 #define TEST_SUITE ComponentManagerTest
 

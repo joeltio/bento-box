@@ -5,7 +5,9 @@
 #include <vector>
 #include <queue>
 #include <memory>
+#include <functional>
 #include <typeindex>
+#include <unordered_map>
 #include <iostream>
 
 #include "component.h"
