@@ -9,12 +9,15 @@ from gast import FunctionDef, AST
 from inspect import getsource
 from textwrap import dedent
 from typing import Callable, List
-from astunparse import unparse
-from tempfile import NamedTemporaryFile
-from importlib.util import spec_from_file_location, module_from_spec
 
-from bento.graph.analyzers import analyze_func, analyze_convert_fn
-from bento.graph.ast import parse_ast
+from bento.graph.analyzers import (
+    analyze_func,
+    analyze_convert_fn,
+    analyze_assign,
+    analyze_const,
+)
+from bento.graph.transforms import transform_build_graph
+from bento.graph.ast import parse_ast, load_ast_module
 from bento.graph.plotter import Plotter
 from bento.protos.graph_pb2 import Graph, Node
 
@@ -29,9 +32,13 @@ def compile_graph(
     analyzers: List[Analyzer] = [
         analyze_func,
         analyze_convert_fn,
+        analyze_assign,
+        analyze_const,
     ],
     linters: List[Linter] = [],
-    transforms: List[Transform] = [],
+    transforms: List[Transform] = [
+        transform_build_graph,
+    ],
 ) -> Graph:
     """Compiles the given `convert_fn` into a computation Graph.
 
@@ -83,20 +90,9 @@ def compile_graph(
     # convert AST to computation graph by applying transforms
     for transform in transforms:
         ast = transform(ast)
-    # TODO: move to transforms
-    ast.body[0].decorator_list = []
-    ast.body[0].name = "build_graph"
 
-    # parse AST back to source and write to file
-    src = unparse(ast)
-    with NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
-        f.write(src)
-        f.flush()
-        # import the source as a module
-        mod_spec = spec_from_file_location("compiled", f.name)
-        compiled = module_from_spec(mod_spec)
-        mod_spec.loader.exec_module(compiled)
-
+    # load AST back as a module
+    compiled = load_ast_module(ast)
     # run build graph function with plotter to build final computation graph
     g = Plotter()
     compiled.build_graph(g)
