@@ -14,6 +14,7 @@ add_library(core
     src/graphicsContext.cpp
     src/systemContext.cpp
     src/windowContext.cpp
+    src/ics/componentStore.cpp
 )
 target_include_directories(core
     PRIVATE lib/stb_image

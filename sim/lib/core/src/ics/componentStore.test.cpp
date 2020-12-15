@@ -69,3 +69,28 @@ TEST(TEST_SUITE, AddComponentsAppendsToVec) {
     ASSERT_EQ(vec.size(), 1);
     ASSERT_EQ(vec.at(compFullId.second).height, 20);
 }
+
+TEST(TEST_SUITE, AsCompSet) {
+    ComponentStore store;
+    ASSERT_EQ(asCompSet(store).size(), 0);
+
+    addComponent(store, TestComponent { true, 20 }, 1);
+    addComponent(store, TestComponent { true, 20 }, 1);
+    addComponent(store, TestComponent { true, 20 }, 1);
+    addComponent(store, TestComponent { true, 20 }, 1);
+    addComponent(store, TestComponent { true, 20 }, 2);
+    addComponent(store, TestComponent { true, 20 }, 2);
+
+    int group1Count = 0;
+    int group2Count = 0;
+    for (const auto& compFullId : asCompSet(store)) {
+        if (compFullId.first == 1) {
+            ++group1Count;
+        } else if (compFullId.first == 2) {
+            ++group2Count;
+        }
+    }
+
+    ASSERT_EQ(group1Count, 4);
+    ASSERT_EQ(group2Count, 2);
+}

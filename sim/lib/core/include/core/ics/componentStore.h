@@ -6,6 +6,7 @@
 #include <any>
 #include "component.h"
 #include "compVec.h"
+#include "componentSet.h"
 
 namespace ics {
     // stores size_t -> unique_ptr -> CompVec<Component>
@@ -41,6 +42,8 @@ namespace ics {
         auto vecIndex = vec.add(c);
         return std::make_pair(group, vecIndex);
     }
+
+    ComponentSet asCompSet(const ComponentStore& store);
 }
 
 #endif //BENTOBOX_COMPONENTSTORE_H
