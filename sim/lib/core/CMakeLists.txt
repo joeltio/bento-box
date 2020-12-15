@@ -31,7 +31,7 @@ if (NOT WIN32)
 endif()
 
 # core test
-add_executable(core-test
+add_library(core-test
     src/ics/component.test.cpp
     src/ics/componentStore.test.cpp
     src/ics/compVec.test.cpp
@@ -40,8 +40,9 @@ add_executable(core-test
 )
 target_link_libraries(core-test
     PRIVATE core
-    PRIVATE gtest_main
+    PRIVATE gtest
 )
 
 # Export libraries with namespaced name
 add_library(bento::core ALIAS core)
+add_library(bento::core-test ALIAS core-test)

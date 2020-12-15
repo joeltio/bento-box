@@ -23,8 +23,13 @@ add_executable(${TARGET_TEST}
 )
 
 add_subdirectory("lib/core")
-target_link_libraries(${TARGET_SIM} PRIVATE core)
-target_link_libraries(${TARGET_TEST} PRIVATE core)
+target_link_libraries(${TARGET_SIM}
+    PRIVATE bento::core
+)
+target_link_libraries(${TARGET_TEST}
+    PRIVATE bento::core
+    PRIVATE -Wl,--whole-archive bento::core-test -Wl,--no-whole-archive
+)
 
 ## Library Dependencies
 # target library dependencies to c++ 17
