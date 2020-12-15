@@ -19,10 +19,12 @@ add_executable(${TARGET_SIM}
 )
 add_executable(${TARGET_TEST}
     src/main.test.cpp
+    src/index/componentType.test.cpp
 )
 
 add_subdirectory("lib/core")
 target_link_libraries(${TARGET_SIM} PRIVATE core)
+target_link_libraries(${TARGET_TEST} PRIVATE core)
 
 ## Library Dependencies
 # target library dependencies to c++ 17
