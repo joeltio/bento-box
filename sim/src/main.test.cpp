@@ -11,7 +11,7 @@ TEST(proto, CanBuildProtobufMessage) {
     bento::protos::AttributeRef attrRef;
     attrRef.set_entity_id(24);
     attrRef.set_component("Sprite2D");
-    // serialise to binary string and parsed back into protobuf messsage
+    // serialise to binary string and parsed back into protobuf message
     string encoded = attrRef.SerializeAsString();
     bento::protos::AttributeRef restored;
     restored.ParseFromString(encoded);
