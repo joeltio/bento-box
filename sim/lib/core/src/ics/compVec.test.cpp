@@ -7,7 +7,7 @@
 
 using namespace ics;
 
-struct TestComp : public DefaultComponent {
+struct TestComp : public BaseComponent {
     int height;
 };
 
@@ -67,10 +67,14 @@ TEST(TEST_SUITE, RetrieveByReference) {
 
 TEST(TEST_SUITE, StoreAsUnknownAndRetrieve) {
     auto vec = CompVec<TestComp>();
+    auto trueCompId = vec.add(TestComp { true, 3 });
+    auto falseCompId = vec.add(TestComp { false, 3 });
     vec.add(TestComp { true, 3 });
-    vec.add(TestComp { true, 3 });
-    vec.add(TestComp { true, 3 });
+    CompVec<TestComp>* vecPtr = &vec;
 
-//    auto storedVec = dynamic_cast<CompVec<UnknownComponent>>(vec);
-//    ASSERT_EQ(storedVec.size(), 3);
+    auto storedVec = reinterpret_cast<CompVec<BaseComponent>*>(vecPtr);
+
+    ASSERT_EQ(storedVec->size(), 3);
+    ASSERT_TRUE(storedVec->at(trueCompId).isActive);
+    EXPECT_THROW(storedVec->at(falseCompId), std::out_of_range);
 }

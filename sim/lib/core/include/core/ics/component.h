@@ -4,32 +4,17 @@
 #include <concepts>
 
 namespace ics {
-    template<class T>
-    concept Component = std::semiregular<T>
-            && std::same_as<decltype(T::isActive), bool>;
-
-    // Needed for Index concept
-    // See: https://stackoverflow.com/q/37655113/4428725
-    namespace archetypes {
-        struct Component {
-            bool isActive = true;
-            bool operator==(const Component&) const = default;
-        };
-    }
-
-    static_assert(Component<archetypes::Component>);
-
-    struct DefaultComponent {
+    struct BaseComponent {
         bool isActive = true;
-        bool operator==(const DefaultComponent&) const = default;
+        bool operator==(const BaseComponent&) const = default;
     };
-    static_assert(Component<DefaultComponent>);
 
-    struct UnknownComponent {
-        bool isActive = true;
-    };
+    template<class C>
+    concept Component = std::derived_from<C, BaseComponent>;
+
+    struct UnknownComponent : BaseComponent { };
+
     static_assert(Component<UnknownComponent>);
-
 }
 
 #endif //BENTOBOX_COMPONENT_H

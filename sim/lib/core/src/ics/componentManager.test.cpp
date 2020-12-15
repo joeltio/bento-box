@@ -4,7 +4,7 @@
 
 #define TEST_SUITE ComponentManagerTest
 
-struct TestComponent : public ics::DefaultComponent {
+struct TestComponent : public ics::BaseComponent {
     int length;
 };
 

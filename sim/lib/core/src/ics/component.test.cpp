@@ -5,19 +5,7 @@
 
 using namespace ics;
 
-TEST(TEST_SUITE, DefaultComponentFulfillsConcept) {
-    ASSERT_TRUE(Component<DefaultComponent>);
-}
-
-struct IncorrectNoIsactiveComponent {
-    bool operator==(const IncorrectNoIsactiveComponent&) const = default;
-};
-
-TEST(TEST_SUITE, RequireIsactive) {
-    ASSERT_FALSE(Component<IncorrectNoIsactiveComponent>);
-}
-
-struct DerivedComp : public DefaultComponent {
+struct DerivedComp : public BaseComponent {
     int height;
     char c;
 };

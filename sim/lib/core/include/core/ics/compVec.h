@@ -16,17 +16,30 @@ namespace ics {
     template<Component C>
     class CompVec {
     public:
-        typedef typename std::vector<std::any>::size_type size_type;
+        typedef typename std::vector<C>::size_type size_type;
         typedef unsigned int CompId;
     private:
         CompId lastId = 0;
+        std::function<C&(std::vector<BaseComponent>* vectorPtr, size_type idx)> getter;
+        std::function<const C&(const std::vector<BaseComponent>* vectorPtr, size_type idx)> constGetter;
         std::unordered_map<CompId, size_type> idToIndex;
         std::queue<size_type> inactiveCompIdx;
-        std::vector<std::any> vec;
+        std::vector<C> vec;
     protected:
         void isActiveCheck(CompId id) const;
         size_type addToVec(const C& val);
     public:
+        CompVec() {
+            getter = [](std::vector<BaseComponent>* vectorPtr, size_type idx) -> C& {
+                auto vecPtr = reinterpret_cast<std::vector<C>*>(vectorPtr);
+                return vecPtr->at(idx);
+            };
+
+            constGetter = [](const std::vector<BaseComponent>* vectorPtr, size_type idx) -> const C& {
+                const auto vecPtr = reinterpret_cast<const std::vector<C>*>(vectorPtr);
+                return vecPtr->at(idx);
+            };
+        }
         CompId add(const C& val);
         void remove(CompId id);
         size_type size();
@@ -39,7 +52,7 @@ namespace ics {
     template<Component C>
     void CompVec<C>::isActiveCheck(CompId id) const {
         auto index = idToIndex.at(id);
-        const auto& comp = std::any_cast<C>(vec.at(index));
+        const auto& comp = constGetter(reinterpret_cast<const std::vector<BaseComponent>*>(&vec), index);
         if (!comp.isActive) {
             // TODO: format the index into the string
             throw std::out_of_range("compVec::isActiveCheck: component at index is inactive");
@@ -73,7 +86,7 @@ namespace ics {
     void CompVec<C>::remove(CompId id) {
         auto index = idToIndex.at(id);
         // Mark component as deleted
-        auto& comp = std::any_cast<C&>(vec.at(index));
+        auto& comp = getter(reinterpret_cast<std::vector<BaseComponent>*>(&vec), index);
         comp.isActive = false;
         // Queue the component for reuse
         inactiveCompIdx.push(index);
@@ -90,7 +103,8 @@ namespace ics {
     C& CompVec<C>::at(CompId id) {
         isActiveCheck(id);
         auto index = idToIndex.at(id);
-        return std::any_cast<C&>(vec.at(index));
+
+        return getter(reinterpret_cast<std::vector<BaseComponent>*>(&vec), index);
     }
 
     template<Component C>
