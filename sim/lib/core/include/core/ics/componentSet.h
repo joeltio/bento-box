@@ -2,6 +2,7 @@
 #define BENTOBOX_COMPONENTSET_H
 
 #include <unordered_set>
+#include "compVec.h"
 
 namespace std {
     template <> struct hash<std::pair<size_t, ics::CompId>> {
