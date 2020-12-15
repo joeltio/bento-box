@@ -37,15 +37,16 @@ namespace ics {
     }
 
     template<Component C>
-    std::pair<size_t, size_t> addComponent(ComponentStore& store, const C& c, size_t group) {
+    std::pair<size_t, CompId> addComponent(ComponentStore& store, const C& c, size_t group) {
         auto& vec = store.contains(group) ? getCompVec<C>(store, group) : createCompVec<C>(store, group);
         auto vecIndex = vec.add(c);
         return std::make_pair(group, vecIndex);
     }
 
     template<Component C>
-    C& getComponent(ComponentStore& store, std::pair<size_t, size_t> compId) {
-        return getCompVec<C>(store, compId.first).at(compId.second);
+    C& getComponent(ComponentStore& store, std::pair<size_t, CompId> compId) {
+        auto& vec = getCompVec<C>(store, compId.first);
+        return vec.at(compId.second);
     }
 
     ComponentSet asCompSet(const ComponentStore& store);

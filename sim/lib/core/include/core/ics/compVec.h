@@ -13,11 +13,12 @@
 #include "component.h"
 
 namespace ics {
+    typedef unsigned long CompId;
+
     template<Component C>
     class CompVec {
     public:
         typedef typename std::vector<C>::size_type size_type;
-        typedef unsigned int CompId;
     private:
         CompId lastId = 0;
         std::function<C&(std::vector<BaseComponent>* vectorPtr, size_type idx)> getter;
@@ -74,7 +75,7 @@ namespace ics {
     }
 
     template<Component C>
-    typename CompVec<C>::CompId CompVec<C>::add(const C& val) {
+    CompId CompVec<C>::add(const C& val) {
         auto insertedIdx = addToVec(val);
         // Update the idToIndex map
         idToIndex.insert(std::make_pair(lastId + 1, insertedIdx));
