@@ -22,6 +22,8 @@ from gast import (
     Assign,
     AugAssign,
     AnnAssign,
+    Name,
+    Attribute,
 )
 
 
@@ -105,8 +107,8 @@ def analyze_assign(ast: AST) -> AST:
     - `n_targets`: no. of targets variables this assignments assign to.
     - `is_unpack`: Whether this assignment unpacks values from a List or Tuple.
     - `is_multi`: Whether this assignment assigns the same value to multiple variables.
-    - `n_values`: no. of values this assignment attempts to assign.
-    Annotates assignment's targets and values with reference to assignment `assign`.:w
+    - `n_values`: no. of values this assignment attempts to assign
+    Annotates assignment's targets and values with reference to assignment `assign`.
 
     Args:
         ast:
@@ -204,3 +206,50 @@ def analyze_const(ast: AST) -> AST:
 
     walk_const(ast)
     return ast
+
+
+def analyze_symbol(ast: AST) -> AST:
+    """Finds and labels qualified and unqualified symbols in the given AST.
+
+    Detects symbols as:
+    - Name AST nodes referencing a unqualified symbol (ie `x`).
+    - Attributes AST nodes referencing a qualified symbol (ie `x.y.z`).
+    and labels the top-level AST node with:
+    - `is_symbol` set to whether the node is an symbol.
+    - `symbol`, set to the symbol as string, is set on symbol AST nodes.
+
+    Args:
+        ast:
+            AST to scan and label symbols
+    Returns:
+        The given AST with the constants literals annotated with `is_constant`
+    """
+    # walk AST top down to label symbols to capture
+    # parent Attribute node to qualifying child node relatiionships
+    def walk_symbol(ast, qualifying_attrs=[]):
+        # assume is not symbol unless proven otherwise
+        ast.is_symbol = False
+        # check if name is unqualified symbol
+        if isinstance(ast, Name) and len(qualifying_attrs) == 0:
+            ast.is_symbol, ast.symbol = True, ast.id
+            return
+        # check if name part of qualified symbol
+        elif isinstance(ast, Name):
+            top_attr = qualifying_attrs[0]
+            top_attr.is_symbol = True
+            # qualified names are written in revered
+            top_attr.symbol = (
+                f"{ast.id}." + ".".join([a.attr for a in reversed(qualifying_attrs)])
+            )
+            return
+        # append qualifying attributes of a incomplete qualified symbol
+        elif isinstance(ast, Attribute):
+            qualifying_attrs.append(ast)
+
+        # recursively inspect child nodes for constants
+        for node in gast.iter_child_nodes(ast):
+            walk_symbol(node, qualifying_attrs)
+
+    walk_symbol(ast)
+    return ast
+

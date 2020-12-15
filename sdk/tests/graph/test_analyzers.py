@@ -165,3 +165,27 @@ def test_const_analyzer():
     )
     const_asts = set([n for n in gast.walk(ast) if n.is_constant])
     assert const_asts == expected_asts
+
+
+# test that qualified and unqualified symbols and be detected by symbol analyzer
+def test_symbol_analyzer():
+    def convert_fn(g):
+        x = 2
+        a.b.c = "str"
+
+    req_analyzers = [
+        analyze_func,
+        analyze_convert_fn,
+    ]
+    ast = parse_ast(convert_fn)
+    for analyzer in req_analyzers:
+        ast = analyzer(ast)
+    analyzed_ast = analyze_symbol(ast)
+    fn_ast = analyzed_ast.convert_fn
+    first_id, second_id = [fn_ast.body[i].targets[0] for i in range(2) ]
+    first_val, second_val = [fn_ast.body[i].value for i in range(2) ]
+
+    # both targets should be labeled as symbols
+    assert first_id.is_symbol and first_id.symbol == "x"
+    assert second_id.is_symbol and second_id.symbol == "a.b.c"
+    assert not first_val.is_symbol and not second_val.is_symbol
