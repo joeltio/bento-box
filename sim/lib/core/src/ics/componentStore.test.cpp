@@ -94,3 +94,14 @@ TEST(TEST_SUITE, AsCompSet) {
     ASSERT_EQ(group1Count, 4);
     ASSERT_EQ(group2Count, 2);
 }
+
+TEST(TEST_SUITE, GetComponentByReference) {
+    ComponentStore store;
+    auto compId = addComponent(store, TestComponent { true, 20 }, 1);
+    ics::Component auto& comp = getComponent<TestComponent>(store, compId);
+
+    ASSERT_EQ(comp.height, 20);
+    comp.height = 50;
+    auto retrievedComp = getComponent<TestComponent>(store, compId);
+    ASSERT_EQ(retrievedComp.height, 50);
+}
