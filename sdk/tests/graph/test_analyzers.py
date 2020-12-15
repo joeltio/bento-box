@@ -105,15 +105,36 @@ def test_assign_analyzer():
     assign_fns = [
         (
             single_assign,
-            {"n_targets": 1, "n_values": 1, "is_unpack": False, "is_multi": False},
+            {
+                "n_targets": 1,
+                "n_values": 1,
+                "is_unpack": False,
+                "is_multi": False,
+                "values": [2],
+                "tgts": ["x"],
+            },
         ),
         (
             multi_assign,
-            {"n_targets": 2, "n_values": 1, "is_unpack": False, "is_multi": True},
+            {
+                "n_targets": 2,
+                "n_values": 1,
+                "is_unpack": False,
+                "is_multi": True,
+                "values": [True],
+                "tgts": ["a", "b"],
+            },
         ),
         (
             unpack_assign,
-            {"n_targets": 2, "n_values": 2, "is_unpack": True, "is_multi": False},
+            {
+                "n_targets": 2,
+                "n_values": 2,
+                "is_unpack": True,
+                "is_multi": False,
+                "values": [1, 2],
+                "tgts": ["x", "y"],
+            },
         ),
     ]
 
@@ -128,19 +149,23 @@ def test_assign_analyzer():
 
         # check ast has expected annotations
         _, expected_annotations = assign_fn
-        assert all(
-            [
-                getattr(assign_ast, name) == value
-                for name, value in expected_annotations.items()
-            ]
-        )
-
+        for name, expected_value in expected_annotations.items():
+            value = getattr(assign_ast, name)
+            # for tgts & values, directly check name match instead of comparing ast node
+            if name == "tgts":
+                tgts = value
+                assert [t.id for t in tgts] == expected_value
+            elif name == "values":
+                values = value
+                assert [v.value for v in values] == expected_value
+            else:
+                value == expected_value
         # TODO(mrzzy): check backreferences are set correctly
 
 
 # test that constants picked up & labeled by constants analyzer
 def test_const_analyzer():
-    def convert_fn(g):
+    def const_fn(g):
         int_const = 2
         float_const = 3.14
         str_const = "str"
@@ -148,16 +173,9 @@ def test_const_analyzer():
         tuple_const = (1, 2, 3)
         boolean_const, boolean_const_2 = True, False
 
-    req_analyzers = [
-        analyze_func,
-        analyze_convert_fn,
-        analyze_assign,
-    ]
-    ast = parse_ast(convert_fn)
-    for analyzer in req_analyzers:
-        ast = analyzer(ast)
-    analyzed_ast = analyze_const(ast)
-    fn_ast = analyzed_ast.convert_fn
+    ast = parse_ast(const_fn)
+    analyzed_ast = analyze_const(analyze_assign(ast))
+    fn_ast = analyzed_ast.body[0]
     get_const_ast = lambda i: fn_ast.body[i].value
     expected_asts = set(
         [get_const_ast(i) for i in range(5)]
@@ -169,21 +187,39 @@ def test_const_analyzer():
 
 # test that qualified and unqualified symbols and be detected by symbol analyzer
 def test_symbol_analyzer():
-    def convert_fn(g):
+    def symbol_fn():
         x = 2
         a.b.c = "str"
 
-    req_analyzers = [
-        analyze_func,
-        analyze_convert_fn,
-    ]
-    ast = parse_ast(convert_fn)
-    for analyzer in req_analyzers:
-        ast = analyzer(ast)
+    ast = parse_ast(symbol_fn)
     analyzed_ast = analyze_symbol(ast)
-    fn_ast = analyzed_ast.convert_fn
-    first_id, second_id = [fn_ast.body[i].targets[0] for i in range(2) ]
-    first_val, second_val = [fn_ast.body[i].value for i in range(2) ]
+    fn_ast = analyzed_ast.body[0]
+    first_id, second_id = [fn_ast.body[i].targets[0] for i in range(2)]
+    first_val, second_val = [fn_ast.body[i].value for i in range(2)]
+
+    # both targets should be labeled as symbols
+    assert first_id.is_symbol and first_id.symbol == "x"
+    assert second_id.is_symbol and second_id.symbol == "a.b.c"
+    assert not first_val.is_symbol and not second_val.is_symbol
+
+
+# test that the definition of the symbol can be resolved
+def test_symbol_resolution():
+    def symbol_fn():
+        x = 2
+        a.b.c = "str"
+
+    ast = parse_ast(symbol_fn)
+    required_analyzers = [
+        analyze_assign,
+        analyze_symbol,
+    ]
+    for analyzer in required_analyzers:
+        ast = analyzer(ast)
+    analyzed_ast = resolve_symbol(ast)
+    fn_ast = analyzed_ast.body[0]
+    first_id, second_id = [fn_ast.body[i].targets[0] for i in range(2)]
+    first_val, second_val = [fn_ast.body[i].value for i in range(2)]
 
     # both targets should be labeled as symbols
     assert first_id.is_symbol and first_id.symbol == "x"

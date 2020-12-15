@@ -6,6 +6,7 @@
 
 import gast
 
+from collections import deque
 from math import inf
 from typing import List
 from gast import (
@@ -73,11 +74,10 @@ def analyze_func(ast: AST) -> AST:
 def analyze_convert_fn(ast: AST) -> AST:
     """Finds and Annotates the target convert function AST
 
+    Requires `analyze_func()` to analyze to the AST first.
     Assumes the target convert function is the first child node of AST.
-
     Annotates the top level node with the target convert `FunctionDef` node as
     `convert_fn`, otherwise set to `None`.
-
     Additionally annotates `convert_fn` if present with:
     - `plotter_name` - name of the plotter instance passed to `convert_fn`
 
@@ -108,6 +108,8 @@ def analyze_assign(ast: AST) -> AST:
     - `is_unpack`: Whether this assignment unpacks values from a List or Tuple.
     - `is_multi`: Whether this assignment assigns the same value to multiple variables.
     - `n_values`: no. of values this assignment attempts to assign
+    - `values`: List of values this assignment attempts to assign
+    - `tgts`: List of values this assignment attempts to assign.
     Annotates assignment's targets and values with reference to assignment `assign`.
 
     Args:
@@ -139,6 +141,7 @@ def analyze_assign(ast: AST) -> AST:
             targets = [assign_ast.target]
         # determine no. of target variables assigned
         assign_ast.n_targets = len(targets)
+        assign_ast.tgts = targets
 
         # determine no. of values assigned
         if isinstance(assign_ast.value, iterable_types):
@@ -147,6 +150,7 @@ def analyze_assign(ast: AST) -> AST:
         else:
             values = [assign_ast.value]
         assign_ast.n_values = len(values)
+        assign_ast.values = values
 
         # create back references in assignment targets and values
         if isinstance(assign_ast, Assign) and isinstance(
@@ -163,6 +167,7 @@ def analyze_assign(ast: AST) -> AST:
 def analyze_const(ast: AST) -> AST:
     """Finds and labels constant literals in the given AST.
 
+    Requires `analyze_assign()` to analyze to the AST first.
     Detects constant literals with the criteria:
     - Nodes of the Constant AST type.
     - List/Tuple ASTs containing or Constant nodes. Nested List/Tuples are
@@ -209,8 +214,9 @@ def analyze_const(ast: AST) -> AST:
 
 
 def analyze_symbol(ast: AST) -> AST:
-    """Finds and labels qualified and unqualified symbols in the given AST.
+    """Finds and labels symbols in the given AST.
 
+    Requires `analyze_assign()` to analyze to the AST first.
     Detects symbols as:
     - Name AST nodes referencing a unqualified symbol (ie `x`).
     - Attributes AST nodes referencing a qualified symbol (ie `x.y.z`).
@@ -238,8 +244,8 @@ def analyze_symbol(ast: AST) -> AST:
             top_attr = qualifying_attrs[0]
             top_attr.is_symbol = True
             # qualified names are written in revered
-            top_attr.symbol = (
-                f"{ast.id}." + ".".join([a.attr for a in reversed(qualifying_attrs)])
+            top_attr.symbol = f"{ast.id}." + ".".join(
+                [a.attr for a in reversed(qualifying_attrs)]
             )
             return
         # append qualifying attributes of a incomplete qualified symbol
@@ -253,3 +259,27 @@ def analyze_symbol(ast: AST) -> AST:
     walk_symbol(ast)
     return ast
 
+
+def resolve_symbol(ast: AST) -> AST:
+    """Resolves and labels definition of symbols in the given AST.
+
+    Requires `analyze_symbol()` to analyze to the AST first.
+    Resolves symbols detected by `analyze_symbol()` using definitions from:
+    - Assign AST nodes
+    - FunctionDef AST nodes
+    - Future/TODO: Global symbol table provided by `globals()`
+    and annotates the symbol nodes with `definition` set to the node that provides
+    the definition for that node
+    Args:
+        ast:
+            AST to resolve symbols in.
+    Returns: The given AST with to symbol nodes annotated with their defiitions
+    """
+
+    def walk_resolve(ast, symbol_table=deque({})):
+        # get current stack frame of the symbol table
+        symbol_frame = symbol_table[-1]
+        if isinstance(ast, Assign):
+            # update frame with defitions for symbol defined in assignment
+            assign = ast
+            target_syms = [t.symbol for t in assign.tgts]
