@@ -11,11 +11,8 @@ find_package(glfw3 3 REQUIRED)
 
 # core library
 add_library(core
-    include/core/graphicsContext.h
     src/graphicsContext.cpp
-    include/core/systemContext.h
     src/systemContext.cpp
-    include/core/windowContext.h
     src/windowContext.cpp
 )
 target_include_directories(core
