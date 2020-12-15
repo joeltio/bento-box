@@ -37,7 +37,6 @@ add_executable(core-test
     src/ics/component.test.cpp
     src/ics/componentManager.test.cpp
     src/ics/compVec.test.cpp
-    src/ics/index.test.cpp
     src/ics/util/composable.test.cpp
     src/ics/util/typeMap.test.cpp
 )
