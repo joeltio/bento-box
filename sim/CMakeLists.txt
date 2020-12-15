@@ -15,11 +15,6 @@ set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 set(CMAKE_CXX_STANDARD 20)
 add_executable(${TARGET_SIM}
     src/main.cpp
-    src/component/componentStoreFns.cpp
-    src/component/componentStoreFns.h
-    src/component/textureComponent.h
-    src/index/componentType.h
-    src/system/render.h
     src/system/render.cpp
 )
 add_executable(${TARGET_TEST}
