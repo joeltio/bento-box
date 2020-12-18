@@ -29,8 +29,8 @@ def test_graph_compile_const():
         x_delta = 20
         car["position"].x = car["position"].x + x_delta
 
-    print(actual_graph.outputs)
-    raise ValueError()
+        print(actual_graph.outputs)
+        raise ValueError()
 
 
 # test compile basic attrimatic example
@@ -52,4 +52,3 @@ def test_graph_compile_arithmetic():
 
     print(actual_graph.outputs)
     raise ValueError()
-

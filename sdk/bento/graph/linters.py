@@ -31,5 +31,8 @@ def lint_convert_fn(ast: AST):
         raise TypeError("Expected convert function to only have one Plotter argument")
     if ast.convert_fn.is_generator:
         raise ValueError(
-            "Cannot convert a generator function. Convert function contains yield."
+            "Cannot convert a generator function. Convert function contains a yield statement."
         )
+
+
+# TODO(mrzzy): lint types

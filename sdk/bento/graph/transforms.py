@@ -28,41 +28,6 @@ class FuncASTTransform(gast.NodeTransformer):
         return new_node
 
 
-def transform_const(ast: AST) -> AST:
-    """Transforms constant literals in AST to plot Constant Nodes on graph
-
-    Transforms constant literals such as '2' into a call to the Graph Plotter
-    to plot a Constant Node `g.constant(2)` on the computation graph.
-
-    Args:
-        ast: AST to transform constant literals into constant nodes
-    Returns:
-        The given ast with the constant nodes transforms
-    """
-
-    # define constant AST transform
-    def do_transform(literal: AST) -> AST:
-        # only perform transform on constant literals
-        if not literal.is_constant:
-            return literal
-        # subsitute constant literals with a constant node plotted graph
-        plot_const_ast = parse_ast(Plotter.const).body[0]
-        call_plot_ast = call_func_ast(
-            attr_parent=ast.convert_fn.plotter_name,
-            fn=plot_const_ast,
-            args={"value": literal},
-        )
-        # make call qualified by refering plotter
-        return call_plot_ast
-
-    const_transform = FuncASTTransform(do_transform)
-
-    # apply const transform to AST
-    ast = const_transform.visit(ast)
-
-    return ast
-
-
 def transform_build_graph(ast: AST) -> AST:
     """Transforms convert function to build graph function
 

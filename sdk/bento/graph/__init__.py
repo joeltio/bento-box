@@ -13,8 +13,9 @@ from typing import Callable, List
 from bento.graph.analyzers import (
     analyze_func,
     analyze_convert_fn,
+    analyze_symbol,
     analyze_assign,
-    analyze_const,
+    resolve_symbol,
 )
 from bento.graph.transforms import transform_build_graph
 from bento.graph.ast import parse_ast, load_ast_module
@@ -32,8 +33,9 @@ def compile_graph(
     analyzers: List[Analyzer] = [
         analyze_func,
         analyze_convert_fn,
+        analyze_symbol,
         analyze_assign,
-        analyze_const,
+        resolve_symbol,
     ],
     linters: List[Linter] = [],
     transforms: List[Transform] = [

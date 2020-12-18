@@ -54,12 +54,12 @@ def call_func_ast(
     # create qualified reference to function
     if attr_parent is not None:
         func_ref = Attribute(
-            value=Name(id=attr_parent, ctx=Load(), annotation=[], type_comment=""),
+            value=Name(id=attr_parent, ctx=Load(), annotation=None, type_comment=""),
             attr=fn.name,
             ctx=Load(),
         )
     else:
-        func_ref = Name(id=fn.name, ctx=Load(), annotation=[], type_comment="")
+        func_ref = Name(id=fn.name, ctx=Load(), annotation=None, type_comment="")
     # create call AST with function name and apply args
     return Call(
         args=[],

@@ -322,5 +322,5 @@ def resolve_symbol(ast: AST) -> AST:
 
 
 # TODO(mrzzy): create parent edges
-# TODO(mrzzy): tag all nodes with body
+# TODO(mrzzy): tag all nodes with body (ie if/else, functiondef, classdef)
 # TODO(mrzzy): activity analysis on body (ie assignments that happen)
