@@ -267,21 +267,60 @@ def resolve_symbol(ast: AST) -> AST:
     """Resolves and labels definition of symbols in the given AST.
 
     Requires `analyze_symbol()` & `analyze_assign()` to analyze to the AST first.
-    Resolves symbols detected by `analyze_symbol()` using definitions from:
+    Tries to Resolves symbols detected by `analyze_symbol()` using definitions from:
     - Assign AST nodes
     - FunctionDef AST nodes
     and annotates the symbol nodes with `definition` set to the node that provides
-    the definition for that node
+    the definition for that node.
     Args:
         ast:
             AST to resolve symbols in.
     Returns: The given AST with to symbol nodes annotated with their defiitions
     """
-
-    def walk_resolve(ast, symbol_table=deque({})):
+    # TODO(mrzzy): resolve qualified symbols, ClassDef.
+    # TODO(mrzzy): support more types of assignment AnnAssign, AugAssign.
+    # TODO(mrzzy): resolve Global symbol table provided by `globals()`.
+    def walk_resolve(ast, symbol_table=deque([{}])):
         # get current stack frame of the symbol table
         symbol_frame = symbol_table[-1]
+        new_scope = False
         if isinstance(ast, Assign):
-            # update frame with defitions for symbol defined in assignment
+            # update frame with definitions for symbol defined in assignment
             assign = ast
-            target_syms = [t.symbol for t in assign.tgts]
+            target_syms = {t.symbol: getattr(t, "symbol", None) for t in assign.tgts}
+            # create mapping of assignments made in this assign AST node
+            assign_map = dict(zip(target_syms, assign.values))
+            symbol_frame.update(assign_map)
+        elif isinstance(ast, FunctionDef):
+            # record symbol defined by function definition
+            fn_def = ast
+            symbol_frame[fn_def.name] = fn_def
+            # record arguments defined in function as symbols
+            for arg in fn_def.args.args:
+                symbol_frame[arg.id] = arg
+            # function definition creates a new scope
+            new_scope = True
+        elif hasattr(ast, "symbol"):
+            # try to resolve symbol and label definition of symbol on symbol AST node
+            try:
+                ast.definition = symbol_frame[ast.symbol]
+            except KeyError:
+                pass
+        # create a new stack frame if in new scope
+        if new_scope:
+            new_frame = dict(symbol_frame)
+            symbol_table.append(new_frame)
+        # recursively resolve attributes of child nodes
+        for node in gast.iter_child_nodes(ast):
+            walk_resolve(node, symbol_table)
+        # pop stack frame from symbol table to revert to previous frame
+        if new_scope:
+            symbol_table.pop()
+
+    walk_resolve(ast)
+    return ast
+
+
+# TODO(mrzzy): create parent edges
+# TODO(mrzzy): tag all nodes with body
+# TODO(mrzzy): activity analysis on body (ie assignments that happen)

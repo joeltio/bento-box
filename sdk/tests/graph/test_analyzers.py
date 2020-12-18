@@ -211,33 +211,51 @@ def test_symbol_analyzer():
 
 # test that the definition of the symbol can be resolved
 def test_symbol_resolution():
-    class Qualified:
-        s = ""
-
-    def symbol_fn():
+    def simple_fn():
         simple = 2
-        Qualified.s = "str"
-        multi_a, multi_b = True, False
-
-        def func():
-            pass
-
-        # symbol resolution should label the following ast nodes referencing
-        # symbols with defintions set above
         simple
-        Qualified.s
+
+    def multi_assign():
+        multi_a, multi_b = True, False
         multi_a, multi_b
-        func
 
-    ast = parse_ast(symbol_fn)
-    required_analyzers = [
-        analyze_symbol,
-        analyze_assign,
+    def repeated_assign():
+        repeated = "first"
+        repeated = "second"
+        repeated
+
+    def scoped_assign():
+        scoped = False
+
+        def fn():
+            scoped = True
+
+        # should reference the first definition of 'scoped' as the second definition
+        # is scoped to only within function
+        scoped
+
+    symbol_fns = [
+        (simple_fn, 0),
+        (multi_assign, 0),
+        (repeated_assign, 1),
+        (scoped_assign, 0),
     ]
-    for analyzer in required_analyzers:
-        ast = analyzer(ast)
-    fn_ast = ast.body[0]
-    analyzed_ast = resolve_symbol(ast)
-    fn_ast = analyzed_ast.body[0]
 
-    raise ValueError()
+    for symbol_fn, n_def_line in symbol_fns:
+        ast = parse_ast(symbol_fn)
+        required_analyzers = [
+            analyze_symbol,
+            analyze_assign,
+        ]
+        for analyzer in required_analyzers:
+            ast = analyzer(ast)
+        analyzed_ast = resolve_symbol(ast)
+        fn_ast = analyzed_ast.body[0]
+
+        sym_def = fn_ast.body[n_def_line]
+        sym_defs = sym_def.values
+        sym_ref = fn_ast.body[-1].value
+        sym_refs = sym_ref.elts if isinstance(sym_ref, Tuple) else [sym_ref]
+        for sym_def, sym_ref in zip(sym_defs, sym_refs):
+            print(sym_ref.symbol, " = ", sym_ref.definition, " => ", sym_def)
+            assert sym_ref.definition == sym_def
