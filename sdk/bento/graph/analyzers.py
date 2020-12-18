@@ -216,13 +216,12 @@ def analyze_const(ast: AST) -> AST:
 def analyze_symbol(ast: AST) -> AST:
     """Finds and labels symbols in the given AST.
 
-    Requires `analyze_assign()` to analyze to the AST first.
     Detects symbols as:
     - Name AST nodes referencing a unqualified symbol (ie `x`).
-    - Attributes AST nodes referencing a qualified symbol (ie `x.y.z`).
+    - Attributes AST nodes referencing a qualified symbol (ie `x.y.z`)
     and labels the top-level AST node with:
     - `is_symbol` set to whether the node is an symbol.
-    - `symbol`, set to the symbol as string, is set on symbol AST nodes.
+    - `symbol`, set to the name of symbol as string on symbol AST nodes.
 
     Args:
         ast:
@@ -230,6 +229,9 @@ def analyze_symbol(ast: AST) -> AST:
     Returns:
         The given AST with the constants literals annotated with `is_constant`
     """
+    # TODO(mrzzy): annotate `qualified_sym` set to the fully qualified name of
+    # symbol on symbol AST nodes.
+
     # walk AST top down to label symbols to capture
     # parent Attribute node to qualifying child node relatiionships
     def walk_symbol(ast, qualifying_attrs=[]):
@@ -250,7 +252,8 @@ def analyze_symbol(ast: AST) -> AST:
             return
         # append qualifying attributes of a incomplete qualified symbol
         elif isinstance(ast, Attribute):
-            qualifying_attrs.append(ast)
+            # create a new copy of qualifying attrs with attribute appended
+            qualifying_attrs = qualifying_attrs + [ast]
 
         # recursively inspect child nodes for constants
         for node in gast.iter_child_nodes(ast):
@@ -263,11 +266,10 @@ def analyze_symbol(ast: AST) -> AST:
 def resolve_symbol(ast: AST) -> AST:
     """Resolves and labels definition of symbols in the given AST.
 
-    Requires `analyze_symbol()` to analyze to the AST first.
+    Requires `analyze_symbol()` & `analyze_assign()` to analyze to the AST first.
     Resolves symbols detected by `analyze_symbol()` using definitions from:
     - Assign AST nodes
     - FunctionDef AST nodes
-    - Future/TODO: Global symbol table provided by `globals()`
     and annotates the symbol nodes with `definition` set to the node that provides
     the definition for that node
     Args:

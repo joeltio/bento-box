@@ -190,38 +190,54 @@ def test_symbol_analyzer():
     def symbol_fn():
         x = 2
         a.b.c = "str"
+        # TODO: multiple assign symbol
+        y, z = True, False
 
     ast = parse_ast(symbol_fn)
     analyzed_ast = analyze_symbol(ast)
     fn_ast = analyzed_ast.body[0]
-    first_id, second_id = [fn_ast.body[i].targets[0] for i in range(2)]
-    first_val, second_val = [fn_ast.body[i].value for i in range(2)]
+    x_target, abc_target = [fn_ast.body[i].targets[0] for i in range(2)]
+    x_value, abc_value = [fn_ast.body[i].value for i in range(2)]
+    y_target, z_target = fn_ast.body[2].targets[0].elts
+    y_value, z_value = fn_ast.body[2].value.elts
 
-    # both targets should be labeled as symbols
-    assert first_id.is_symbol and first_id.symbol == "x"
-    assert second_id.is_symbol and second_id.symbol == "a.b.c"
-    assert not first_val.is_symbol and not second_val.is_symbol
+    # targets should be labeled as symbols
+    assert x_target.is_symbol and x_target.symbol == "x"
+    assert abc_target.is_symbol and abc_target.symbol == "a.b.c"
+    assert y_target.is_symbol and y_target.symbol == "y"
+    assert z_target.is_symbol and z_target.symbol == "z"
+    assert all([not val.is_symbol for val in [x_value, abc_value, y_value, z_value]])
 
 
 # test that the definition of the symbol can be resolved
 def test_symbol_resolution():
+    class Qualified:
+        s = ""
+
     def symbol_fn():
-        x = 2
-        a.b.c = "str"
+        simple = 2
+        Qualified.s = "str"
+        multi_a, multi_b = True, False
+
+        def func():
+            pass
+
+        # symbol resolution should label the following ast nodes referencing
+        # symbols with defintions set above
+        simple
+        Qualified.s
+        multi_a, multi_b
+        func
 
     ast = parse_ast(symbol_fn)
     required_analyzers = [
-        analyze_assign,
         analyze_symbol,
+        analyze_assign,
     ]
     for analyzer in required_analyzers:
         ast = analyzer(ast)
+    fn_ast = ast.body[0]
     analyzed_ast = resolve_symbol(ast)
     fn_ast = analyzed_ast.body[0]
-    first_id, second_id = [fn_ast.body[i].targets[0] for i in range(2)]
-    first_val, second_val = [fn_ast.body[i].value for i in range(2)]
 
-    # both targets should be labeled as symbols
-    assert first_id.is_symbol and first_id.symbol == "x"
-    assert second_id.is_symbol and second_id.symbol == "a.b.c"
-    assert not first_val.is_symbol and not second_val.is_symbol
+    raise ValueError()
