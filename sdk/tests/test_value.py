@@ -88,3 +88,7 @@ def test_wrap():
         assert len(proto.array.values) == sum(expect_type.dimensions)
         # check wrapped primitive's data types are identical
         assert len(set([p.WhichOneof("value") for p in proto.array.values])) == 1
+
+    # do nothing if given an already wrapped value protobuf message
+    wrapped_bool = wrap_primitive(True)
+    assert wrap(wrapped_bool) == wrapped_bool

@@ -68,6 +68,8 @@ def wrap(val: Any) -> Value:
     native type mixing is allowed as supported by `np.asarray()`, although
     doing so is not recommended.
 
+    If the given `val` is already a Protobuf `Value` message, returns `val` as is.
+
     Args:
         val: The native value to wrap as a protobuf message. The value should
             be native primitive, array of primitives.
@@ -76,6 +78,9 @@ def wrap(val: Any) -> Value:
     Throws:
         TypeError: If the given native value is not of a supported type.
     """
+    # return as is if val is already value protobuf
+    if isinstance(val, Value):
+        return val
     # try to wrap value as primitive
     try:
         return wrap_primitive(val)
