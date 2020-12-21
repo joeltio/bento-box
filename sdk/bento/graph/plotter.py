@@ -4,13 +4,12 @@
 # Graph Plotter
 #
 
-from random import randint
 from typing import Any, Iterable, List, Set
 from bento.value import wrap
+from bento.graph.value import wrap_const
+from bento.graph.ecs import GraphEntity, GraphComponent
 from bento.ecs.base import Component, Entity
 from bento.protos.graph_pb2 import Graph, Node
-from bento.protos.values_pb2 import Value
-from bento.protos.references_pb2 import AttributeRef
 
 
 class Plotter:
@@ -21,12 +20,13 @@ class Plotter:
     """
 
     def __init__(self):
-        self.inputs, self.outputs = [], []
         self.entity_map = {}
 
     def entity(self, components: Iterable[str]) -> Entity:
         """
-        Find and retrieve the ECS entity with the the given component.
+        Get the entity with the given components attached.
+
+        Provides access to component state when building the computation graph.
 
         Args:
             components:
@@ -42,22 +42,26 @@ class Plotter:
             raise ValueError("Given component names should not contain duplicates")
         # retrieve entity for components, create if not does not yet exist
         if not comp_set in self.entity_map:
-            self.entity_map[comp_set] = GraphEntity(self, comp_set)
+            self.entity_map[comp_set] = GraphEntity(comp_set)
         return self.entity_map[comp_set]
 
     def graph(self) -> Graph:
         """Obtains the computation graph plotted by this Plotter.
 
         Obtains the computation graph plotted by this Plotter based on the
-        operations performed recorded by the Plotter.
+        operations recorded by the Plotter.
 
         Returns:
             The computation graph plotted by this Plotter as a `Graph` protobuf message.
         """
-        return Graph(
-            inputs=self.inputs,
-            outputs=self.outputs,
-        )
+        # Extract graph inputs and outputs from GraphEntities and GraphComponents
+        inputs, outputs = [], []
+        for entity in self.entity_map.values():
+            for component in entity.components:
+                inputs.extend(component.inputs)
+                outputs.extend(component.outputs)
+
+        return Graph(inputs=inputs, outputs=outputs)
 
     # section: shims - ECS shims records access/assignments to ECS
     def const(self, value: Any) -> Node.Const:
@@ -68,7 +72,7 @@ class Plotter:
         Returns:
             Constant Node protobuf message that evaluates to the given constant value.
         """
-        return Node(const_op=Node.Const(held_value=wrap(value)))
+        return wrap_const(value)
 
     def switch(self, condition: Node, true: Node, false: Node) -> Node.Switch:
         """Creates a conditional Switch Node that evaluates based on condition.
@@ -180,74 +184,3 @@ class Plotter:
 
     def le(self, x: Node, y: Node) -> Node:
         return Node(le_op=Node.Le(x=x, y=y))
-
-
-class GraphComponent(Component):
-    """Shim that reprsents ECS Component when plotting computation graph.
-
-    Provides access to component's attributes during graph plotting.
-    Records attribute get/sets performed on component as graph computation nodes.
-    """
-
-    def __init__(self, plotter: Plotter, entity_id: int, name: str):
-        # use __dict__ assignment to prevent triggering __setattr__()
-        self.__dict__["_entity_id"] = entity_id
-        self.__dict__["_name"] = name
-        self.__dict__["_plotter"] = plotter
-
-    def get_attr(self, name: str) -> Node:
-        # Record the attribute retrieve operation as input graph node
-        get_op = Node.Retrieve(
-            retrieve_attr=AttributeRef(
-                entity_id=self._entity_id,
-                component=self._name,
-                attribute=name,
-            )
-        )
-        self._plotter.inputs.append(get_op)
-
-        return Node(retrieve_op=get_op)
-
-    def set_attr(self, name: str, value: Any):
-        # wrap native value as a constant node
-        value = self._plotter.const(value) if not isinstance(value, Node) else value
-        # Record the attribute set/mutate operation as output graph node
-        set_op = Node.Mutate(
-            mutate_attr=AttributeRef(
-                entity_id=self._entity_id,
-                component=self._name,
-                attribute=name,
-            ),
-            to_node=value,
-        )
-        self._plotter.outputs.append(set_op)
-
-    def __str__(self):
-        # return string representation of graph component
-        return f"{self.__class__.__name___}<{self._entity_id}, {self._name}>"
-
-
-class GraphEntity(Entity):
-    """Shim that reprsents ECS Entity when plotting computation graph.
-
-    Provides access to Entity's components during graph plotting.
-    """
-
-    def __init__(self, plotter: Plotter, components: Set[str]):
-        # TODO(zzy): obtain id from actual entity
-        self.id = randint(1, int(1e5))
-        self.components = {
-            name: GraphComponent(plotter, self.id, name) for name in components
-        }
-
-    def get_component(self, name):
-        try:
-            return self.components[name]
-        except KeyError:
-            raise ValueError(
-                f"Cannot get component: Component {name} not found bound for entity"
-            )
-
-    def __str__(self):
-        # return string representation of graph entity
-        return f"{self.__class__.__name___}<{self.id}>"
