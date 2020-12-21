@@ -222,6 +222,10 @@ class GraphComponent(Component):
         )
         self._plotter.outputs.append(set_op)
 
+    def __str__(self):
+        # return string representation of graph component
+        return f"{self.__class__.__name___}<{self._entity_id}, {self._name}>"
+
 
 class GraphEntity(Entity):
     """Shim that reprsents ECS Entity when plotting computation graph.
@@ -243,3 +247,7 @@ class GraphEntity(Entity):
             raise ValueError(
                 f"Cannot get component: Component {name} not found bound for entity"
             )
+
+    def __str__(self):
+        # return string representation of graph entity
+        return f"{self.__class__.__name___}<{self.id}>"

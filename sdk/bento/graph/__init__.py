@@ -23,9 +23,9 @@ from bento.graph.plotter import Plotter
 from bento.protos.graph_pb2 import Graph, Node
 
 
+Analyzer = Callable[[AST], AST]
 Linter = Callable[[AST], None]
 Transform = Callable[[AST], AST]
-Analyzer = Callable[[AST], AST]
 
 
 def compile_graph(
@@ -68,6 +68,7 @@ def compile_graph(
             allows users to access graphing specific operations.
         analyzers:
             List of `Analyzer`s that are run sequentially on the AST perform static analysis.
+            Analyzers can add attributes to AST nodes but not modify the AST tree.
         linters:
             List of `Linter`s that are run sequentially on the AST to perform
             static checks on the convertablity of the AST. `Linter`s are expected
