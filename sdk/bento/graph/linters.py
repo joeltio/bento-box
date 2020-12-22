@@ -33,6 +33,3 @@ def lint_convert_fn(ast: AST):
         raise ValueError(
             "Cannot convert a generator function. Convert function contains a yield statement."
         )
-
-
-# TODO(mrzzy): lint types

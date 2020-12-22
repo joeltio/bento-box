@@ -13,9 +13,6 @@ from typing import Callable, List
 from bento.graph.analyzers import (
     analyze_func,
     analyze_convert_fn,
-    analyze_symbol,
-    analyze_assign,
-    resolve_symbol,
 )
 from bento.graph.transforms import transform_build_graph
 from bento.graph.ast import parse_ast, load_ast_module
@@ -33,9 +30,6 @@ def compile_graph(
     analyzers: List[Analyzer] = [
         analyze_func,
         analyze_convert_fn,
-        analyze_symbol,
-        analyze_assign,
-        resolve_symbol,
     ],
     linters: List[Linter] = [],
     transforms: List[Transform] = [
@@ -80,6 +74,8 @@ def compile_graph(
     Returns:
         The converted computational Graph as a `Graph` protobuf message.
     """
+
+    # TODO(mrzzy): capture globals with convert_fn.__globals__
 
     # parse ast from function source
     ast = parse_ast(convert_fn)
