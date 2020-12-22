@@ -26,28 +26,28 @@ def wrap_primitive(val: Any) -> Value:
     if type(val) in [int, np.int32] and is_int32(val):
         return Value(
             data_type=Type(primitive=Type.Primitive.INT32),
-            primitive=Value.Primitive(int_32=val),
+            primitive=Value.Primitive(int_32=int(val)),
         )
     elif type(val) in [int, np.int64]:
         return Value(
             data_type=Type(primitive=Type.Primitive.INT64),
-            primitive=Value.Primitive(int_64=val),
+            primitive=Value.Primitive(int_64=int(val)),
         )
     # TODO: figure out how to check if value fits within 32 bits
     elif type(val) in [float, np.float64]:
         return Value(
             data_type=Type(primitive=Type.Primitive.FLOAT64),
-            primitive=Value.Primitive(float_64=val),
+            primitive=Value.Primitive(float_64=float(val)),
         )
     elif type(val) in [str, np.str_]:
         return Value(
             data_type=Type(primitive=Type.Primitive.STRING),
-            primitive=Value.Primitive(str_val=val),
+            primitive=Value.Primitive(str_val=str(val)),
         )
     elif type(val) in [bool, np.bool_]:
         return Value(
             data_type=Type(primitive=Type.Primitive.BOOL),
-            primitive=Value.Primitive(boolean=val),
+            primitive=Value.Primitive(boolean=bool(val)),
         )
     else:
         raise TypeError(
