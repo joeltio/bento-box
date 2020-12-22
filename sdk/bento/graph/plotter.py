@@ -5,9 +5,8 @@
 #
 
 from typing import Any, Iterable, List, Set
-from bento.value import wrap
 from bento.graph.value import wrap_const
-from bento.graph.ecs import GraphEntity, GraphComponent
+from bento.graph.ecs import GraphEntity, GraphComponent, GraphNode
 from bento.ecs.base import Component, Entity
 from bento.protos.graph_pb2 import Graph, Node
 
@@ -54,12 +53,12 @@ class Plotter:
         Returns:
             The computation graph plotted by this Plotter as a `Graph` protobuf message.
         """
-        # Extract graph inputs and outputs from GraphEntities and GraphComponents
+        # Extract graph inputs and outputs nodes from GraphComponent's GraphNodes
         inputs, outputs = [], []
         for entity in self.entity_map.values():
             for component in entity.components:
-                inputs.extend(component.inputs)
-                outputs.extend(component.outputs)
+                inputs.extend([i.node.retrieve_op for i in component.inputs])
+                outputs.extend([o.node.mutate_op for o in component.outputs])
 
         return Graph(inputs=inputs, outputs=outputs)
 
@@ -74,113 +73,92 @@ class Plotter:
         """
         return wrap_const(value)
 
-    def switch(self, condition: Node, true: Node, false: Node) -> Node.Switch:
+    def switch(self, condition: Any, true: Any, false: Any) -> GraphNode:
         """Creates a conditional Switch Node that evaluates based on condition.
 
-        The switch evalutes to `true` Node if the `condition` Node is true,
-        `false` Node otherwise.
+        The switch evalutes to `true` if the `condition` is true, `false` otherwise.
 
         Args:
-            condition: Node that defines the condition. Should evaluate to true or false.
-            true: Switch Node evaluates to this Node if `condition` evaluates to true.
-            false: Switch Node evaluates to this Node if `condition` evaluates to false.
-
+            condition: Defines the condition. Should evaluate to true or false.
+            true: Switch Node evaluates to this expression if `condition` evaluates to true.
+            false: Switch Node evaluates to this expression if `condition` evaluates to false.
         Return:
-            Switch Node protobuf message that evaluates based on the condition Node.
+            Switch Node Graph Node that evaluates based on the condition Node.
         """
-        return Node(
-            switch_op=Node.Switch(
-                condition_node=condition,
-                true_node=true,
-                false_node=false,
+        condition, true, false = (
+            GraphNode.wrap(condition),
+            GraphNode.wrap(true),
+            GraphNode.wrap(false),
+        )
+        return GraphNode.wrap(
+            Node(
+                switch_op=Node.Switch(
+                    condition_node=condition.node,
+                    true_node=true.node,
+                    false_node=false.node,
+                )
             )
         )
 
     # arithmetic operations
-    def add(self, x: Node, y: Node) -> Node:
-        return Node(add_op=Node.Add(x=x, y=y))
+    def max(self, x: Any, y: Any) -> GraphNode:
+        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
+        return GraphNode(node=Node(max_op=Node.Max(x=x.node, y=y.node)))
 
-    def sub(self, x: Node, y: Node) -> Node:
-        return Node(sub_op=Node.Sub(x=x, y=y))
+    def min(self, x: Any, y: Any) -> GraphNode:
+        return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
 
-    def mul(self, x: Node, y: Node) -> Node:
-        return Node(mul_op=Node.Mul(x=x, y=y))
+    def abs(self, x: Any) -> GraphNode:
+        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
+        return GraphNode(node=Node(abs_op=Node.Abs(x=x)))
 
-    def div(self, x: Node, y: Node) -> Node:
-        return Node(div_op=Node.Div(x=x, y=y))
+    def floor(self, x: Any) -> GraphNode:
+        x = GraphNode.wrap(x)
+        return GraphNode(node=Node(floor_op=Node.Floor(x=x.node)))
 
-    def max(self, x: Node, y: Node) -> Node:
-        return Node(max_op=Node.Max(x=x, y=y))
+    def pow(self, x: Any, y: Any) -> GraphNode:
+        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
+        return GraphNode(node=Node(pow_op=Node.Pow(x=x.node, y=y.node)))
 
-    def min(self, x: Node, y: Node) -> Node:
-        return Node(min_op=Node.Min(x=x, y=y))
-
-    def abs(self, x: Node) -> Node:
-        return Node(abs_op=Node.Abs(x=x))
-
-    def floor(self, x: Node) -> Node:
-        return Node(floor_op=Node.Floor(x=x))
-
-    def pow(self, x: Node, y: Node) -> Node:
-        return Node(pow_op=Node.Pow(x=x, y=y))
-
-    def mod(self, x: Node, y: Node) -> Node:
-        return Node(mod_op=Node.Mod(x=x, y=y))
+    def mod(self, x: Any, y: Any) -> GraphNode:
+        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
+        return GraphNode(node=Node(mod_op=Node.Mod(x=x.node, y=y.node)))
 
     # trignomomic operations
-    def sin(self, x: Node) -> Node:
-        return Node(sin_op=Node.Sin(x=x))
+    def sin(self, x: Any) -> GraphNode:
+        x = GraphNode.wrap(x)
+        return GraphNode(node=Node(sin_op=Node.Sin(x=x.node)))
 
-    def arcsin(self, x: Node) -> Node:
-        return Node(arcsin_op=Node.ArcSin(x=x))
+    def arcsin(self, x: Any) -> GraphNode:
+        x = GraphNode.wrap(x)
+        return GraphNode(node=Node(arcsin_op=Node.ArcSin(x=x.node)))
 
-    def cos(self, x: Node) -> Node:
-        return Node(cos_op=Node.Cos(x=x))
+    def cos(self, x: Any) -> GraphNode:
+        x = GraphNode.wrap(x)
+        return GraphNode(node=Node(cos_op=Node.Cos(x=x.node)))
 
-    def arccos(self, x: Node) -> Node:
-        return Node(arccos_op=Node.ArcCos(x=x))
+    def arccos(self, x: Any) -> GraphNode:
+        x = GraphNode.wrap(x)
+        return GraphNode(node=Node(arccos_op=Node.ArcCos(x=x.node)))
 
-    def tan(self, x: Node) -> Node:
-        return Node(tan_op=Node.Tan(x=x))
+    def tan(self, x: Any) -> GraphNode:
+        x = GraphNode.wrap(x)
+        return GraphNode(node=Node(tan_op=Node.Tan(x=x.node)))
 
-    def arctan(self, x: Node) -> Node:
-        return Node(arctan_op=Node.ArcTan(x=x))
+    def arctan(self, x: Any) -> GraphNode:
+        x = GraphNode.wrap(x)
+        return GraphNode(node=Node(arctan_op=Node.ArcTan(x=x.node)))
 
     # random number operation
-    def random(self, low: Node, high: Node) -> Node:
+    def random(self, low: Any, high: Any) -> GraphNode:
         """Creates a Random Node that evaluates to a random float between given `low` and `high`
 
         Args:
-            low: Node that evaluates to the lower bound of the random number generated (inclusive).
-            high: Node that evaluates to the upper bound of the random number generated (inclusive).
+            low: Expression that evaluates to the lower bound of the random number generated (inclusive).
+            high: Expression that evaluates to the upper bound of the random number generated (inclusive).
 
         Returns:
-            Random Node protobuf message that evaluates to a random float between given `low` and `high`
+            Random Graph Node that evaluates to a random float between given `low` and `high`
         """
-        return Node(random_op=Node.Random(low=low, high=high))
-
-    # boolean operations
-    # NOTE: and/or/not are  and_/or_/not_ respectively as they conflict with python keywords
-    def and_(self, x: Node, y: Node) -> Node:
-        return Node(and_op=Node.And(x=x, y=y))
-
-    def or_(self, x: Node, y: Node) -> Node:
-        return Node(or_op=Node.Or(x=x, y=y))
-
-    def not_(self, x: Node, y: Node) -> Node:
-        return Node(not_op=Node.Not(x=x, y=y))
-
-    def eq(self, x: Node, y: Node) -> Node:
-        return Node(eq_op=Node.Eq(x=x, y=y))
-
-    def gt(self, x: Node, y: Node) -> Node:
-        return Node(gt_op=Node.Gt(x=x, y=y))
-
-    def lt(self, x: Node, y: Node) -> Node:
-        return Node(lt_op=Node.Lt(x=x, y=y))
-
-    def ge(self, x: Node, y: Node) -> Node:
-        return Node(ge_op=Node.Ge(x=x, y=y))
-
-    def le(self, x: Node, y: Node) -> Node:
-        return Node(le_op=Node.Le(x=x, y=y))
+        low, high = GraphNode.wrap(low), GraphNode.wrap(high)
+        return GraphNode(node=Node(random_op=Node.Random(low=low.node, high=high.node)))

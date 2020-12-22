@@ -83,7 +83,6 @@ class GraphNode:
         self.node = Node(add_op=Node.Sub(x=self.node, y=other.node))
         return self
 
-
     def __mul__(self, other: Any):
         other = GraphNode.wrap(other)
         return GraphNode.wrap(Node(mul_op=Node.Mul(x=self.node, y=other.node)))
@@ -98,7 +97,6 @@ class GraphNode:
         self.node = Node(add_op=Node.Mul(x=self.node, y=other.node))
         return self
 
-
     def __truediv__(self, other: Any):
         other = GraphNode.wrap(other)
         return GraphNode.wrap(Node(div_op=Node.Div(x=self.node, y=other.node)))
@@ -112,7 +110,6 @@ class GraphNode:
         # divide inplace
         self.node = Node(add_op=Node.Div(x=self.node, y=other.node))
         return self
-
 
     def __mod__(self, other: Any):
         other = GraphNode.wrap(other)
@@ -146,13 +143,15 @@ class GraphNode:
 
     def __ne__(self, other: Any):
         other = GraphNode.wrap(other)
-        return Node(not_op=Node.Not( x=self.__eq__(other).node))
+        return Node(not_op=Node.Not(x=self.__eq__(other).node))
 
     def __le__(self, other: Any):
         other = GraphNode.wrap(other)
         return GraphNode.wrap(
             Node(
-                or_op=Node.Or(x=self.__lt__(other.node).node, y=self.__eq__(other.node).node),
+                or_op=Node.Or(
+                    x=self.__lt__(other.node).node, y=self.__eq__(other.node).node
+                ),
             )
         )
 
@@ -160,19 +159,24 @@ class GraphNode:
         other = GraphNode.wrap(other)
         return GraphNode.wrap(
             Node(
-                or_op=Node.Or(x=self.__gt__(other.node).node, y=self.__eq__(other.node).node),
+                or_op=Node.Or(
+                    x=self.__gt__(other.node).node, y=self.__eq__(other.node).node
+                ),
             )
         )
+
+    def __str__(self):
+        return f"{self.__class__.__name___}<{self.node}>"
+
+    def __hash__(self):
+        return hash(self.node)
 
 
 class GraphComponent(Component):
     """Shim that reprsents ECS Component when plotting computation graph.
 
     Provides access to component's attributes during graph plotting.
-    Records attribute gey(components
-    ]y(components
-    ])fa
-    which can be accessed via `.inputs` and `.outputs` respectively.
+    Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively.
 
     Example:
         # Record operations on component
@@ -234,7 +238,6 @@ class GraphComponent(Component):
         return self._outputs
 
     def __str__(self):
-        # return string representation of graph component
         return f"{self.__class__.__name___}<{self._name}, {self._name}>"
 
 
@@ -266,5 +269,4 @@ class GraphEntity(Entity):
         return set(self.component_map.values())
 
     def __str__(self):
-        # return string representation of graph entity
         return f"{self.__class__.__name___}<{self.id}>"
