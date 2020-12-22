@@ -120,7 +120,6 @@ class GraphNode:
         return GraphNode.wrap(Node(mod_op=Node.Mod(x=other.node, y=self.node)))
 
     def __neg__(self):
-        other = GraphNode.wrap(other)
         # -x is equvilent to 0 - x
         return GraphNode.wrap(Node(sub_op=Node.Sub(x=wrap_const(0), y=self.node)))
 
