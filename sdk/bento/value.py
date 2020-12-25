@@ -33,7 +33,7 @@ def wrap_primitive(val: Any) -> Value:
             data_type=Type(primitive=Type.Primitive.INT64),
             primitive=Value.Primitive(int_64=int(val)),
         )
-    # TODO: figure out how to check if value fits within 32 bits
+    # TODO(mrzzy): figure out how to check if value fits within 32 bits
     elif type(val) in [float, np.float64]:
         return Value(
             data_type=Type(primitive=Type.Primitive.FLOAT64),
