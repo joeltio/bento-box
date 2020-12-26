@@ -32,7 +32,6 @@ def test_graph_compile_arithmetic():
         car["position"].x += x_delta
 
     # TODO(mrzzy): compare with YAML test case to make this easier to test
-    print(actual_graph.outputs)
     car_pos_x = actual_graph.outputs[0]
     attr, to_node = car_pos_x.mutate_attr, car_pos_x.to_node
     assert attr.component == "position" and attr.attribute == "x"
@@ -57,5 +56,3 @@ def test_graph_compile_arithmetic_multiple():
         xps = -car["speed"].x_neg
         x_delta = xps * (tick_ms * ms_in_sec)
         car["position"].x = x_delta + car["position"].x
-
-    print(actual_graph.outputs)

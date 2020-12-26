@@ -266,7 +266,6 @@ def test_symbol_resolution():
         sym_ref = fn_ast.body[-1].value
         sym_refs = sym_ref.elts if isinstance(sym_ref, Tuple) else [sym_ref]
         for sym_def, sym_ref in zip(sym_defs, sym_refs):
-            print(sym_ref.symbol, " = ", sym_ref.definition, " => ", sym_def)
             assert sym_ref.definition == sym_def
 
 
@@ -283,3 +282,81 @@ def test_analyze_parent():
     simple_ast, const_ast = assign_ast.targets[0], assign_ast.value
     assert simple_ast.parent == assign_ast
     assert const_ast.parent == assign_ast
+
+
+# test that code blocks can be identified and labeled correctly
+def test_analyze_block():
+    def ternary_fn():
+        x = 1 if True else False
+
+    def list_comp_fn():
+        x = [i for i in [1, 2, 3]]
+
+    def dict_comp_fn():
+        x = {i: j for i, j in [[1, 2], [2, 3], [3, 4]]}
+
+    def lambda_fn():
+        x = lambda y: y + 2
+
+    def func_fn():
+        def fn(y):
+            return y + 2
+
+    def ifelse_fn():
+        if True:
+            x = 1
+        else:
+            x = 3
+
+    def for_fn():
+        for i in [1, 2, 3]:
+            x = i
+        else:
+            y = i
+
+    def while_fn():
+        while True:
+            x = 2
+
+    def with_fn():
+        with 1 as x:
+            y = x
+
+    def try_fn():
+        try:
+            x = 1
+        finally:
+            z = x == 1
+
+    # test case, whether the first statement is code block, expected ast getter
+    block_fns = [
+        (ternary_fn, False),
+        (list_comp_fn, False),
+        (dict_comp_fn, False),
+        (lambda_fn, False),
+        (func_fn, True),
+        (ifelse_fn, True),
+        (for_fn, True),
+        (while_fn, True),
+        (with_fn, True),
+        (try_fn, True),
+    ]
+
+    for fn, is_expected_block in block_fns:
+        analyzed_ast = analyze_block(parse_ast(fn))
+        fn_ast = analyzed_ast.body[0]
+        block_ast = fn_ast.body[0]
+        # check code blocks are labeled correctly
+        assert block_ast.is_block == is_expected_block
+        # check back edges to code block are created correctedly to child nodes
+        if is_expected_block:
+            for child in gast.walk(block_ast):
+                # walk() will include the root block ast node..
+                # ignore when checking code block back edges
+                if child == block_ast:
+                    continue
+
+                if child.block != block_ast:
+                    __import__("pprint").pprint((gast.dump(child.block)))
+                    __import__("pprint").pprint((gast.dump(block_ast)))
+                assert child.block == block_ast

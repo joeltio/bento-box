@@ -223,7 +223,7 @@ def analyze_symbol(ast: AST) -> AST:
     - Attributes AST nodes referencing a qualified symbol (ie `x.y.z`)
     and labels the top-level AST node with:
     - `is_symbol` set to whether the node is an symbol.
-    - `symbol`, set to the name of symbol as string on symbol AST nodes.
+    - `symbol` set to the name of symbol as string on symbol AST nodes.
 
     Args:
         ast:
@@ -324,7 +324,6 @@ def resolve_symbol(ast: AST) -> AST:
     return ast
 
 
-# TODO(mrzzy): create parent edge
 def analyze_parent(ast: AST) -> AST:
     """Annotate each AST node in the given AST  with its parent node.
     Labels each AST node with its parent AST node set to the `parent` attribute.
@@ -349,5 +348,29 @@ def analyze_parent(ast: AST) -> AST:
     return ast
 
 
-# TODO(mrzzy): identify blocks (ie if/else, functiondef, classdef)
-# TODO(mrzzy): activity analysis on body (ie assignments that happen)
+def analyze_block(ast: AST) -> AST:
+    """Annotate each AST node in the given AST with the code block it belongs to.
+    Labels each AST node with the code block it belongs to set to the `block` attribute
+    and `is_block` set to `True` on code block nodes themselves.
+    If the AST node is not part of any code block , the AST node would not be annotated.
+
+    Args:
+        ast:
+            AST to annotate parents nodes in.
+    Returns:
+        The given AST with AST nodes annotated with the code block that they are part of.
+    """
+
+    def walk_block(ast, block=None):
+        if not block is None:
+            ast.block = block
+        # detect code blocks by checking for attributes
+        ast.is_block = any([hasattr(ast, attr) for attr in ["body", "orelse"]])
+        if ast.is_block:
+            block = ast
+        # recursively resolve code blocks of child nodes
+        for node in gast.iter_child_nodes(ast):
+            walk_block(node, block)
+
+    walk_block(ast)
+    return ast
