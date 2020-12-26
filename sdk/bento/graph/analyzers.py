@@ -242,7 +242,6 @@ def analyze_symbol(ast: AST) -> AST:
         # check if name is unqualified symbol
         if isinstance(ast, Name) and len(qualifying_attrs) == 0:
             ast.is_symbol, ast.symbol = True, ast.id
-            return
         # check if name part of qualified symbol
         elif isinstance(ast, Name):
             top_attr = qualifying_attrs[0]
@@ -251,12 +250,10 @@ def analyze_symbol(ast: AST) -> AST:
             top_attr.symbol = f"{ast.id}." + ".".join(
                 [a.attr for a in reversed(qualifying_attrs)]
             )
-            return
         # append qualifying attributes of a incomplete qualified symbol
         elif isinstance(ast, Attribute):
             # create a new copy of qualifying attrs with attribute appended
             qualifying_attrs = qualifying_attrs + [ast]
-
         # recursively inspect child nodes for constants
         for node in gast.iter_child_nodes(ast):
             walk_symbol(node, qualifying_attrs)
@@ -358,7 +355,8 @@ def analyze_block(ast: AST) -> AST:
         ast:
             AST to annotate parents nodes in.
     Returns:
-        The given AST with AST nodes annotated with the code block that they are part of.
+        The given AST with AST nodes annotated with the code block that they are part of
+        and code block nodes annotated with `is_symbol`
     """
 
     def walk_block(ast, block=None):
@@ -373,4 +371,36 @@ def analyze_block(ast: AST) -> AST:
             walk_block(node, block)
 
     walk_block(ast)
+    return ast
+
+
+def analyze_activity(ast: AST) -> AST:
+    """Analyze each code block AST node for assignment and use activity.
+
+    Requires resolve_symbol() and analyze_block() to analyze the AST first.
+    Analyzes activity in each code block by identifying which symbols are used
+    (input symbol) and assigned to (output symbol) in the code block.
+
+    Labels the input and output symbols by setting the `input_syms` and `output_syms`
+    attributes on the code block AST.
+
+    Args:
+        ast:
+            AST to analyze and annotate code block AST nodes in.
+    Returns:
+        The given AST with code block nodes annotated the input and output symbols
+    """
+    symbols = [n for n in gast.walk(ast) if n.is_symbol]
+    for symbol in symbols:
+        block = symbol.block
+        input_syms = getattr(block, "input_syms", [])
+        output_syms = getattr(block, "output_syms", [])
+        # detect input symbol by checking symbol context and that its declared outside code block
+        if isinstance(symbol.ctx, Load) and symbol.definition.block != block:
+            input_syms.append(symbol)
+        # detect output symbol by checking symbol context
+        elif isinstance(symbol.ctx, (Store, Del)):
+            output_syms.append(symbol)
+        block.input_syms, block.output_syms = input_syms, output_syms
+
     return ast

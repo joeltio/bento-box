@@ -360,3 +360,52 @@ def test_analyze_block():
                     __import__("pprint").pprint((gast.dump(child.block)))
                     __import__("pprint").pprint((gast.dump(block_ast)))
                 assert child.block == block_ast
+
+
+def test_analyze_activity():
+    def output_only_fn():
+        if True:
+            # since 'x' is assigned inside the if block
+            # it should not be label as input_syms wrt. if block
+            x = 1
+            y = x + 1
+
+    def input_only_fn():
+        x, f = 1, (lambda x: x)
+        if True:
+            f(x)
+
+    def input_output_fn():
+        x = 1
+        if True:
+            y = x + 1
+            x = 2
+
+    # test case,  expected attributes
+    activity_fns = [
+        (output_only_fn, {"input_syms": [], "output_syms": ["x", "y"]}),
+        (input_only_fn, {"input_syms": ["x", "f"], "output_syms": []}),
+        (input_output_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
+    ]
+
+    for fn, expected_attrs in activity_fns:
+        required_analyzers = [
+            analyze_assign,
+            analyze_symbol,
+            resolve_symbol,
+            analyze_block,
+        ]
+        ast = parse_ast(fn)
+        for analyzer in required_analyzers:
+            ast = analyzer(ast)
+        analyzed_ast = analyze_activity(ast)
+        fn_ast = analyzed_ast.body[0]
+
+        # extract code block AST node
+        block_ast = [n for n in gast.walk(fn_ast) if n.is_block and n != fn_ast][0]
+        actual_attrs = {
+            "output_syms": [s.symbol for s in block_ast.output_syms],
+            "input_syms": [s.symbol for s in block_ast.input_syms],
+        }
+        for attr in expected_attrs.keys():
+            assert set(actual_attrs[attr]) == set(expected_attrs[attr])
