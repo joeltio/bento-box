@@ -25,6 +25,7 @@ from gast import (
     AnnAssign,
     Name,
     Attribute,
+    BinOp,
 )
 
 
@@ -278,13 +279,13 @@ def resolve_symbol(ast: AST) -> AST:
         The given AST with to symbol nodes annotated with their definitions
     """
     # TODO(mrzzy): resolve qualified symbols, ClassDef.
-    # TODO(mrzzy): support more types of assignment AnnAssign, AugAssign.
+    # TODO(mrzzy): resolve AnnAssign symbols
     # TODO(mrzzy): resolve Global symbol table provided by `globals()`.
     def walk_resolve(ast, symbol_table=deque([{}])):
         # get current stack frame of the symbol table
         symbol_frame = symbol_table[-1]
         new_scope = False
-        if isinstance(ast, Assign):
+        if isinstance(ast, (Assign, AnnAssign)):
             # update frame with definitions for symbol defined in assignment
             assign = ast
             target_syms = {t.symbol: getattr(t, "symbol", None) for t in assign.tgts}
@@ -396,7 +397,11 @@ def analyze_activity(ast: AST) -> AST:
         input_syms = getattr(block, "input_syms", [])
         output_syms = getattr(block, "output_syms", [])
         # detect input symbol by checking symbol context and that its declared outside code block
-        if isinstance(symbol.ctx, Load) and symbol.definition.block != block:
+        if (
+            isinstance(symbol.ctx, Load)
+            and hasattr(symbol, "definition")
+            and symbol.definition.block != block
+        ):
             input_syms.append(symbol)
         # detect output symbol by checking symbol context
         elif isinstance(symbol.ctx, (Store, Del)):

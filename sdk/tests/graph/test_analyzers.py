@@ -219,6 +219,8 @@ def test_symbol_analyzer():
 
 
 # test that the definition of the symbol can be resolved
+
+
 def test_symbol_resolution():
     def simple_fn():
         simple = 2
@@ -243,6 +245,8 @@ def test_symbol_resolution():
         # is scoped to only within function
         scoped
 
+    # test case functions to the line number wrt. the function where the variable is defined.
+    # if line no. is None, the symbols is defined global symbol
     symbol_fns = [
         (simple_fn, 0),
         (multi_assign, 0),
@@ -261,11 +265,15 @@ def test_symbol_resolution():
         analyzed_ast = resolve_symbol(ast)
         fn_ast = analyzed_ast.body[0]
 
+        # symbol defined in function
         sym_def = fn_ast.body[n_def_line]
-        sym_defs = sym_def.values
         sym_ref = fn_ast.body[-1].value
+        sym_defs = sym_def.values
         sym_refs = sym_ref.elts if isinstance(sym_ref, Tuple) else [sym_ref]
         for sym_def, sym_ref in zip(sym_defs, sym_refs):
+            if sym_ref.definition != sym_def:
+                print(gast.dump(sym_ref.definition))
+                print(gast.dump(sym_def))
             assert sym_ref.definition == sym_def
 
 

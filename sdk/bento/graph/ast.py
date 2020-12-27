@@ -11,19 +11,20 @@ from tempfile import NamedTemporaryFile
 from astunparse import unparse
 from importlib.util import spec_from_file_location, module_from_spec
 from gast import AST, Call, FunctionDef, keyword, Name, Load, Attribute
-from inspect import getsource, cleandoc
+from inspect import getsource, getsourcefile
 from textwrap import dedent
 from typing import Any, Dict, Optional
 
 
 def parse_ast(obj: Any) -> AST:
     """Parse the AST of the given `obj`.
+    Annotates the AST with the AST of the entire source file in which `obj` is defined in.
 
     Args:
         obj: Object to obtain AST for. Can be any object supported by `inspect.getsource()`.
 
     Returns:
-        The AST parsed from the the given `obj`
+        The AST parsed from the the given `obj`. Entire source AST can be accessed via `src_ast` attribute.
     """
     src = getsource(obj)
     clean_src = dedent(src)
