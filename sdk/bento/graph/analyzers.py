@@ -289,7 +289,8 @@ def resolve_symbol(ast: AST) -> AST:
     - Assign AST nodes
     - FunctionDef AST nodes
     and annotates the symbol nodes with `definition` set to the node that provides
-    the definition for that node.
+    the definition for that node, or None if no definition can be resolved for the symbol.
+
     Args:
         ast:
             AST to resolve symbols in.
@@ -297,7 +298,7 @@ def resolve_symbol(ast: AST) -> AST:
         The given AST with to symbol nodes annotated with their definitions
     """
     # TODO(mrzzy): resolve qualified symbols, ClassDef.
-    # TODO(mrzzy): resolve AnnAssign symbols
+    # TODO(mrzzy): resolve AugAssign symbols
     # TODO(mrzzy): resolve Global symbol table provided by `globals()`.
     def walk_resolve(ast, symbol_table=deque([{}])):
         # get current stack frame of the symbol table
@@ -310,19 +311,6 @@ def resolve_symbol(ast: AST) -> AST:
             # create mapping of assignments made in this assign AST node
             assign_map = dict(zip(target_syms, assign.values))
             symbol_frame.update(assign_map)
-        elif isinstance(ast, AugAssign):
-            assign = ast
-            # only one symbol assignment can occur with augment assign
-            # define as  with expanded version of augment assign
-            # ie define x +=y as x = x + y
-            target, value = assign.tgts[0], assign.values[0]
-            target_sym = target.symbol
-            prev_def = symbol_frame[target_sym]
-            symbol_frame[target_sym] = BinOp(
-                left=prev_def,
-                op=assign.op,
-                right=value,
-            )
         elif isinstance(ast, FunctionDef):
             # record symbol defined by function definition
             fn_def = ast
@@ -334,10 +322,7 @@ def resolve_symbol(ast: AST) -> AST:
             new_scope = True
         elif hasattr(ast, "symbol"):
             # try to resolve symbol and label definition of symbol on symbol AST node
-            try:
-                ast.definition = symbol_frame[ast.symbol]
-            except KeyError:
-                pass
+            ast.definition = symbol_frame.get(ast.symbol, None)
         # create a new stack frame if in new scope
         if new_scope:
             new_frame = dict(symbol_frame)
@@ -428,9 +413,11 @@ def analyze_activity(ast: AST) -> AST:
         input_syms = getattr(block, "input_syms", [])
         output_syms = getattr(block, "output_syms", [])
         # detect input symbol by checking symbol context and that its declared outside code block
+        if symbol.definition is not None:
+            print(gast.dump(symbol.definition))
         if (
             isinstance(symbol.ctx, Load)
-            and hasattr(symbol, "definition")
+            and symbol.definition is not None
             and symbol.definition.block != block
         ):
             input_syms.append(symbol)

@@ -236,8 +236,6 @@ def test_symbol_analyzer():
 
 
 # test that the definition of the symbol can be resolved
-
-
 def test_symbol_resolution():
     def simple_fn():
         simple = 2
@@ -282,7 +280,6 @@ def test_symbol_resolution():
         analyzed_ast = resolve_symbol(ast)
         fn_ast = analyzed_ast.body[0]
 
-        # symbol defined in function
         sym_def = fn_ast.body[n_def_line]
         sym_ref = fn_ast.body[-1].value
         sym_defs = sym_def.values
