@@ -70,7 +70,7 @@ def call_func_ast(
 
 
 def load_ast_module(ast: AST) -> Any:
-    # TODO(mrzzy) docs
+    # TODO(mrzzy): docs
     src = unparse(ast)
     with NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(src)

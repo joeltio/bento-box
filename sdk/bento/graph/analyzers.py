@@ -7,6 +7,7 @@
 import gast
 
 from collections import deque
+from collections.abc import Iterable
 from math import inf
 from typing import List
 from gast import (
@@ -26,6 +27,7 @@ from gast import (
     Name,
     Attribute,
     BinOp,
+    Subscript,
 )
 
 
@@ -222,6 +224,7 @@ def analyze_symbol(ast: AST) -> AST:
     Detects symbols as:
     - Name AST nodes referencing a unqualified symbol (ie `x`).
     - Attributes AST nodes referencing a qualified symbol (ie `x.y.z`)
+    - Subscript AST nodes referencing a subscripted symbol (ie `x[y]`)
     and labels the top-level AST node with:
     - `is_symbol` set to whether the node is an symbol.
     - `symbol` set to the name of symbol as string on symbol AST nodes.
@@ -235,29 +238,44 @@ def analyze_symbol(ast: AST) -> AST:
     # TODO(mrzzy): annotate `qualified_sym` set to the fully qualified name of
     # symbol on symbol AST nodes.
 
-    # walk AST top down to label symbols to capture
-    # parent Attribute node to qualifying child node relatiionships
-    def walk_symbol(ast, qualifying_attrs=[]):
+    # walk AST top down to label symbols to capture qualifier relationships
+    def walk_symbol(ast, qualifiers=[], field_name=""):
         # assume is not symbol unless proven otherwise
         ast.is_symbol = False
         # check if name is unqualified symbol
-        if isinstance(ast, Name) and len(qualifying_attrs) == 0:
+        if isinstance(ast, Name) and len(qualifiers) == 0:
             ast.is_symbol, ast.symbol = True, ast.id
-        # check if name part of qualified symbol
-        elif isinstance(ast, Name):
-            top_attr = qualifying_attrs[0]
-            top_attr.is_symbol = True
-            # qualified names are written in revered
-            top_attr.symbol = f"{ast.id}." + ".".join(
-                [a.attr for a in reversed(qualifying_attrs)]
-            )
-        # append qualifying attributes of a incomplete qualified symbol
-        elif isinstance(ast, Attribute):
-            # create a new copy of qualifying attrs with attribute appended
-            qualifying_attrs = qualifying_attrs + [ast]
+        # append qualifiers of a incomplete qualified symbol
+        elif isinstance(ast, (Subscript, Attribute)):
+            qualifiers = qualifiers + [ast]
+        # check if name part of qualified symbol and not part of a subcript's slice
+        elif isinstance(ast, Name) and field_name != "slice":
+            # qualifiers are recorded in reverse order
+            symbol = ast.id
+            for qualifier in reversed(qualifiers):
+                if isinstance(qualifier, Attribute):
+                    symbol += f".{qualifier.attr}"
+                elif isinstance(qualifier, Subscript):
+                    symbol += f"[{gast.dump(qualifier.slice)}]"
+            # label top level symbol
+            top_attr = qualifiers[0]
+            top_attr.is_symbol, top_attr.symbol = True, symbol
+
         # recursively inspect child nodes for constants
-        for node in gast.iter_child_nodes(ast):
-            walk_symbol(node, qualifying_attrs)
+        for name, value in gast.iter_fields(ast):
+            # extract AST nodes from fields
+            if isinstance(value, AST):
+                nodes = [value]
+            elif isinstance(value, Iterable) and all(
+                [isinstance(v, AST) for v in value]
+            ):
+                nodes = value
+            else:
+                # non node field-skip
+                continue
+
+            for node in nodes:
+                walk_symbol(node, qualifiers, field_name=name)
 
     walk_symbol(ast)
     return ast
@@ -292,6 +310,19 @@ def resolve_symbol(ast: AST) -> AST:
             # create mapping of assignments made in this assign AST node
             assign_map = dict(zip(target_syms, assign.values))
             symbol_frame.update(assign_map)
+        elif isinstance(ast, AugAssign):
+            assign = ast
+            # only one symbol assignment can occur with augment assign
+            # define as  with expanded version of augment assign
+            # ie define x +=y as x = x + y
+            target, value = assign.tgts[0], assign.values[0]
+            target_sym = target.symbol
+            prev_def = symbol_frame[target_sym]
+            symbol_frame[target_sym] = BinOp(
+                left=prev_def,
+                op=assign.op,
+                right=value,
+            )
         elif isinstance(ast, FunctionDef):
             # record symbol defined by function definition
             fn_def = ast

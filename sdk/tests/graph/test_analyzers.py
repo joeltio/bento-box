@@ -199,23 +199,40 @@ def test_symbol_analyzer():
     def symbol_fn():
         x = 2
         a.b.c = "str"
-        # TODO: multiple assign symbol
         y, z = True, False
+        m[k1] = "v1"
+        m["k2"] = "v2"
 
     ast = parse_ast(symbol_fn)
     analyzed_ast = analyze_symbol(ast)
     fn_ast = analyzed_ast.body[0]
     x_target, abc_target = [fn_ast.body[i].targets[0] for i in range(2)]
     x_value, abc_value = [fn_ast.body[i].value for i in range(2)]
-    y_target, z_target = fn_ast.body[2].targets[0].elts
-    y_value, z_value = fn_ast.body[2].value.elts
-
-    # targets should be labeled as symbols
     assert x_target.is_symbol and x_target.symbol == "x"
     assert abc_target.is_symbol and abc_target.symbol == "a.b.c"
+
+    y_target, z_target = fn_ast.body[2].targets[0].elts
+    y_value, z_value = fn_ast.body[2].value.elts
     assert y_target.is_symbol and y_target.symbol == "y"
     assert z_target.is_symbol and z_target.symbol == "z"
-    assert all([not val.is_symbol for val in [x_value, abc_value, y_value, z_value]])
+
+    mk1_target, mk2_target = [fn_ast.body[i].targets[0] for i in range(3, 5)]
+    mk1_value, mk2_value = [fn_ast.body[i].value for i in range(3, 5)]
+    assert (
+        mk1_target.is_symbol
+        and mk1_target.symbol == f"m[{gast.dump(mk1_target.slice)}]"
+    )
+    assert (
+        mk2_target.is_symbol
+        and mk2_target.symbol == f"m[{gast.dump(mk2_target.slice)}]"
+    )
+
+    assert all(
+        [
+            not val.is_symbol
+            for val in [x_value, abc_value, y_value, z_value, mk1_value, mk2_value]
+        ]
+    )
 
 
 # test that the definition of the symbol can be resolved
