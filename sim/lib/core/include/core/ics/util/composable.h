@@ -12,8 +12,10 @@ namespace util {
         explicit Composable(Data d) : data(d) {};
 
         template<class Fn>
+        // Require that Fn is a function that has argument of type Data, i.e. Fn: (Data d) -> ??
         requires std::invocable<Fn, Data>
-        auto operator>=(Fn fn) -> Composable<decltype(fn(std::declval<Data>()))> {
+        // The return type is Composable<Return type of Fn(Data)>
+        auto operator|(Fn fn) -> Composable<decltype(fn(std::declval<Data>()))> {
             typedef decltype(fn(std::declval<Data>())) ReturnType;
             return Composable<ReturnType>(fn(data));
         }

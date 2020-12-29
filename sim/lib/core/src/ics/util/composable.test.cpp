@@ -20,9 +20,9 @@ std::string h(bool x) {
 
 TEST(TEST_SUITE, ComposesFunctions) {
     auto val = Composable(3000)
-            >= &f
-            >= &g
-            >= &h;
+            | &f
+            | &g
+            | &h;
     ASSERT_EQ(val.data, "hello");
 }
 
@@ -35,6 +35,6 @@ TEST(TEST_SUITE, ComposeByReference) {
     Store store;
     store.emplace(1, std::make_unique<int>(10));
     auto val = Composable<Store&>(store)
-        >= &j;
+        | &j;
     ASSERT_EQ(*val.data.at(1), 10);
 }

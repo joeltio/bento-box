@@ -11,8 +11,8 @@ namespace ics::system {
     void render(GraphicsContext &graphicsContext, ics::ComponentStore &componentStore, ics::IndexStore &indexStore) {
         auto& componentType = indexStore.at<ics::index::ComponentType>();
         auto components = util::Composable<ComponentStore&>(componentStore)
-            >= ics::asCompSet
-            >= componentType.is<ics::component::Texture2DComponent>();
+            | ics::asCompSet
+            | componentType.is<ics::component::Texture2DComponent>();
 
         for (auto componentId : components.data) {
             auto component = ics::getComponent<ics::component::Texture2DComponent>(componentStore, componentId);
