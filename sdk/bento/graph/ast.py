@@ -114,9 +114,17 @@ def wrap_block_ast(
         name=name,
         args=arguments(
             args=[name_ast(a, Param()) for a in args],
+            defaults=[],
+            posonlyargs=[],
+            kwonlyargs=[],
+            kw_defaults=[],
+            kwarg=None,
+            vararg=None,
         ),
         body=block,
         decorator_list=[],
+        returns="",
+        type_comment="",
     )
 
 
