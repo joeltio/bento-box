@@ -4,16 +4,22 @@
 #include <unordered_set>
 #include "compVec.h"
 
+namespace ics {
+    typedef size_t CompGroup;
+    typedef std::pair<CompGroup, CompId> CompStoreId;
+    typedef std::unordered_set<CompStoreId, std::hash<CompStoreId>> ComponentSet;
+}
+
 namespace std {
-    template <> struct hash<std::pair<size_t, ics::CompId>> {
-        inline size_t operator()(const std::pair<size_t, ics::CompId> &v) const {
+    // std::unordered_set does not know how to hash CompStoreId. This function
+    // tells C++ how to do so.
+    template <> struct hash<ics::CompStoreId> {
+        inline size_t operator()(const ics::CompStoreId &v) const {
             return v.first * 31 + v.second;
         }
     };
 }
 
-namespace ics {
-    typedef std::unordered_set<std::pair<size_t, CompId>, std::hash<std::pair<size_t, CompId>>> ComponentSet;
-}
+
 
 #endif //BENTOBOX_COMPONENTSET_H

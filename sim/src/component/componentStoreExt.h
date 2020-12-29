@@ -8,7 +8,7 @@
 
 namespace ics {
     template<Component C>
-    std::pair<size_t, CompId> addComponent(IndexStore& indexStore, ComponentStore& compStore, const C& c) {
+    CompStoreId addComponent(IndexStore& indexStore, ComponentStore& compStore, const C& c) {
         auto& compTypeIndex = indexStore.at<ics::index::ComponentType>();
 
         // Update the ComponentType index

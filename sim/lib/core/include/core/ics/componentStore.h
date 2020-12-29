@@ -11,10 +11,10 @@
 namespace ics {
     // stores size_t -> unique_ptr -> CompVec<Component>
     // stored as size_t -> unique_ptr -> any(CompVec<BaseComponent>)
-    typedef std::unordered_map<size_t, std::unique_ptr<std::any>> ComponentStore;
+    typedef std::unordered_map<CompGroup, std::unique_ptr<std::any>> ComponentStore;
 
     template<Component C>
-    CompVec<C>& getCompVec(ComponentStore& store, size_t group) {
+    CompVec<C>& getCompVec(ComponentStore& store, CompGroup group) {
         std::any& compVecAny = *store.at(group);
         auto& compVec = std::any_cast<ics::CompVec<BaseComponent>&>(compVecAny);
         auto& castedCompVec = *reinterpret_cast<ics::CompVec<C>*>(&compVec);
@@ -22,7 +22,7 @@ namespace ics {
     }
 
     template<Component C>
-    CompVec<C>& createCompVec(ComponentStore& store, size_t group) {
+    CompVec<C>& createCompVec(ComponentStore& store, CompGroup group) {
         ics::CompVec<C> vec;
         ics::CompVec<BaseComponent> castedVec = *reinterpret_cast<ics::CompVec<BaseComponent>*>(&vec);
 
@@ -37,16 +37,16 @@ namespace ics {
     }
 
     template<Component C>
-    std::pair<size_t, CompId> addComponent(ComponentStore& store, const C& c, size_t group) {
+    CompStoreId addComponent(ComponentStore& store, const C& c, CompGroup group) {
         auto& vec = store.contains(group) ? getCompVec<C>(store, group) : createCompVec<C>(store, group);
         auto vecIndex = vec.add(c);
         return std::make_pair(group, vecIndex);
     }
 
     template<Component C>
-    C& getComponent(ComponentStore& store, std::pair<size_t, CompId> compId) {
-        auto& vec = getCompVec<C>(store, compId.first);
-        return vec.at(compId.second);
+    C& getComponent(ComponentStore& store, CompStoreId compStoreId) {
+        auto& vec = getCompVec<C>(store, compStoreId.first);
+        return vec.at(compStoreId.second);
     }
 
     ComponentSet asCompSet(const ComponentStore& store);

@@ -14,10 +14,6 @@ namespace ics {
 
     template<class C>
     concept Component = std::derived_from<C, BaseComponent>;
-
-    struct UnknownComponent : BaseComponent { };
-
-    static_assert(Component<UnknownComponent>);
 }
 
 #endif //BENTOBOX_COMPONENT_H

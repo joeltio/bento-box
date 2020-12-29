@@ -9,8 +9,8 @@
 namespace ics::index {
     class ComponentType {
     private:
-        std::unordered_map<std::type_index, size_t> map;
-        size_t compTypeIndex = 0;
+        std::unordered_map<std::type_index, CompGroup> map;
+        CompGroup compTypeIndex = 0;
 
     public:
         template<Component C>
@@ -23,7 +23,7 @@ namespace ics::index {
             return [compIndex](const ics::ComponentSet& compSet) {
                 // TODO: find a way to make this more memory efficient
                 ics::ComponentSet newSet;
-                for (const std::pair<size_t, CompId>& comp : compSet) {
+                for (const CompStoreId& comp : compSet) {
                     if (comp.first == compIndex) {
                         newSet.insert(comp);
                     }
@@ -40,7 +40,7 @@ namespace ics::index {
         }
 
         template<Component C>
-        size_t addComponentType() {
+        CompGroup addComponentType() {
             auto compType = std::type_index(typeid(C));
             if (!map.contains(compType)) {
                 map.insert(std::make_pair(compType, compTypeIndex));
@@ -51,7 +51,7 @@ namespace ics::index {
         }
 
         template<Component C>
-        size_t getComponentType() {
+        CompGroup getComponentType() {
             auto compType = std::type_index(typeid(C));
             return map.at(compType);
         }
