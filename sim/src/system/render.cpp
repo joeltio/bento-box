@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include <index/componentType.h>
-#include <component/componentStoreExt.h>
 #include <component/textureComponent.h>
 #include <core/ics/componentStore.h>
 #include <core/ics/util/composable.h>

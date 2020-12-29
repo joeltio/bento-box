@@ -3,8 +3,8 @@
 #include <core/graphicsContext.h>
 #include <index/componentType.h>
 #include <component/textureComponent.h>
-#include <component/componentStoreExt.h>
 #include <system/render.h>
+#include <ics.h>
 
 int main() {
     WindowContext windowContext = WindowContext(800, 600, "Bento Box");

@@ -4,7 +4,7 @@
 #include <core/ics/component.h>
 #include <core/ics/componentStore.h>
 #include <core/ics/indexStore.h>
-#include "../index/componentType.h"
+#include <index/componentType.h>
 
 namespace ics {
     template<Component C>
