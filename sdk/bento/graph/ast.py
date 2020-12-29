@@ -10,10 +10,22 @@ import gast
 from tempfile import NamedTemporaryFile
 from astunparse import unparse
 from importlib.util import spec_from_file_location, module_from_spec
-from gast import AST, Call, FunctionDef, keyword, Name, Load, Attribute
+from gast import (
+    AST,
+    Call,
+    FunctionDef,
+    keyword,
+    arguments,
+    Return,
+    Tuple,
+    Name,
+    Load,
+    Attribute,
+    Param,
+)
 from inspect import getsource, getsourcefile
 from textwrap import dedent
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 
 def parse_ast(obj: Any) -> AST:
@@ -66,6 +78,45 @@ def call_func_ast(
         args=[],
         func=func_ref,
         keywords=[keyword(name, value) for name, value in apply_arg.items()],
+    )
+
+
+def wrap_block_ast(
+    name: str,
+    args: List[str],
+    block: List[AST],
+    returns: List[str] = [],
+) -> FunctionDef:
+    """Wrap the given code block in a function as a FunctionDef AST node.
+
+    Args:
+        name: The name of the function wrapping the block of code.
+        args: List of argument names which the wrapping function accepts
+        block:
+            List of AST nodes reprsenting the code block being wrapped by the
+            wrapping function. The code block should not contain `return` statements
+        returns: List of variable names to return from the wrapping functions
+    Returns:
+        The created function wrapping the given code block.
+    """
+    # append return statement if actually returning variables
+    if len(returns) > 0:
+        # convert return names to return AST node
+        name_ast = lambda n, ctx: Name(id=n, ctx=ctx, annotation=None, type_comment="")
+        return_ast = Return(
+            value=name_ast(returns[0], Load())
+            if len(returns) == 1
+            else [Tuple(elts=[name_ast(r, Load()) for r in returns], ctx=Load())],
+        )
+        block = block + [return_ast]
+
+    return FunctionDef(
+        name=name,
+        args=arguments(
+            args=[name_ast(a, Param()) for a in args],
+        ),
+        body=block,
+        decorator_list=[],
     )
 
 
