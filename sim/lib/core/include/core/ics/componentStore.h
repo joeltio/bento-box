@@ -11,12 +11,11 @@
 namespace ics {
     // stores size_t -> unique_ptr -> CompVec<Component>
     // stored as size_t -> unique_ptr -> any(CompVec<BaseComponent>)
-    typedef std::unordered_map<CompGroup, std::unique_ptr<std::any>> ComponentStore;
+    typedef std::unordered_map<CompGroup, std::unique_ptr<CompVec<BaseComponent>>> ComponentStore;
 
     template<Component C>
     CompVec<C>& getCompVec(ComponentStore& store, CompGroup group) {
-        std::any& compVecAny = *store.at(group);
-        auto& compVec = std::any_cast<ics::CompVec<BaseComponent>&>(compVecAny);
+        auto& compVec = *store.at(group);
         auto& castedCompVec = *reinterpret_cast<ics::CompVec<C>*>(&compVec);
         return castedCompVec;
     }
@@ -28,9 +27,7 @@ namespace ics {
 
         store.emplace(
             group,
-            std::make_unique<std::any>(
-                std::make_any<ics::CompVec<BaseComponent>>(castedVec)
-            )
+            std::make_unique<ics::CompVec<BaseComponent>>(castedVec)
         );
 
         return getCompVec<C>(store, group);
