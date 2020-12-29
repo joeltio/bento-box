@@ -28,6 +28,9 @@ target_link_libraries(${TARGET_SIM}
 )
 target_link_libraries(${TARGET_TEST}
     PRIVATE bento::core
+    # When --whole-archive is needed to ensure that core-test's tests are not lost when
+    # they are linked to the test target. The core-test's tests are lost because they
+    # are not referenced. This flag ensures that the tests are retained.
     PRIVATE -Wl,--whole-archive bento::core-test -Wl,--no-whole-archive
 )
 
