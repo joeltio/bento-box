@@ -4,14 +4,19 @@
 #include <forward_list>
 #include <functional>
 #include "ics/componentStore.h"
-#include "ics/indexStore.h"
 #include "graphicsContext.h"
 
-typedef std::function<void(GraphicsContext&, ics::ComponentStore&, ics::IndexStore&)> SystemFn;
+template<class IndexStore>
+using SystemFn = std::function<void(GraphicsContext&, ics::ComponentStore&, IndexStore&)>;
 
+template<class IndexStore>
 struct SystemContext {
-    std::forward_list<SystemFn> systems;
-    void run(GraphicsContext& graphicsContext, ics::ComponentStore& componentStore, ics::IndexStore& indexStore);
+    std::forward_list<SystemFn<IndexStore>> systems;
+    void run(GraphicsContext& graphicsContext, ics::ComponentStore& componentStore, IndexStore& indexStore) {
+        for (const auto& system : systems) {
+            system(graphicsContext, componentStore, indexStore);
+        }
+    }
 };
 
 #endif //BENTOBOX_SYSTEMCONTEXT_H

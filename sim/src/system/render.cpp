@@ -1,14 +1,13 @@
 #include <system/render.h>
 #include <iostream>
 
-#include <index/componentType.h>
 #include <component/textureComponent.h>
 #include <core/ics/componentStore.h>
 #include <core/ics/util/composable.h>
 
 namespace ics::system {
-    void render(GraphicsContext &graphicsContext, ics::ComponentStore &componentStore, ics::IndexStore &indexStore) {
-        auto& componentType = indexStore.at<ics::index::ComponentType>();
+    void render(GraphicsContext &graphicsContext, ics::ComponentStore &componentStore, ics::index::IndexStore &indexStore) {
+        auto& componentType = indexStore.componentType;
         auto components = util::Composable<ComponentStore&>(componentStore)
             | ics::asCompSet
             | componentType.is<ics::component::Texture2DComponent>();

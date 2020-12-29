@@ -3,13 +3,13 @@
 
 #include <core/ics/component.h>
 #include <core/ics/componentStore.h>
-#include <core/ics/indexStore.h>
 #include <index/componentType.h>
+#include <index/indexStore.h>
 
 namespace ics {
     template<Component C>
-    CompStoreId addComponent(IndexStore& indexStore, ComponentStore& compStore, const C& c) {
-        auto& compTypeIndex = indexStore.at<ics::index::ComponentType>();
+    CompStoreId addComponent(index::IndexStore& indexStore, ComponentStore& compStore, const C& c) {
+        auto& compTypeIndex = indexStore.componentType;
 
         // Update the ComponentType index
         auto compIndex = compTypeIndex.addComponentType<C>();

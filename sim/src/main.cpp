@@ -1,7 +1,6 @@
 #include <core/systemContext.h>
 #include <core/windowContext.h>
 #include <core/graphicsContext.h>
-#include <index/componentType.h>
 #include <component/textureComponent.h>
 #include <system/render.h>
 #include <ics.h>
@@ -10,13 +9,8 @@ int main() {
     WindowContext windowContext = WindowContext(800, 600, "Bento Box");
     GraphicsContext graphics = GraphicsContext(windowContext);
     ics::ComponentStore componentStore = ics::ComponentStore();
-    ics::IndexStore indexStore = ics::IndexStore();
-    SystemContext systemContext = SystemContext();
-
-    // Setup indexStore
-    auto compTypeIndex = ics::index::ComponentType();
-    compTypeIndex.addComponentType<ics::component::Texture2DComponent>();
-    indexStore.insert(compTypeIndex);
+    ics::index::IndexStore indexStore = ics::index::IndexStore();
+    SystemContext systemContext = SystemContext<ics::index::IndexStore>();
 
     auto tex1 = ics::component::Texture2DComponent(1);
     auto tex2 = ics::component::Texture2DComponent(2);
@@ -27,7 +21,7 @@ int main() {
     ics::addComponent(indexStore, componentStore, tex3);
     ics::addComponent(indexStore, componentStore, tex4);
 
-    const SystemFn a(&ics::system::render);
+    const SystemFn<ics::index::IndexStore> a(&ics::system::render);
     systemContext.systems.push_front(a);
 
     while(!windowContext.shouldClose())

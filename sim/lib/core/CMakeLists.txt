@@ -12,7 +12,6 @@ find_package(glfw3 3 REQUIRED)
 # core library
 add_library(core
     src/graphicsContext.cpp
-    src/systemContext.cpp
     src/windowContext.cpp
     src/ics/componentStore.cpp
 )
