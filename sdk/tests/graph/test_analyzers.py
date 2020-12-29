@@ -405,11 +405,21 @@ def test_analyze_activity():
             x = 2
             y = x + 3
 
+    def nested_in_out_fn():
+        x = 1
+        # parent if block should obtain child node's inputs and ouputs
+        if False:
+            if True:
+                y = x + 1
+                x = 2
+                y = x + 3
+
     # test case, expected attributes
     activity_fns = [
         (output_only_fn, {"input_syms": [], "output_syms": ["x", "y"]}),
         (input_only_fn, {"input_syms": ["x", "f"], "output_syms": []}),
         (input_output_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
+        (nested_in_out_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
     ]
 
     for fn, expected_attrs in activity_fns:
@@ -439,7 +449,6 @@ def test_analyze_activity():
         combined_syms = list(block_ast.input_syms.items()) + list(
             block_ast.output_syms.items()
         )
-        __import__("pprint").pprint(combined_syms)
         for symbol, sym_asts in combined_syms:
             assert all([ast.symbol == symbol for ast in sym_asts])
             # check sym_asts sorted by order of appearance in source code

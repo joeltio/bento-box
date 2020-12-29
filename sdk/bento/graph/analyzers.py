@@ -397,6 +397,8 @@ def analyze_activity(ast: AST) -> AST:
     Requires resolve_symbol() and analyze_block() to analyze the AST first.
     Analyzes activity in each code block by identifying which symbols are used
     (input symbol) and assigned to (output symbol) in the code block.
+    Input and output symbols in nested child code blocks are also considered
+    to be input and output symbol of parent code blocks.
 
     Labels the input and output symbols by setting the `input_syms` and `output_syms`
     attributes on the code block AST to a dict with the key being the symbol name
@@ -436,4 +438,24 @@ def analyze_activity(ast: AST) -> AST:
             output_syms = add_symbol_ref(output_syms, symbol)
         block.input_syms, block.output_syms = input_syms, output_syms
 
+    # walk the AST bottom up to propagate symbol activity to parent code blocks
+    def propagate_activity(ast):
+        # recursively obtain symbol activity from child code blocks
+        input_syms, output_syms = {}, {}
+        for node in gast.iter_child_nodes(ast):
+            child_inputs, child_outputs = propagate_activity(node)
+            input_syms.update(child_inputs)
+            output_syms.update(child_outputs)
+
+        if not ast.is_block:
+            return input_syms, output_syms
+        # include symbol activity from this blockf
+        block = ast
+        input_syms.update(getattr(ast, "input_syms", {}))
+        output_syms.update(getattr(ast, "output_syms", {}))
+        block.input_syms, block.output_syms = input_syms, output_syms
+
+        return input_syms, output_syms
+
+    propagate_activity(ast)
     return ast
