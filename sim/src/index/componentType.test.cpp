@@ -23,6 +23,10 @@ TEST(TEST_SUITE, CheckIfComponentTypeExists) {
     ASSERT_FALSE(index.hasComponentType<TestComponent>());
     ASSERT_FALSE(index.hasComponentType<ics::BaseComponent>());
 
+    index.addComponentType<TestComponent>();
+    ASSERT_FALSE(index.hasComponentType<ics::BaseComponent>());
+    ASSERT_TRUE(index.hasComponentType<TestComponent>());
+
     index.addComponentType<ics::BaseComponent>();
     ASSERT_TRUE(index.hasComponentType<ics::BaseComponent>());
 }
