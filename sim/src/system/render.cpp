@@ -16,7 +16,7 @@ namespace ics::system {
 
         for (auto componentId : components.data) {
             auto component = ics::getComponent<ics::component::Texture2DComponent>(componentStore, componentId);
-            // TODO: Use the graphics context to render the texture
+            // TODO(joeltio): Use the graphics context to render the texture
             std::cout << "texture: " << component.texture << std::endl;
         }
     }

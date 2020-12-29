@@ -55,7 +55,7 @@ namespace ics {
         auto index = idToIndex.at(id);
         const auto& comp = constGetter(reinterpret_cast<const std::vector<BaseComponent>*>(&vec), index);
         if (!comp.isActive) {
-            // TODO: format the index into the string
+            // TODO(joeltio): format the index into the string
             throw std::out_of_range("compVec::isActiveCheck: component at index is inactive");
         }
     }

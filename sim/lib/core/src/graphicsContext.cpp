@@ -37,7 +37,7 @@ unsigned int GraphicsContext::loadTexture2D(const std::string &filepath) {
     unsigned char *data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
 
     if (!data) {
-        // TODO: Replace with a logger class and add name of texture that failed to load
+        // TODO(joeltio): Replace with a logger class and add name of texture that failed to load
         throw std::runtime_error("Failed to load texture.");
     }
 

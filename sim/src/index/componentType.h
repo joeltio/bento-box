@@ -21,7 +21,7 @@ namespace ics::index {
             auto compIndex = map.at(std::type_index(typeid(C)));
 
             return [compIndex](const ics::ComponentSet& compSet) {
-                // TODO: find a way to make this more memory efficient
+                // TODO(joeltio): find a way to make this more memory efficient
                 ics::ComponentSet newSet;
                 for (const CompStoreId& comp : compSet) {
                     if (comp.first == compIndex) {
