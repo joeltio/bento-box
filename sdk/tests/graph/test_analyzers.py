@@ -403,7 +403,7 @@ def test_analyze_activity():
             y = x + 1
             x = 2
 
-    # test case,  expected attributes
+    # test case, expected attributes
     activity_fns = [
         (output_only_fn, {"input_syms": [], "output_syms": ["x", "y"]}),
         (input_only_fn, {"input_syms": ["x", "f"], "output_syms": []}),
@@ -426,8 +426,15 @@ def test_analyze_activity():
         # extract code block AST node
         block_ast = [n for n in gast.walk(fn_ast) if n.is_block and n != fn_ast][0]
         actual_attrs = {
-            "output_syms": [s.symbol for s in block_ast.output_syms],
-            "input_syms": [s.symbol for s in block_ast.input_syms],
+            "output_syms": block_ast.output_syms.keys(),
+            "input_syms": block_ast.input_syms.keys(),
         }
+        # check detect of input and output symbols
         for attr in expected_attrs.keys():
-            assert set(actual_attrs[attr]) == set(expected_attrs[attr])
+            assert set(actual_attrs[attr]) == set(actual_attrs[attr])
+
+        # check contents of symbol dict
+        combined_syms = dict(block_ast.input_syms)
+        combined_syms.update(block_ast.output_syms)
+        for symbol, sym_asts in combined_syms.items():
+            assert all([ast.symbol == symbol for ast in sym_asts])

@@ -399,7 +399,8 @@ def analyze_activity(ast: AST) -> AST:
     (input symbol) and assigned to (output symbol) in the code block.
 
     Labels the input and output symbols by setting the `input_syms` and `output_syms`
-    attributes on the code block AST.
+    attributes on the code block AST to a dict with the key being the symbol name
+    and the value a list the of the AST nodes where the symbol is assigned or used.
 
     Args:
         ast:
@@ -410,20 +411,22 @@ def analyze_activity(ast: AST) -> AST:
     symbols = [n for n in gast.walk(ast) if n.is_symbol]
     for symbol in symbols:
         block = symbol.block
-        input_syms = getattr(block, "input_syms", [])
-        output_syms = getattr(block, "output_syms", [])
+        input_syms = getattr(block, "input_syms", {})
+        output_syms = getattr(block, "output_syms", {})
         # detect input symbol by checking symbol context and that its declared outside code block
-        if symbol.definition is not None:
-            print(gast.dump(symbol.definition))
         if (
             isinstance(symbol.ctx, Load)
             and symbol.definition is not None
             and symbol.definition.block != block
         ):
-            input_syms.append(symbol)
+            sym_refs = input_syms.get(symbol.symbol, [])
+            sym_refs.append(symbol)
+            input_syms[symbol.symbol] = sym_refs
         # detect output symbol by checking symbol context
         elif isinstance(symbol.ctx, (Store, Del)):
-            output_syms.append(symbol)
+            sym_refs = output_syms.get(symbol.symbol, [])
+            sym_refs.append(symbol)
+            output_syms[symbol.symbol] = sym_refs
         block.input_syms, block.output_syms = input_syms, output_syms
 
     return ast
