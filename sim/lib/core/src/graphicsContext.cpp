@@ -12,10 +12,11 @@ GraphicsContext::GraphicsContext(WindowContext& windowContext) : windowContext(w
 
 GraphicsContext::~GraphicsContext() {}
 
-GraphicsContext::GraphicsContext(const GraphicsContext &other) : windowContext(other.windowContext) {}
-
-GraphicsContext& GraphicsContext::operator=(const GraphicsContext &other) {
+// The default copy assignment is unable to assign references, hence they must
+// be explicitly defined. The linting is disabled for this reason.
+GraphicsContext& GraphicsContext::operator=(const GraphicsContext &other) { // NOLINT(modernize-use-equals-default)
     windowContext = other.windowContext;
+    textureCache = other.textureCache;
     return *this;
 }
 
