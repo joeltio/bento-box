@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <core/ics/component.h>
 #include <core/ics/componentSet.h>
-#include "componentType.h"
+#include <index/componentType.h>
 
 #define TEST_SUITE ComponentType
 

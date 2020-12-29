@@ -17,9 +17,16 @@ add_executable(${TARGET_SIM}
     src/main.cpp
     src/system/render.cpp
 )
+target_include_directories(${TARGET_SIM}
+    PUBLIC include
+)
+
 add_executable(${TARGET_TEST}
     src/main.test.cpp
     src/index/componentType.test.cpp
+)
+target_include_directories(${TARGET_TEST}
+    PUBLIC include
 )
 
 add_subdirectory("lib/core")

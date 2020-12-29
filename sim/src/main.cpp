@@ -1,10 +1,10 @@
 #include <core/systemContext.h>
 #include <core/windowContext.h>
 #include <core/graphicsContext.h>
-#include "index/componentType.h"
-#include "component/textureComponent.h"
-#include "component/componentStoreExt.h"
-#include "system/render.h"
+#include <index/componentType.h>
+#include <component/textureComponent.h>
+#include <component/componentStoreExt.h>
+#include <system/render.h>
 
 int main() {
     WindowContext windowContext = WindowContext(800, 600, "Bento Box");
