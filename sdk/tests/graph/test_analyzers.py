@@ -396,12 +396,14 @@ def test_analyze_activity():
         x, f = 1, (lambda x: x)
         if True:
             f(x)
+            f(x + 3)
 
     def input_output_fn():
         x = 1
         if True:
             y = x + 1
             x = 2
+            y = x + 3
 
     # test case, expected attributes
     activity_fns = [
@@ -434,7 +436,19 @@ def test_analyze_activity():
             assert set(actual_attrs[attr]) == set(actual_attrs[attr])
 
         # check contents of symbol dict
-        combined_syms = dict(block_ast.input_syms)
-        combined_syms.update(block_ast.output_syms)
-        for symbol, sym_asts in combined_syms.items():
+        combined_syms = list(block_ast.input_syms.items()) + list(
+            block_ast.output_syms.items()
+        )
+        __import__("pprint").pprint(combined_syms)
+        for symbol, sym_asts in combined_syms:
             assert all([ast.symbol == symbol for ast in sym_asts])
+            # check sym_asts sorted by order of appearance in source code
+            # (ie code pos does not decrease) https://stackoverflow.com/a/4983359
+            if len(sym_asts) > 1:
+                code_pos = lambda ast: (ast.lineno, ast.col_offset)
+                print(
+                    [code_pos(x) <= code_pos(y) for x, y in zip(sym_asts, sym_asts[1:])]
+                )
+                assert all(
+                    [code_pos(x) <= code_pos(y) for x, y in zip(sym_asts, sym_asts[1:])]
+                )

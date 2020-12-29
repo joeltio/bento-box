@@ -401,6 +401,7 @@ def analyze_activity(ast: AST) -> AST:
     Labels the input and output symbols by setting the `input_syms` and `output_syms`
     attributes on the code block AST to a dict with the key being the symbol name
     and the value a list the of the AST nodes where the symbol is assigned or used.
+    The list of AST nodes are sorted in the order they appear in source code.
 
     Args:
         ast:
@@ -413,20 +414,26 @@ def analyze_activity(ast: AST) -> AST:
         block = symbol.block
         input_syms = getattr(block, "input_syms", {})
         output_syms = getattr(block, "output_syms", {})
+
+        def add_symbol_ref(sym_dict, symbol):
+            sym_refs = sym_dict.get(symbol.symbol, [])
+            sym_refs.append(symbol)
+            # tim-sort should be relatively performant when sorting almost sorted lists
+            # https://stackoverflow.com/a/23809854
+            sym_refs = sorted(sym_refs, key=(lambda ast: (ast.lineno, ast.col_offset)))
+            sym_dict[symbol.symbol] = sym_refs
+            return sym_dict
+
         # detect input symbol by checking symbol context and that its declared outside code block
         if (
             isinstance(symbol.ctx, Load)
             and symbol.definition is not None
             and symbol.definition.block != block
         ):
-            sym_refs = input_syms.get(symbol.symbol, [])
-            sym_refs.append(symbol)
-            input_syms[symbol.symbol] = sym_refs
+            input_syms = add_symbol_ref(input_syms, symbol)
         # detect output symbol by checking symbol context
         elif isinstance(symbol.ctx, (Store, Del)):
-            sym_refs = output_syms.get(symbol.symbol, [])
-            sym_refs.append(symbol)
-            output_syms[symbol.symbol] = sym_refs
+            output_syms = add_symbol_ref(output_syms, symbol)
         block.input_syms, block.output_syms = input_syms, output_syms
 
     return ast
