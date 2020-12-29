@@ -20,12 +20,14 @@ from gast import (
     Tuple,
     Name,
     Load,
+    Store,
+    Del,
     Attribute,
     Param,
 )
 from inspect import getsource, getsourcefile
 from textwrap import dedent
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Union
 
 
 def parse_ast(obj: Any) -> AST:
@@ -41,6 +43,16 @@ def parse_ast(obj: Any) -> AST:
     src = getsource(obj)
     clean_src = dedent(src)
     return gast.parse(clean_src)
+
+
+def name_ast(name: str, ctx: Union[Load, Store, Del] = Load()) -> Name:
+    """Convience function for creating Name nodes
+
+    Args:
+        name: Maps to the `id` parameter of the Name constructor.
+        ctx: Maps to the `ctx` parameter of the Name constructor.
+    """
+    return Name(id=name, ctx=ctx, annotation=None, type_comment="")
 
 
 def call_func_ast(
@@ -67,12 +79,12 @@ def call_func_ast(
     # create qualified reference to function
     if attr_parent is not None:
         func_ref = Attribute(
-            value=Name(id=attr_parent, ctx=Load(), annotation=None, type_comment=""),
+            value=name_ast(attr_parent),
             attr=fn.name,
             ctx=Load(),
         )
     else:
-        func_ref = Name(id=fn.name, ctx=Load(), annotation=None, type_comment="")
+        func_ref = name_ast(fn.name)
     # create call AST with function name and apply args
     return Call(
         args=[],
@@ -102,11 +114,10 @@ def wrap_block_ast(
     # append return statement if actually returning variables
     if len(returns) > 0:
         # convert return names to return AST node
-        name_ast = lambda n, ctx: Name(id=n, ctx=ctx, annotation=None, type_comment="")
         return_ast = Return(
-            value=name_ast(returns[0], Load())
+            value=name_ast(returns[0])
             if len(returns) == 1
-            else [Tuple(elts=[name_ast(r, Load()) for r in returns], ctx=Load())],
+            else [Tuple(elts=[name_ast(r) for r in returns], ctx=Load())],
         )
         block = block + [return_ast]
 
