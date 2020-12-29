@@ -9,8 +9,8 @@
 namespace ics::index {
     class ComponentType {
     private:
-        std::unordered_map<std::type_index, CompGroup> map;
-        CompGroup compTypeIndex = 0;
+        std::unordered_map<std::type_index, CompGroup> typeGroupMap;
+        CompGroup compGroup = 0;
 
     public:
         template<Component C>
@@ -18,7 +18,7 @@ namespace ics::index {
         // represented. Type errors can occur at build-time when using function
         // pointer return types or std::function.
         auto is() {
-            auto compIndex = map.at(std::type_index(typeid(C)));
+            auto compIndex = typeGroupMap.at(std::type_index(typeid(C)));
 
             return [compIndex](const ics::ComponentSet& compSet) {
                 // TODO(joeltio): find a way to make this more memory efficient
@@ -36,24 +36,24 @@ namespace ics::index {
         template<Component C>
         bool hasComponentType() {
             auto compType = std::type_index(typeid(C));
-            return map.contains(compType);
+            return typeGroupMap.contains(compType);
         }
 
         template<Component C>
         CompGroup addComponentType() {
             auto compType = std::type_index(typeid(C));
-            if (!map.contains(compType)) {
-                map.insert(std::make_pair(compType, compTypeIndex));
-                return compTypeIndex++;
+            if (!typeGroupMap.contains(compType)) {
+                typeGroupMap.insert(std::make_pair(compType, compGroup));
+                return compGroup++;
             } else {
-                return map.at(compType);
+                return typeGroupMap.at(compType);
             }
         }
 
         template<Component C>
         CompGroup getComponentType() {
             auto compType = std::type_index(typeid(C));
-            return map.at(compType);
+            return typeGroupMap.at(compType);
         }
     };
 }
