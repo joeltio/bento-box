@@ -44,10 +44,14 @@ namespace ics::index {
             auto compType = std::type_index(typeid(C));
             if (!typeGroupMap.contains(compType)) {
                 typeGroupMap.insert(std::make_pair(compType, compGroup));
-                return compGroup++;
-            } else {
-                return typeGroupMap.at(compType);
+
+                // Equivalent to return compGroup++;
+                auto insertedCompGroup = compGroup;
+                ++compGroup;
+                return insertedCompGroup;
             }
+
+            return typeGroupMap.at(compType);
         }
 
         template<Component C>
