@@ -10,7 +10,13 @@ GraphicsContext::GraphicsContext(WindowContext& windowContext) : windowContext(w
     }
 }
 
-GraphicsContext::~GraphicsContext() {}
+GraphicsContext::~GraphicsContext() {
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    for (const auto& pathTexIdPair : textureCache) {
+        glDeleteTextures(1, &pathTexIdPair.second);
+    }
+}
 
 // The default copy assignment is unable to assign references, hence they must
 // be explicitly defined. The linting is disabled for this reason.
