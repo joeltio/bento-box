@@ -26,7 +26,7 @@ class GenProtos(Command):
     protos_dir = Path("..") / "protos"
     binds_dir = Path(".") / "bento" / "protos"
 
-    # Empty implementation to statisfy abstract Command class requirements
+    # Empty implementation to satisfy abstract Command class requirements
     def initialize_options(self):
         pass
 

@@ -41,8 +41,8 @@ def test_graph_compile_arithmetic():
     assert to_node.add_op.y == wrap_const(20)
 
 
-# test compile basic attrimatic example
-# test compile basic attrimatic example with one entity
+# test compile basic arithmetic example
+# test compile basic arithmetic example with one entity
 def test_graph_compile_arithmetic_multiple():
     @graph.compile_graph
     def actual_graph(g: Plotter):

@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 
 
 class Component(ABC):
-    """Component representes a ECS Component in the Engine. """
+    """Component represents a ECS Component in the Engine. """
 
     @abstractmethod
     def get_attr(self, name: str) -> Any:
@@ -46,7 +46,7 @@ class Component(ABC):
 
 
 class Entity(ABC):
-    """Entity representes a ECS entity in the Engine. """
+    """Entity represents a ECS entity in the Engine. """
 
     @abstractmethod
     def get_component(self, name: str) -> Component:

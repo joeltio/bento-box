@@ -42,7 +42,7 @@ def call_func_ast(
     Args:
         fn: FunctionDef AST of the function to call.
         args: Mapping of argument name to argument value to apply function call.
-        attr_parent: Optionally specifiy name of the parent attribute required
+        attr_parent: Optionally specify name of the parent attribute required
             to reference the given `fn`. Genrates a call with `attr_parent.fn(...)`.
     Returns:
         Call AST with the given args applied that represents the function call.

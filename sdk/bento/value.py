@@ -92,7 +92,7 @@ def wrap(val: Any) -> Value:
     # extract values from if generator
     if isgenerator(val):
         val = [v for v in val]
-    # extract flatten list of primitive protos from collect of primatives
+    # extract flatten list of primitive protos from collect of primitives
     val_arr = np.asarray(val)
     primitives = [wrap_primitive(v) for v in val_arr.flatten()]
     # resolve element data type and build value proto

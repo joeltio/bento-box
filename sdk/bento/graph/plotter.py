@@ -124,7 +124,7 @@ class Plotter:
         x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(mod_op=Node.Mod(x=x.node, y=y.node)))
 
-    # trignomomic operations
+    # trigonometric operations
     def sin(self, x: Any) -> GraphNode:
         x = GraphNode.wrap(x)
         return GraphNode(node=Node(sin_op=Node.Sin(x=x.node)))

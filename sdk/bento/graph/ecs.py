@@ -65,7 +65,7 @@ class GraphNode:
 
     def __iadd__(self, other: Any):
         other = GraphNode.wrap(other)
-        # add inplace
+        # add in-place
         self.node = Node(add_op=Node.Add(x=self.node, y=other.node))
         return self
 
@@ -79,7 +79,7 @@ class GraphNode:
 
     def __isub__(self, other: Any):
         other = GraphNode.wrap(other)
-        # subtract inplace
+        # subtract in-place
         self.node = Node(add_op=Node.Sub(x=self.node, y=other.node))
         return self
 
@@ -93,7 +93,7 @@ class GraphNode:
 
     def __imul__(self, other: Any):
         other = GraphNode.wrap(other)
-        # multiply inplace
+        # multiply in-place
         self.node = Node(add_op=Node.Mul(x=self.node, y=other.node))
         return self
 
@@ -107,7 +107,7 @@ class GraphNode:
 
     def __itruediv__(self, other: Any):
         other = GraphNode.wrap(other)
-        # divide inplace
+        # divide in-place
         self.node = Node(add_op=Node.Div(x=self.node, y=other.node))
         return self
 
@@ -120,11 +120,11 @@ class GraphNode:
         return GraphNode.wrap(Node(mod_op=Node.Mod(x=other.node, y=self.node)))
 
     def __neg__(self):
-        # -x is equvilent to 0 - x
+        # -x is equivalent to 0 - x
         return GraphNode.wrap(Node(sub_op=Node.Sub(x=wrap_const(0), y=self.node)))
 
     def __pos__(self):
-        # +x is equvilent to x
+        # +x is equivalent to x
         return GraphNode.wrap(self.node)
 
     # boolean overloads
@@ -172,7 +172,7 @@ class GraphNode:
 
 
 class GraphComponent(Component):
-    """Shim that reprsents ECS Component when plotting computation graph.
+    """Shim that represents an ECS Component when plotting computation graph.
 
     Provides access to component's attributes during graph plotting.
     Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively.
@@ -241,7 +241,7 @@ class GraphComponent(Component):
 
 
 class GraphEntity(Entity):
-    """Shim that reprsents ECS Entity when plotting computation graph.
+    """Shim that represnets an ECS Entity when plotting computation graph.
 
     Provides access to Entity's components during graph plotting.
     The GraphEntity's GraphComponents can be accessed via `.components`.
