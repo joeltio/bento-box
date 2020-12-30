@@ -93,8 +93,6 @@ def call_func_ast(
         args: Mapping of argument name to argument value to apply function call.
         attr_parent: Optionally specify name of the parent attribute required
             to reference the given `fn`. Genrates a call with `attr_parent.fn(...)`.
-        use_keyword: Whether to apply argument using keyword argument syntax.
-            Otherwise, applies arguments positional style.
     Returns:
         Call AST with the given args applied that represents the function call.
     """
@@ -123,6 +121,7 @@ def wrap_func_ast(
     args: List[str],
     block: List[AST],
     returns: List[str] = [],
+    return_tuple: bool = False,
 ) -> FunctionDef:
     """Wrap the given code block in a function as a FunctionDef AST node.
 
@@ -132,7 +131,10 @@ def wrap_func_ast(
         block:
             List of AST nodes reprsenting the code block being wrapped by the
             wrapping function. The code block should not contain `return` statements
-        returns: List of variable names to return from the wrapping functions
+        returns: List of variable names to return from the wrapping functions.
+        return_tuple:
+            Whether to force the wrapping function to return to be a tuple,
+            irregardless of whether multiple values are actually returned.
     Returns:
         The created function wrapping the given code block.
     """
@@ -140,9 +142,9 @@ def wrap_func_ast(
     if len(returns) > 0:
         # convert return names to return AST node
         return_ast = Return(
-            value=name_ast(returns[0])
-            if len(returns) == 1
-            else [Tuple(elts=[name_ast(r) for r in returns], ctx=Load())],
+            value=[Tuple(elts=[name_ast(r) for r in returns], ctx=Load())]
+            if len(returns) > 1 or return_tuple
+            else name_ast(returns[0])
         )
         block = block + [return_ast]
 

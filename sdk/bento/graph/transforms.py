@@ -183,6 +183,8 @@ def transform_ifelse(ast: AST) -> AST:
                 args=args,
                 block=block,
                 returns=returns,
+                # zip() requires the returned outputs to be iterable
+                return_tuple=True,
             )
             for name, block in zip(
                 ["__if_block", "__else_block"], [ifelse_ast.body, ifelse_ast.orelse]
@@ -239,7 +241,6 @@ def transform_ifelse(ast: AST) -> AST:
                 )
             ],
         )
-
         # wrap transformed code block as single AST node
         return wrap_block_ast(
             block=fn_asts + call_fn_asts + [switch_asts],
@@ -250,8 +251,5 @@ def transform_ifelse(ast: AST) -> AST:
     # apply ifelse transform to AST
     ast = ifelse_transform.visit(ast)
     mod = load_ast_module(ast)
-    from inspect import getsource
-
-    print(getsource(mod))
 
     return ast
