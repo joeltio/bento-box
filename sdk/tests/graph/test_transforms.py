@@ -75,6 +75,11 @@ def test_transform_ternary():
 
 # test transformations of ifelse statements into plotting switch nodes
 def test_tranform_ifelse():
+    def if_fn(g: Plotter):
+        x, w = "str1", "str2"
+        if True:
+            x = w
+
     def ifelse_fn(g: Plotter):
         w, y = "str1", "str2"
         if True:
@@ -109,6 +114,12 @@ def test_tranform_ifelse():
     # test case plotter => expected g.switch() call args
     g = Plotter()
     ifelse_fns = [
+        (
+            if_fn,
+            [
+                {"condition": True, "true": "str2", "false": "str1"},
+            ],
+        ),
         (
             ifelse_fn,
             [
