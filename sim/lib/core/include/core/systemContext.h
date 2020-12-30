@@ -6,13 +6,18 @@
 #include "ics/componentStore.h"
 #include "graphicsContext.h"
 
-template<class IndexStore>
-using SystemFn = std::function<void(GraphicsContext&, ics::ComponentStore&, IndexStore&)>;
+namespace {
+    template<class C>
+    concept IndexStore = std::semiregular<C> && !std::is_fundamental_v<C>;
+}
 
-template<class IndexStore>
+template<IndexStore IS>
+using SystemFn = std::function<void(GraphicsContext&, ics::ComponentStore&, IS&)>;
+
+template<IndexStore IS>
 struct SystemContext {
-    std::forward_list<SystemFn<IndexStore>> systems;
-    void run(GraphicsContext& graphicsContext, ics::ComponentStore& componentStore, IndexStore& indexStore) {
+    std::forward_list<SystemFn<IS>> systems;
+    void run(GraphicsContext& graphicsContext, ics::ComponentStore& componentStore, IS& indexStore) {
         for (const auto& system : systems) {
             system(graphicsContext, componentStore, indexStore);
         }

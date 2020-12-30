@@ -31,6 +31,7 @@ endif()
 
 # core test
 add_library(core-test
+    src/systemContext.test.cpp
     src/ics/component.test.cpp
     src/ics/componentStore.test.cpp
     src/ics/compVec.test.cpp
