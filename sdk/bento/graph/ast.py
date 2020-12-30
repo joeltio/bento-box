@@ -24,6 +24,10 @@ from gast import (
     Del,
     Attribute,
     Param,
+    Assign,
+    List as ListAST,
+    If,
+    Constant,
 )
 from inspect import getsource, getsourcefile
 from textwrap import dedent
@@ -46,19 +50,39 @@ def parse_ast(obj: Any) -> AST:
 
 
 def name_ast(name: str, ctx: Union[Load, Store, Del] = Load()) -> Name:
-    """Convience function for creating Name nodes
+    """Convenience function for creating Name AST nodes
 
     Args:
         name: Maps to the `id` parameter of the Name constructor.
-        ctx: Maps to the `ctx` parameter of the Name constructor.
+        ctx: Maps to the `id` parameter of the Name constructor.
     """
     return Name(id=name, ctx=ctx, annotation=None, type_comment="")
 
 
+def assign_ast(
+    targets: List[AST], values: List[AST], multi_assign: bool = False
+) -> AST:
+    """Convenience function for creating Assignment AST
+
+    Args:
+        targets: List of target AST nodes to assign to.
+        values: List of values as AST nodes to assign to the target nodes.
+        multi_assign: Whether to assign multiple targets to the same value
+    """
+    if len(targets) >= 2:
+        targets = targets if multi_assign else [Tuple(elts=targets, ctx=Store())]
+    return Assign(
+        targets=targets,
+        value=values[0] if len(values) == 1 else Tuple(elts=values, ctx=Load()),
+    )
+
+
 def call_func_ast(
-    fn: FunctionDef, args: Dict[str, Any], attr_parent: Optional[str] = None
+    fn_name: str,
+    args: Union[List[AST], Dict[str, AST]] = [],
+    attr_parent: Optional[str] = None,
 ) -> Call:
-    """Call the Function with the given FunctionDef AST  with the given args.
+    """Call the Function with the given name with the given args.
 
     Applies the arguments in `args` by argument name in to `fn` and calls the
     function by creating a Call AST node. Any extra arguments in `args` not used
@@ -69,31 +93,32 @@ def call_func_ast(
         args: Mapping of argument name to argument value to apply function call.
         attr_parent: Optionally specify name of the parent attribute required
             to reference the given `fn`. Genrates a call with `attr_parent.fn(...)`.
+        use_keyword: Whether to apply argument using keyword argument syntax.
+            Otherwise, applies arguments positional style.
     Returns:
         Call AST with the given args applied that represents the function call.
     """
-    # collect names of parameters from fn_call
-    param_names = set(param.id for param in fn.args.args)
-    # extract arguments and apply to params
-    apply_arg = {name: args[name] for name in param_names}
     # create qualified reference to function
     if attr_parent is not None:
         func_ref = Attribute(
             value=name_ast(attr_parent),
-            attr=fn.name,
+            attr=fn_name,
             ctx=Load(),
         )
     else:
-        func_ref = name_ast(fn.name)
+        func_ref = name_ast(fn_name)
     # create call AST with function name and apply args
-    return Call(
-        args=[],
-        func=func_ref,
-        keywords=[keyword(name, value) for name, value in apply_arg.items()],
-    )
+    if isinstance(args, dict):
+        return Call(
+            args=[],
+            func=func_ref,
+            keywords=[keyword(name, value) for name, value in args.items()],
+        )
+    # apply arguments using positional arguments syntax
+    return Call(args=args, func=func_ref, keywords=[])
 
 
-def wrap_block_ast(
+def wrap_func_ast(
     name: str,
     args: List[str],
     block: List[AST],
@@ -136,6 +161,26 @@ def wrap_block_ast(
         decorator_list=[],
         returns="",
         type_comment="",
+    )
+
+
+def wrap_block_ast(
+    block: List[AST],
+) -> AST:
+    """Wraps the given code block in a always true If AST node.
+
+    Allows the list of statements of the code block to be represented by a single AST node.
+    Without altering the function of the code within code block.
+
+    Args:
+        block: List of AST nodes representing the statements in the code block.
+    Returns:
+        If AST node wrapping the code block.
+    """
+    return If(
+        test=Constant(value=True, kind=None),
+        body=block,
+        orelse=[],
     )
 
 
