@@ -89,7 +89,9 @@ def analyze_convert_fn(ast: AST) -> AST:
         The given AST with the target convert function annotated as `convert_fn`
     """
     # walk through the AST to find the top level node with min nesting
-    candidate_fns = [n for n in gast.iter_child_nodes(ast) if isinstance(n, FunctionDef)]
+    candidate_fns = [
+        n for n in gast.iter_child_nodes(ast) if isinstance(n, FunctionDef)
+    ]
     ast.convert_fn = candidate_fns[0] if len(candidate_fns) == 1 else None
 
     # extract name of plotter argument if present
