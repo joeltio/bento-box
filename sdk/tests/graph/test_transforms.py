@@ -49,7 +49,7 @@ def test_transform_build_graph():
         mod.build_graph(Plotter())
 
 
-# transform ternary expressions into plotting switch nodes
+# test transformation of ternary expressions into plotting switch nodes
 def test_transform_ternary():
     def ternary_fn(g: Plotter):
         int_ternary = 1 if True else 2
@@ -71,3 +71,75 @@ def test_transform_ternary():
         true=1,
         false=2,
     )
+
+
+# test transformations of ifelse statements into plotting switch nodes
+def test_tranform_ifelse():
+    def ifelse_fn(g: Plotter):
+        w, y = "str1", "str2"
+        if True:
+            x = w
+            z = 1
+        else:
+            x = y
+            z = 2
+
+    def ifelse_elif_fn(g: Plotter):
+        y, m, n = "str1", "str2", "str3"
+        if True:
+            x = y
+            z = 1
+        elif False:
+            x = m
+            z = 2
+        else:
+            x = n
+            z = 3
+
+    req_analyzers = [
+        analyze_func,
+        analyze_convert_fn,
+        analyze_assign,
+        analyze_symbol,
+        resolve_symbol,
+        analyze_block,
+        analyze_activity,
+    ]
+
+    # test case plotter => expected g.switch() call args
+    g = Plotter()
+    ifelse_fns = [
+        (
+            ifelse_fn,
+            [
+                {"condition": True, "true": "str1", "false": "str2"},
+                {"condition": True, "true": 1, "false": 2},
+            ],
+        ),
+        (
+            ifelse_elif_fn,
+            [
+                {
+                    "condition": True,
+                    "true": "str1",
+                    "false": g.switch(False, "str2", "str3"),
+                },
+                {"condition": True, "true": 1, "false": g.switch(False, 2, 3)},
+                {"condition": False, "true": "str2", "false": "str3"},
+                {"condition": False, "true": 2, "false": 3},
+            ],
+        ),
+    ]
+
+    for fn, expected_switch_args in ifelse_fns:
+        ast = parse_ast(fn)
+        for analyzer in req_analyzers:
+            ast = analyzer(ast)
+        trans_ast = transform_build_graph(transform_ifelse(ast))
+
+        mod = load_ast_module(trans_ast)
+        mock_g = Mock(wraps=Plotter())
+        mod.build_graph(mock_g)
+
+        for expected_arg in expected_switch_args:
+            mock_g.switch.assert_any_call(**expected_arg)
