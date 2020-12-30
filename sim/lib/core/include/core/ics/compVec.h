@@ -1,22 +1,28 @@
 #ifndef BENTOBOX_COMPVEC_H
 #define BENTOBOX_COMPVEC_H
 
+#include <any>
 #include <vector>
 #include <queue>
 #include <memory>
+#include <functional>
 #include <typeindex>
+#include <unordered_map>
 #include <iostream>
 
 #include "component.h"
 
 namespace ics {
+    typedef unsigned long CompId;
+
     template<Component C>
     class CompVec {
     public:
         typedef typename std::vector<C>::size_type size_type;
-        typedef unsigned int CompId;
     private:
         CompId lastId = 0;
+        std::function<C&(std::vector<BaseComponent>* vectorPtr, size_type idx)> getter;
+        std::function<const C&(const std::vector<BaseComponent>* vectorPtr, size_type idx)> constGetter;
         std::unordered_map<CompId, size_type> idToIndex;
         std::queue<size_type> inactiveCompIdx;
         std::vector<C> vec;
@@ -24,8 +30,20 @@ namespace ics {
         void isActiveCheck(CompId id) const;
         size_type addToVec(const C& val);
     public:
+        CompVec() {
+            getter = [](std::vector<BaseComponent>* vectorPtr, size_type idx) -> C& {
+                auto vecPtr = reinterpret_cast<std::vector<C>*>(vectorPtr);
+                return vecPtr->at(idx);
+            };
+
+            constGetter = [](const std::vector<BaseComponent>* vectorPtr, size_type idx) -> const C& {
+                const auto vecPtr = reinterpret_cast<const std::vector<C>*>(vectorPtr);
+                return vecPtr->at(idx);
+            };
+        }
         CompId add(const C& val);
         void remove(CompId id);
+        size_type size();
 
         C& at(CompId id);
         C& operator[](CompId id);
@@ -35,8 +53,9 @@ namespace ics {
     template<Component C>
     void CompVec<C>::isActiveCheck(CompId id) const {
         auto index = idToIndex.at(id);
-        if (!vec.at(index).isActive) {
-            // TODO: format the index into the string
+        const auto& comp = constGetter(reinterpret_cast<const std::vector<BaseComponent>*>(&vec), index);
+        if (!comp.isActive) {
+            // TODO(joeltio): format the index into the string
             throw std::out_of_range("compVec::isActiveCheck: component at index is inactive");
         }
     }
@@ -56,7 +75,7 @@ namespace ics {
     }
 
     template<Component C>
-    typename CompVec<C>::CompId CompVec<C>::add(const C& val) {
+    CompId CompVec<C>::add(const C& val) {
         auto insertedIdx = addToVec(val);
         // Update the idToIndex map
         idToIndex.insert(std::make_pair(lastId + 1, insertedIdx));
@@ -68,7 +87,8 @@ namespace ics {
     void CompVec<C>::remove(CompId id) {
         auto index = idToIndex.at(id);
         // Mark component as deleted
-        vec.at(index).isActive = false;
+        auto& comp = getter(reinterpret_cast<std::vector<BaseComponent>*>(&vec), index);
+        comp.isActive = false;
         // Queue the component for reuse
         inactiveCompIdx.push(index);
         // Remove the mapping from idToIdx
@@ -76,10 +96,16 @@ namespace ics {
     }
 
     template<Component C>
+    typename CompVec<C>::size_type CompVec<C>::size() {
+        return idToIndex.size();
+    }
+
+    template<Component C>
     C& CompVec<C>::at(CompId id) {
         isActiveCheck(id);
         auto index = idToIndex.at(id);
-        return vec.at(index);
+
+        return getter(reinterpret_cast<std::vector<BaseComponent>*>(&vec), index);
     }
 
     template<Component C>

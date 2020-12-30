@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "typeMap.h"
+#include <core/ics/util/typeMap.h>
 
 #define TEST_SUITE TypeMapTest
 

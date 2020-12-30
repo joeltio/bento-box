@@ -36,7 +36,7 @@ dep-protoc: /usr/local/bin/protoc
 
 ## Bento - Simulator component
 SIM_TARGET:=bentobox
-SIM_TEST:=bentobox_test
+SIM_TEST:=bentobox-test
 SIM_SRC:=sim
 SIM_BUILD_DIR:=sim/build
 
