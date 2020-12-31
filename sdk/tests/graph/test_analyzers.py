@@ -455,9 +455,6 @@ def test_analyze_activity():
             # (ie code pos does not decrease) https://stackoverflow.com/a/4983359
             if len(sym_asts) > 1:
                 code_pos = lambda ast: (ast.lineno, ast.col_offset)
-                print(
-                    [code_pos(x) <= code_pos(y) for x, y in zip(sym_asts, sym_asts[1:])]
-                )
                 assert all(
                     [code_pos(x) <= code_pos(y) for x, y in zip(sym_asts, sym_asts[1:])]
                 )

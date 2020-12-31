@@ -1,0 +1,22 @@
+# expected graph for test_graph_compile_arithmetic()
+inputs: []
+outputs:
+- mutateAttr:
+    attribute: x
+    component: position
+    entityId: 1177347317
+  toNode:
+    addOp:
+      x:
+        retrieveOp:
+          retrieveAttr:
+            attribute: x
+            component: position
+            entityId: 1177347317
+      y:
+        constOp:
+          heldValue:
+            dataType:
+              primitive: INT32
+            primitive:
+              int32: 20
