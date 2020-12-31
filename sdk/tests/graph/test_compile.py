@@ -35,12 +35,8 @@ def assert_graph(actual: Graph, expected_path: str):
     with open(path.join(GRAPH_DIR, expected_path), "r") as f:
         expected = Graph()
         ParseDict(yaml.safe_load(f.read()), expected)
-
     # sort graph inputs and outputs to ensure position invariance when comparing
     actual, expected = sort_input_outputs(actual), sort_input_outputs(expected)
-
-    print()
-    print(yaml.dump(MessageToDict(actual)))
     # pytest -vv gives us a nice diff when comparing as JSON
     assert MessageToJson(actual, sort_keys=True) == MessageToJson(
         expected, sort_keys=True

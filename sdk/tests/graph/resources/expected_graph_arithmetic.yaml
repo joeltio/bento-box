@@ -1,5 +1,9 @@
 # expected graph for test_graph_compile_arithmetic()
-inputs: []
+inputs:
+- retrieveAttr:
+    attribute: x
+    component: position
+    entityId: 1177347317
 outputs:
 - mutateAttr:
     attribute: x

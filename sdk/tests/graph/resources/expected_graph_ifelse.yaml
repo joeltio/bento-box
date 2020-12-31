@@ -1,6 +1,14 @@
 # expected graph for test_graph_compile_ifelse()
 inputs:
 - retrieveAttr:
+    attribute: x
+    component: position
+    entityId: 1177347317
+- retrieveAttr:
+    attribute: y
+    component: position
+    entityId: 1177347317
+- retrieveAttr:
     attribute: tick_ms
     component: clock
     entityId: 3195780754
