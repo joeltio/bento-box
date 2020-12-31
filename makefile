@@ -29,8 +29,8 @@ PROTOC_VERSION:=3.13.0
 dep-protoc: /usr/local/bin/protoc
 
 /usr/local/bin/protoc:
-	curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-$(OS)-$(ARCH).zip 
-	unzip -d /tmp/protoc protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
+	curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-$(OS)-$(ARCH).zip
+	unzip -d /tmp/protoc protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip
 	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
 
@@ -60,7 +60,7 @@ clean-sim:
 SDK_SRC:=sdk
 PYTHON:=python
 BLACK_FMT:=python -m black
-PYTEST:=python -m pytest
+PYTEST:=python -m pytest -vv
 PDOC:=python -m pdoc
 
 .PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk
