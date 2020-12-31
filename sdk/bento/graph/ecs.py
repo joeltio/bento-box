@@ -4,7 +4,7 @@
 # Graph ECS
 #
 
-from random import randint
+from binascii import crc32
 from typing import Any, Iterable, Set, List
 from bento.ecs.base import Component, Entity
 from bento.graph.value import wrap_const
@@ -248,8 +248,9 @@ class GraphEntity(Entity):
     """
 
     def __init__(self, components: Iterable[str]):
-        # TODO(zzy): obtain id from actual entity
-        self.id = randint(1, int(1e5))
+        # TODO(zzy): obtain id from actual entity in engine
+        # compute entity id from hash of components to make entity id deterministic
+        self.id = crc32(",".join(sorted(components)).encode())
         self.component_map = {
             name: GraphComponent(self.id, name) for name in components
         }
