@@ -5471,7 +5471,7 @@ static void *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int req
          }
       }
    } else {
-      int rshift=0,gshift=0,bshift=0,ashift=0,rcount=0,gcount=0,bcount=0,account=0;
+      int rshift=0,gshift=0,bshift=0,ashift=0,rcount=0,gcount=0,bcount=0,acount=0;
       int z = 0;
       int easy=0;
       stbi__skip(s, info.offset - info.extra_read - info.hsz);
@@ -5491,8 +5491,8 @@ static void *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int req
          rshift = stbi__high_bit(mr)-7; rcount = stbi__bitcount(mr);
          gshift = stbi__high_bit(mg)-7; gcount = stbi__bitcount(mg);
          bshift = stbi__high_bit(mb)-7; bcount = stbi__bitcount(mb);
-         ashift = stbi__high_bit(ma)-7; account = stbi__bitcount(ma);
-         if (rcount > 8 || gcount > 8 || bcount > 8 || account > 8) { STBI_FREE(out); return stbi__errpuc("bad masks", "Corrupt BMP"); }
+         ashift = stbi__high_bit(ma)-7; acount = stbi__bitcount(ma);
+         if (rcount > 8 || gcount > 8 || bcount > 8 || acount > 8) { STBI_FREE(out); return stbi__errpuc("bad masks", "Corrupt BMP"); }
       }
       for (j=0; j < (int) s->img_y; ++j) {
          if (easy) {
@@ -5514,7 +5514,7 @@ static void *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int req
                out[z++] = STBI__BYTECAST(stbi__shiftsigned(v & mr, rshift, rcount));
                out[z++] = STBI__BYTECAST(stbi__shiftsigned(v & mg, gshift, gcount));
                out[z++] = STBI__BYTECAST(stbi__shiftsigned(v & mb, bshift, bcount));
-               a = (ma ? stbi__shiftsigned(v & ma, ashift, account) : 255);
+               a = (ma ? stbi__shiftsigned(v & ma, ashift, acount) : 255);
                all_a |= a;
                if (target == 4) out[z++] = STBI__BYTECAST(a);
             }
@@ -6649,7 +6649,7 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
          // 0:  not specified.
       }
 
-      // background is what out is after the undoing of the previous frame;
+      // background is what out is after the undoing of the previou frame;
       memcpy( g->background, g->out, 4 * g->w * g->h );
    }
 
