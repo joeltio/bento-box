@@ -16,7 +16,7 @@ def test_graph_plotter_empty():
     assert g.graph() == Graph()
 
 
-# test that graph plotter can record a retrive, mutate operation
+# test that graph plotter can record a retrieve, mutate operation
 def test_graph_plotter_retrieve_mutate_op():
     g = Plotter()
     person = g.entity(components=["position"])
@@ -48,7 +48,7 @@ def test_graph_plotter_retrieve_mutate_op():
     )
 
 
-# test that graph plotter can record switch condition and poolean ops
+# test that graph plotter can record switch condition and boolean ops
 def test_graph_plotter_conditional_boolean():
     g = Plotter()
     env = g.entity(components=["keyboard"])

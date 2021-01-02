@@ -31,7 +31,7 @@ def test_graph_ecs_component_get_attr():
         )
     )
     assert pos_x.node == expected_node
-    # check tha component records the retrieve in `.inputs`
+    # check that component records the retrieve in `.inputs`
     assert position.inputs[0].node == expected_node
 
 
