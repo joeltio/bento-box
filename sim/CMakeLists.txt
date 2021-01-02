@@ -7,33 +7,39 @@ set(FETCHCONTENT_QUIET OFF)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(bentobox)
 
-## Source files
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-set(SOURCES
-    "${SRC_DIR}/main.cpp"
-)
-set(TESTS
-    "${SRC_DIR}/main.test.cpp"
-)
-
 ## Executable
 set(TARGET_SIM ${PROJECT_NAME})
-set(TARGET_TEST "${PROJECT_NAME}_test")
+set(TARGET_TEST "${PROJECT_NAME}-test")
 set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 # target bento simulator's executables to c++ 20
 set(CMAKE_CXX_STANDARD 20)
-add_executable(${TARGET_SIM} ${SOURCES})
-add_executable(${TARGET_TEST} ${TESTS})
-foreach(target IN ITEMS ${TARGETS})
-    target_include_directories(${target} PRIVATE ${SRC_DIR})
-endforeach()
-# Link subdir modules
-foreach (lib IN ITEMS core)
-    add_subdirectory("${SRC_DIR}/${lib}")
-    target_link_libraries(${TARGET_SIM} PRIVATE ${lib})
-    target_link_libraries(${TARGET_TEST} PRIVATE -Wl,--whole-archive,--as-needed ${lib}-test -Wl,--no-whole-archive,--as-needed)
-endforeach()
+add_executable(${TARGET_SIM}
+    src/main.cpp
+    src/system/render.cpp
+)
+target_include_directories(${TARGET_SIM}
+    PUBLIC include
+)
+
+add_executable(${TARGET_TEST}
+    src/main.test.cpp
+    src/index/componentType.test.cpp
+)
+target_include_directories(${TARGET_TEST}
+    PUBLIC include
+)
+
+add_subdirectory("lib/core")
+target_link_libraries(${TARGET_SIM}
+    PRIVATE bento::core
+)
+target_link_libraries(${TARGET_TEST}
+    PRIVATE bento::core
+    # When --whole-archive is needed to ensure that core-test's tests are not lost when
+    # they are linked to the test target. The core-test's tests are lost because they
+    # are not referenced. This flag ensures that the tests are retained.
+    PRIVATE -Wl,--whole-archive bento::core-test -Wl,--no-whole-archive
+)
 
 ## Library Dependencies
 # target library dependencies to c++ 17

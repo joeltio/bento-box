@@ -1,4 +1,4 @@
-#include "windowContext.h"
+#include <core/windowContext.h>
 
 namespace {
     void framebufferSizeCallback([[maybe_unused]] GLFWwindow* window, int width, int height) {
@@ -20,7 +20,7 @@ WindowContext::WindowContext(
     // Create window
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (window == nullptr) {
-        // TODO: Create an exception for this
+        // TODO(joeltio): Create an exception for this
         throw "Failed to create GLFW window";
     }
 
@@ -44,7 +44,7 @@ WindowContext::WindowContext(
         nullptr
     );
     if (window == nullptr) {
-        // TODO: Create an exception for this
+        // TODO(joeltio): Create an exception for this
         throw "Failed to create GLFW window";
     }
 }
