@@ -34,7 +34,10 @@ jobs:
           make build-sdk
       - name: "Build bentobox-sdk Docs"
         run: |
-          make build-sdk-docs SDK_DOC_DIR=${SDK_DOC_DIR}
+          make clean-sdk-docs build-sdk-docs SDK_DOC_DIR=${SDK_DOC_DIR}
+          # move generated docs from docs/bento to top level docs/
+          mv ${SDK_DOC_DIR}/bento /tmp/bento
+          mv -f /tmp/bento ${SDK_DOC_DIR}
       - name: "Publish bentobox-sdk Docs to Github Pages"
         run: |
           git checkout gh-pages
@@ -52,4 +55,4 @@ jobs:
           git commit -a -m "CI: Update docs built from master commit: ${GITHUB_SHA}"
           
           # Publish changes by pushing to Github
-          git push 
+          git push
