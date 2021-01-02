@@ -1,0 +1,50 @@
+#
+# bento-box
+# continuous deployment (cd) pipeline
+#
+
+name: "CI Pipeline"
+on:
+  push:
+    branches:
+      - master
+      # TODO(mrzzy): remove 
+      - ci/docgen-sdk
+
+  # builds & publishes docs for the sdk component to Github 
+  publish-docs-sdk:
+    need: build-test-sdk
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-sdk Docs to Github Pages"
+    env:
+      SDK_DOC_DIR: docs
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # fetch all history for all branches and tags
+          fetch-depth: 0 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Pull dependencies"
+        run: |
+          make dep-sdk-dev
+      - name: "Build bentobox-sdk Docs"
+        run: |
+          make build-sdk-docs
+      - name: "Publish bentobox-sdk Docs to Github Pages"
+        run: |
+          git checkout gh-pages
+          git add ${SDK_DOC_DIR}
+          # check for staged changes to SDK docs
+          if git diff --staged --quiet
+          then
+            echo "No SDK Docs changes to commit."
+            exit 0
+          fi
+
+          # Commit changes as Github Actions bot
+          git config user.name 'github-actions'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -a -m "CI: Update docs built from master sha: ${GITHUB_REF}"
