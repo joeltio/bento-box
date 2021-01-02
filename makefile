@@ -10,7 +10,7 @@ PROTOC:=protoc
 MKDIR:=mkdir -p
 MV:=mv -f
 
-.PHONY: kjeps build test clean run
+.PHONY: deps build test clean run
 
 build: build-sim
 
@@ -86,18 +86,19 @@ clean-sdk:
 	cd $(SDK_SRC) && $(PYTHON) setup.py clean --all
 
 # Bento - SDK docs
+SDK_DOC_DIR:=$(SDK_SRC)/docs
 .PHONY: build-sdk-docs clean-sdk-docs
 
-build-sdk-docs: $(SDK_SRC)/docs
+build-sdk-docs: $(SDK_DOC_DIR)
 
-$(SDK_SRC)/docs: dep-sdk-dev
-	cd $(SDK_SRC) && $(PDOC) --html -o $(notdir $@) bento
+$(SDK_DOC_DIR): dep-sdk-dev
+	$(PDOC) --html -o $(SDK_DOC_DIR) $(SDK_SRC)/bento
 
 clean-sdk-docs: $(SDK_SRC)/docs
 	$(RM) $(notdir $@)
 
 # spellcheck bentobox codebase
-.PHONY: spellcheck
+.PHONY: spellcheck autocorrect
 
 spellcheck:
 	codespell -s

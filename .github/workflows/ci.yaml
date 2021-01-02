@@ -87,7 +87,7 @@ jobs:
 
   # builds docs for the sdk component
   build-docs-sdk:
-    need: build-test-sdk
+    needs: build-test-sdk
     runs-on: ubuntu-20.04
     name: "Build & Push bentobox-sdk Docs"
     steps:
@@ -100,4 +100,4 @@ jobs:
           make dep-sdk-dev
       - name: "Build bentobox-sdk Docs"
         run: |
-          env make build-sdk-docs
+          make build-sdk-docs
