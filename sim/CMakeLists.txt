@@ -77,7 +77,7 @@ get_filename_component(PROTOS_DIR "../protos" ABSOLUTE)
 # target directory to write protobuf bindings to
 set(PROTO_BINDS_DIR "${CMAKE_CURRENT_BINARY_DIR}/protos")
 file(MAKE_DIRECTORY ${PROTO_BINDS_DIR})
-# list protobuf defintions in protos/
+# list protobuf definitions in protos/
 file(GLOB PROTO_DEFS "${PROTOS_DIR}/bento/protos/*.proto")
 # replace .proto with .pb.cc and .pb.h
 string(REPLACE "${PROTOS_DIR}" "${PROTO_BINDS_DIR}" PROTO_BINDS "${PROTO_DEFS}")

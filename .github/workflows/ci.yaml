@@ -1,6 +1,6 @@
 #
 # bento-box
-# continous integration (ci) pipeline
+# continuous integration (ci) pipeline
 #
 
 name: "CI Pipeline"
@@ -23,6 +23,22 @@ jobs:
       - name: "Compile Protos with protoc"
         run: |
           ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/bento/protos/*.proto
+
+  # check spelling typos in source code
+  spellcheck-code:
+    runs-on: ubuntu-20.04
+    name: "Spellcheck bentobox codebase"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Pull codespell spell checker"
+        run: |
+          pip install codespell==2.0.0
+      - name: "Spellcheck codebase"
+        run: |
+          make spellcheck
 
   # build & unit tests simulator component
   build-test-sim:
