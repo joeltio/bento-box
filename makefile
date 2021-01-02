@@ -89,3 +89,12 @@ test-sdk: dep-sdk-dev
 
 clean-sdk:
 	cd $(SDK_SRC) && $(PYTHON) setup.py clean --all
+
+# spellcheck bentobox codebase
+.PHONY: spellcheck
+
+spellcheck: deps
+	codespell -s
+
+autocorrect:
+	codespell -w

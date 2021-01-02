@@ -1,6 +1,6 @@
 #
 # bento-box
-# continous integration (ci) pipeline
+# continuous integration (ci) pipeline
 #
 
 name: "CI Pipeline"
@@ -38,7 +38,7 @@ jobs:
           pip install codespell==2.0.0
       - name: "Spellcheck codebase"
         run: |
-          codespell -s
+          make spellcheck
 
   # build & unit tests simulator component
   build-test-sim:
