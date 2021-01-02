@@ -75,12 +75,13 @@ jobs:
 
       # Cache pip dependencies to speed up job
       - name: "Find pip Cache Directory"
+        id: pip-cache-dir
         run: |
           echo "::set-output name=dir::$(pip cache dir)"
       - name: "Retrieve Cached dependencies"
         uses: actions/cache@v2
         with:
-          path: ${{ steps.pip-cache.outputs.dir }}
+          path: ${{ steps.pip-cache-dir.outputs.dir }}
           key: pip-${{ matrix.python }}-${{ matrix.os }}-${{ hashFiles('sdk/requirements*.txt') }}
           restore-keys: |
             pip-${{ matrix.python }}-${{ matrix.os }}-
