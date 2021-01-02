@@ -34,7 +34,7 @@ jobs:
           make build-sdk
       - name: "Build bentobox-sdk Docs"
         run: |
-          make build-sdk-docs
+          make build-sdk-docs SDK_DOC_DIR=${SDK_DOC_DIR}
       - name: "Publish bentobox-sdk Docs to Github Pages"
         run: |
           git checkout gh-pages

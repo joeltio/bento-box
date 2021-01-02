@@ -98,6 +98,9 @@ jobs:
       - name: "Pull dependencies"
         run: |
           make dep-sdk-dev
+      - name: "Build bentobox-sdk"
+        run: |
+          make build-sdk
       - name: "Build bentobox-sdk Docs"
         run: |
           make build-sdk-docs

@@ -94,8 +94,8 @@ build-sdk-docs: $(SDK_DOC_DIR)
 $(SDK_DOC_DIR): dep-sdk-dev
 	$(PDOC) --html -o $(SDK_DOC_DIR) $(SDK_SRC)/bento
 
-clean-sdk-docs: $(SDK_SRC)/docs
-	$(RM) $(notdir $@)
+clean-sdk-docs: $(SDK_DOC_DIR)
+	$(RM) $<
 
 # spellcheck bentobox codebase
 .PHONY: spellcheck autocorrect
