@@ -7,7 +7,7 @@
 syntax = "proto3";
 package bento.protos;
 
-// Wraps data type infomation for all possible kinds of data types
+// Wraps data type information for all possible kinds of data types
 message Type {
     // Defines the data types of the primitive kind
     enum Primitive {

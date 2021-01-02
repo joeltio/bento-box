@@ -10,7 +10,7 @@ package bento.protos;
 import "bento/protos/types.proto";
 import "bento/protos/graph.proto";
 
-// EntityDef - registerable defintion for a entity in ECS
+// EntityDef - registerable definition for a entity in ECS
 message EntityDef {
     // Unique id that identifies this entity
     // This should be auto assigned by bentobox when first registered.
@@ -19,7 +19,7 @@ message EntityDef {
     repeated string components = 2;
 }
 
-// ComponentDef - registerable defintion for a component in ECS
+// ComponentDef - registerable definition for a component in ECS
 message ComponentDef {
     // Name of the Component type
     string name = 1;
@@ -27,7 +27,7 @@ message ComponentDef {
     map<string, Type> schema = 2;
 }
 
-// SystemDef - registerable defintion for a system in ECS
+// SystemDef - registerable definition for a system in ECS
 message SystemDef {
     // Unique id that identifies the system.
     // This should be auto assigned by bentobox when first registered.
