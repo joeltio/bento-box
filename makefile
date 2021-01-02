@@ -93,7 +93,7 @@ clean-sdk:
 # spellcheck bentobox codebase
 .PHONY: spellcheck
 
-spellcheck: deps
+spellcheck: dep-sdk-dev
 	codespell -s
 
 autocorrect:
