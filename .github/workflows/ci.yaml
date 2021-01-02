@@ -53,7 +53,8 @@ jobs:
         # Ignore the failure of noncritical cache step
         continue-on-error: true
         with:
-          key: docker-${ hashFiles('infra/docker/sim/Dockerfile', '**/CMakeLists.txt') }
+          # {hash} replace with hash of the built sim container
+          key: docker-{hash}
           restore-keys: |
             docker-
 
