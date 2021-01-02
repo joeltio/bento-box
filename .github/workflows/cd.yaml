@@ -3,17 +3,16 @@
 # continuous deployment (cd) pipeline
 #
 
-name: "CI Pipeline"
+name: "CD Pipeline"
 on:
   push:
     branches:
       - master
       # TODO(mrzzy): remove 
       - ci/docgen-sdk
-
+jobs:
   # builds & publishes docs for the sdk component to Github 
   publish-docs-sdk:
-    need: build-test-sdk
     runs-on: ubuntu-20.04
     name: "Publish bentobox-sdk Docs to Github Pages"
     env:
