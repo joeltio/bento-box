@@ -21,7 +21,7 @@ message Node {
     /* Component access, mutation */
     // Retrieve - node that retrieves a value from an entity's component
     message Retrieve {
-        // Reference to the attribute to retriev
+        // Reference to the attribute to retrieve
         AttributeRef retrieve_attr = 1;
     }
 
