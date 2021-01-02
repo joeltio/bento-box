@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-20.04
     name: "Publish bentobox-sdk Docs to Github Pages"
     env:
-      SDK_DOC_DIR: docs
+      SDK_DOC_DIR: /tmp/docs
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     steps:
       - uses: actions/checkout@v2
@@ -34,14 +34,15 @@ jobs:
           make build-sdk
       - name: "Build bentobox-sdk Docs"
         run: |
-          git checkout gh-pages
-          make clean-sdk-docs build-sdk-docs SDK_DOC_DIR=${SDK_DOC_DIR}
-          # move generated docs from docs/bento to top level docs/
-          mv ${SDK_DOC_DIR}/bento /tmp/bento
-          mv -f /tmp/bento ${SDK_DOC_DIR}
+          make build-sdk-docs SDK_DOC_DIR=${SDK_DOC_DIR}
       - name: "Publish bentobox-sdk Docs to Github Pages"
         run: |
-          git add ${SDK_DOC_DIR}
+          git checkout gh-pages
+          # move generated docs to top level docs/ and stage changes
+          rm -rf docs
+          mv -f ${SDK_DOC_DIR}/bento docs
+          git add docs
+
           # check for staged changes to SDK docs
           if git diff --staged --quiet
           then
