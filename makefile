@@ -10,7 +10,7 @@ PROTOC:=protoc
 MKDIR:=mkdir -p
 MV:=mv -f
 
-.PHONY: deps build test clean run
+.PHONY: kjeps build test clean run
 
 build: build-sim
 
@@ -63,18 +63,13 @@ BLACK_FMT:=python -m black
 PYTEST:=python -m pytest
 PDOC:=python -m pdoc
 
-.PHONY: format-sdk clean-sdk build-sdk build-sdk-docs  dep-sdk-dev test-sdk lint-sdk
+.PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk
 
 dep-sdk-dev:
 	pip install -r $(SDK_SRC)/requirements-dev.txt
 
 build-sdk: dep-sdk-dev lint-sdk
 	cd $(SDK_SRC) && $(PYTHON) setup.py sdist bdist_wheel
-
-build-sdk-docs: $(SDK_SRC)/docs
-
-$(SDK_SRC)/docs: dep-sdk-dev
-	cd $(SDK_SRC) && $(PDOC) --html -o $(notdir $@) bento
 
 format-sdk: dep-sdk-dev
 	$(BLACK_FMT) $(SDK_SRC)/bento
@@ -89,6 +84,17 @@ test-sdk: dep-sdk-dev
 
 clean-sdk:
 	cd $(SDK_SRC) && $(PYTHON) setup.py clean --all
+
+# Bento - SDK docs
+.PHONY: build-sdk-docs clean-sdk-docs
+
+build-sdk-docs: $(SDK_SRC)/docs
+
+$(SDK_SRC)/docs: dep-sdk-dev
+	cd $(SDK_SRC) && $(PDOC) --html -o $(notdir $@) bento
+
+clean-sdk-docs: $(SDK_SRC)/docs
+	$(RM) $(notdir $@)
 
 # spellcheck bentobox codebase
 .PHONY: spellcheck
