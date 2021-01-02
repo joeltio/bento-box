@@ -47,6 +47,16 @@ jobs:
     name: "Build & Test bentobox-sim"
     steps:
       - uses: actions/checkout@v2
+
+      # cache docker layers to speed up docker build
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of noncritical cache step
+        continue-on-error: true
+        with:
+          key: docker-${ hashFiles('infra/docker/sim/Dockerfile', '**/CMakeLists.txt') }
+          restore-keys: |
+            docker-
+
       - name: "Build bentobox-sim"
         run: |
           docker build -t bentobox-sim -f infra/docker/sim/Dockerfile .
@@ -73,13 +83,15 @@ jobs:
         with:
           python-version: ${{matrix.python}}
 
-      # Cache pip dependencies to speed up job
+      # cache pip dependencies to speed up job
       - name: "Find pip Cache Directory"
         id: pip-cache-dir
         run: |
           echo "::set-output name=dir::$(pip cache dir)"
       - name: "Retrieve Cached dependencies"
         uses: actions/cache@v2
+        # ignore the failure of noncritical cache step
+        continue-on-error: true
         with:
           path: ${{ steps.pip-cache-dir.outputs.dir }}
           key: pip-${{ matrix.python }}-${{ matrix.os }}-${{ hashFiles('sdk/requirements*.txt') }}
