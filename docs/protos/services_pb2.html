@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>bento.protos.services_pb2 API documentation</title>
+<meta name="description" content="Generated protocol buffer code." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>bento.protos.services_pb2</code></h1>
+</header>
+<section id="section-intro">
+<p>Generated protocol buffer code.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+# Generated by the protocol buffer compiler.  DO NOT EDIT!
+# source: bento/protos/services.proto
+&#34;&#34;&#34;Generated protocol buffer code.&#34;&#34;&#34;
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import message as _message
+from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
+# @@protoc_insertion_point(imports)
+
+_sym_db = _symbol_database.Default()
+
+
+from bento.protos import values_pb2 as bento_dot_protos_dot_values__pb2
+from bento.protos import references_pb2 as bento_dot_protos_dot_references__pb2
+from bento.protos import sim_pb2 as bento_dot_protos_dot_sim__pb2
+
+
+DESCRIPTOR = _descriptor.FileDescriptor(
+  name=&#39;bento/protos/services.proto&#39;,
+  package=&#39;bento.protos&#39;,
+  syntax=&#39;proto3&#39;,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_pb=b&#39;\n\x1b\x62\x65nto/protos/services.proto\x12\x0c\x62\x65nto.protos\x1a\x19\x62\x65nto/protos/values.proto\x1a\x1d\x62\x65nto/protos/references.proto\x1a\x16\x62\x65nto/protos/sim.proto\&#34;E\n\x12\x41pplySimulationReq\x12/\n\nsimulation\x18\x01 \x01(\x0b\x32\x1b.bento.protos.SimulationDef\&#34;\x15\n\x13\x41pplySimulationResp\&#34; \n\x10GetSimulationReq\x12\x0c\n\x04name\x18\x01 \x01(\t\&#34;D\n\x11GetSimulationResp\x12/\n\nsimulation\x18\x01 \x01(\x0b\x32\x1b.bento.protos.SimulationDef\&#34;\x13\n\x11ListSimulationReq\&#34;\&#39;\n\x12ListSimulationResp\x12\x11\n\tsim_names\x18\x01 \x03(\t\&#34;!\n\x11\x44ropSimulationReq\x12\x0c\n\x04name\x18\x01 \x01(\t\&#34;\x14\n\x12\x44ropSimulationResp\&#34;\x13\n\x11StepSimulationReq\&#34;\x14\n\x12StepSimulationResp\&#34;@\n\x0fGetAttributeReq\x12-\n\tattribute\x18\x01 \x01(\x0b\x32\x1a.bento.protos.AttributeRef\&#34;6\n\x10GetAttributeResp\x12\&#34;\n\x05value\x18\x01 \x01(\x0b\x32\x13.bento.protos.Value\&#34;d\n\x0fSetAttributeReq\x12-\n\tattribute\x18\x01 \x01(\x0b\x32\x1a.bento.protos.AttributeRef\x12\&#34;\n\x05value\x18\x02 \x01(\x0b\x32\x13.bento.protos.Value\&#34;\x12\n\x10SetAttributeResp2\xda\x04\n\x11SimulationService\x12V\n\x0f\x41pplySimulation\x12 .bento.protos.ApplySimulationReq\x1a!.bento.protos.ApplySimulationResp\x12P\n\rGetSimulation\x12\x1e.bento.protos.GetSimulationReq\x1a\x1f.bento.protos.GetSimulationResp\x12S\n\x0eListSimulation\x12\x1f.bento.protos.ListSimulationReq\x1a .bento.protos.ListSimulationResp\x12S\n\x0e\x44ropSimulation\x12\x1f.bento.protos.DropSimulationReq\x1a .bento.protos.DropSimulationResp\x12S\n\x0eStepSimulation\x12\x1f.bento.protos.StepSimulationReq\x1a .bento.protos.StepSimulationResp\x12M\n\x0cGetAttribute\x12\x1d.bento.protos.GetAttributeReq\x1a\x1e.bento.protos.GetAttributeResp\x12M\n\x0cSetAttribute\x12\x1d.bento.protos.SetAttributeReq\x1a\x1e.bento.protos.SetAttributeRespb\x06proto3&#39;
+  ,
+  dependencies=[bento_dot_protos_dot_values__pb2.DESCRIPTOR,bento_dot_protos_dot_references__pb2.DESCRIPTOR,bento_dot_protos_dot_sim__pb2.DESCRIPTOR,])
+
+
+
+
+_APPLYSIMULATIONREQ = _descriptor.Descriptor(
+  name=&#39;ApplySimulationReq&#39;,
+  full_name=&#39;bento.protos.ApplySimulationReq&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;simulation&#39;, full_name=&#39;bento.protos.ApplySimulationReq.simulation&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=127,
+  serialized_end=196,
+)
+
+
+_APPLYSIMULATIONRESP = _descriptor.Descriptor(
+  name=&#39;ApplySimulationResp&#39;,
+  full_name=&#39;bento.protos.ApplySimulationResp&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=198,
+  serialized_end=219,
+)
+
+
+_GETSIMULATIONREQ = _descriptor.Descriptor(
+  name=&#39;GetSimulationReq&#39;,
+  full_name=&#39;bento.protos.GetSimulationReq&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;name&#39;, full_name=&#39;bento.protos.GetSimulationReq.name&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b&#34;&#34;.decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=221,
+  serialized_end=253,
+)
+
+
+_GETSIMULATIONRESP = _descriptor.Descriptor(
+  name=&#39;GetSimulationResp&#39;,
+  full_name=&#39;bento.protos.GetSimulationResp&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;simulation&#39;, full_name=&#39;bento.protos.GetSimulationResp.simulation&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=255,
+  serialized_end=323,
+)
+
+
+_LISTSIMULATIONREQ = _descriptor.Descriptor(
+  name=&#39;ListSimulationReq&#39;,
+  full_name=&#39;bento.protos.ListSimulationReq&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=325,
+  serialized_end=344,
+)
+
+
+_LISTSIMULATIONRESP = _descriptor.Descriptor(
+  name=&#39;ListSimulationResp&#39;,
+  full_name=&#39;bento.protos.ListSimulationResp&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;sim_names&#39;, full_name=&#39;bento.protos.ListSimulationResp.sim_names&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=346,
+  serialized_end=385,
+)
+
+
+_DROPSIMULATIONREQ = _descriptor.Descriptor(
+  name=&#39;DropSimulationReq&#39;,
+  full_name=&#39;bento.protos.DropSimulationReq&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;name&#39;, full_name=&#39;bento.protos.DropSimulationReq.name&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b&#34;&#34;.decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=387,
+  serialized_end=420,
+)
+
+
+_DROPSIMULATIONRESP = _descriptor.Descriptor(
+  name=&#39;DropSimulationResp&#39;,
+  full_name=&#39;bento.protos.DropSimulationResp&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=422,
+  serialized_end=442,
+)
+
+
+_STEPSIMULATIONREQ = _descriptor.Descriptor(
+  name=&#39;StepSimulationReq&#39;,
+  full_name=&#39;bento.protos.StepSimulationReq&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=444,
+  serialized_end=463,
+)
+
+
+_STEPSIMULATIONRESP = _descriptor.Descriptor(
+  name=&#39;StepSimulationResp&#39;,
+  full_name=&#39;bento.protos.StepSimulationResp&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=465,
+  serialized_end=485,
+)
+
+
+_GETATTRIBUTEREQ = _descriptor.Descriptor(
+  name=&#39;GetAttributeReq&#39;,
+  full_name=&#39;bento.protos.GetAttributeReq&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;attribute&#39;, full_name=&#39;bento.protos.GetAttributeReq.attribute&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=487,
+  serialized_end=551,
+)
+
+
+_GETATTRIBUTERESP = _descriptor.Descriptor(
+  name=&#39;GetAttributeResp&#39;,
+  full_name=&#39;bento.protos.GetAttributeResp&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;value&#39;, full_name=&#39;bento.protos.GetAttributeResp.value&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=553,
+  serialized_end=607,
+)
+
+
+_SETATTRIBUTEREQ = _descriptor.Descriptor(
+  name=&#39;SetAttributeReq&#39;,
+  full_name=&#39;bento.protos.SetAttributeReq&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;attribute&#39;, full_name=&#39;bento.protos.SetAttributeReq.attribute&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;value&#39;, full_name=&#39;bento.protos.SetAttributeReq.value&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=609,
+  serialized_end=709,
+)
+
+
+_SETATTRIBUTERESP = _descriptor.Descriptor(
+  name=&#39;SetAttributeResp&#39;,
+  full_name=&#39;bento.protos.SetAttributeResp&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=711,
+  serialized_end=729,
+)
+
+_APPLYSIMULATIONREQ.fields_by_name[&#39;simulation&#39;].message_type = bento_dot_protos_dot_sim__pb2._SIMULATIONDEF
+_GETSIMULATIONRESP.fields_by_name[&#39;simulation&#39;].message_type = bento_dot_protos_dot_sim__pb2._SIMULATIONDEF
+_GETATTRIBUTEREQ.fields_by_name[&#39;attribute&#39;].message_type = bento_dot_protos_dot_references__pb2._ATTRIBUTEREF
+_GETATTRIBUTERESP.fields_by_name[&#39;value&#39;].message_type = bento_dot_protos_dot_values__pb2._VALUE
+_SETATTRIBUTEREQ.fields_by_name[&#39;attribute&#39;].message_type = bento_dot_protos_dot_references__pb2._ATTRIBUTEREF
+_SETATTRIBUTEREQ.fields_by_name[&#39;value&#39;].message_type = bento_dot_protos_dot_values__pb2._VALUE
+DESCRIPTOR.message_types_by_name[&#39;ApplySimulationReq&#39;] = _APPLYSIMULATIONREQ
+DESCRIPTOR.message_types_by_name[&#39;ApplySimulationResp&#39;] = _APPLYSIMULATIONRESP
+DESCRIPTOR.message_types_by_name[&#39;GetSimulationReq&#39;] = _GETSIMULATIONREQ
+DESCRIPTOR.message_types_by_name[&#39;GetSimulationResp&#39;] = _GETSIMULATIONRESP
+DESCRIPTOR.message_types_by_name[&#39;ListSimulationReq&#39;] = _LISTSIMULATIONREQ
+DESCRIPTOR.message_types_by_name[&#39;ListSimulationResp&#39;] = _LISTSIMULATIONRESP
+DESCRIPTOR.message_types_by_name[&#39;DropSimulationReq&#39;] = _DROPSIMULATIONREQ
+DESCRIPTOR.message_types_by_name[&#39;DropSimulationResp&#39;] = _DROPSIMULATIONRESP
+DESCRIPTOR.message_types_by_name[&#39;StepSimulationReq&#39;] = _STEPSIMULATIONREQ
+DESCRIPTOR.message_types_by_name[&#39;StepSimulationResp&#39;] = _STEPSIMULATIONRESP
+DESCRIPTOR.message_types_by_name[&#39;GetAttributeReq&#39;] = _GETATTRIBUTEREQ
+DESCRIPTOR.message_types_by_name[&#39;GetAttributeResp&#39;] = _GETATTRIBUTERESP
+DESCRIPTOR.message_types_by_name[&#39;SetAttributeReq&#39;] = _SETATTRIBUTEREQ
+DESCRIPTOR.message_types_by_name[&#39;SetAttributeResp&#39;] = _SETATTRIBUTERESP
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+ApplySimulationReq = _reflection.GeneratedProtocolMessageType(&#39;ApplySimulationReq&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _APPLYSIMULATIONREQ,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.ApplySimulationReq)
+  })
+_sym_db.RegisterMessage(ApplySimulationReq)
+
+ApplySimulationResp = _reflection.GeneratedProtocolMessageType(&#39;ApplySimulationResp&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _APPLYSIMULATIONRESP,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.ApplySimulationResp)
+  })
+_sym_db.RegisterMessage(ApplySimulationResp)
+
+GetSimulationReq = _reflection.GeneratedProtocolMessageType(&#39;GetSimulationReq&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _GETSIMULATIONREQ,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.GetSimulationReq)
+  })
+_sym_db.RegisterMessage(GetSimulationReq)
+
+GetSimulationResp = _reflection.GeneratedProtocolMessageType(&#39;GetSimulationResp&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _GETSIMULATIONRESP,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.GetSimulationResp)
+  })
+_sym_db.RegisterMessage(GetSimulationResp)
+
+ListSimulationReq = _reflection.GeneratedProtocolMessageType(&#39;ListSimulationReq&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _LISTSIMULATIONREQ,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.ListSimulationReq)
+  })
+_sym_db.RegisterMessage(ListSimulationReq)
+
+ListSimulationResp = _reflection.GeneratedProtocolMessageType(&#39;ListSimulationResp&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _LISTSIMULATIONRESP,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.ListSimulationResp)
+  })
+_sym_db.RegisterMessage(ListSimulationResp)
+
+DropSimulationReq = _reflection.GeneratedProtocolMessageType(&#39;DropSimulationReq&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _DROPSIMULATIONREQ,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.DropSimulationReq)
+  })
+_sym_db.RegisterMessage(DropSimulationReq)
+
+DropSimulationResp = _reflection.GeneratedProtocolMessageType(&#39;DropSimulationResp&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _DROPSIMULATIONRESP,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.DropSimulationResp)
+  })
+_sym_db.RegisterMessage(DropSimulationResp)
+
+StepSimulationReq = _reflection.GeneratedProtocolMessageType(&#39;StepSimulationReq&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _STEPSIMULATIONREQ,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.StepSimulationReq)
+  })
+_sym_db.RegisterMessage(StepSimulationReq)
+
+StepSimulationResp = _reflection.GeneratedProtocolMessageType(&#39;StepSimulationResp&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _STEPSIMULATIONRESP,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.StepSimulationResp)
+  })
+_sym_db.RegisterMessage(StepSimulationResp)
+
+GetAttributeReq = _reflection.GeneratedProtocolMessageType(&#39;GetAttributeReq&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _GETATTRIBUTEREQ,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.GetAttributeReq)
+  })
+_sym_db.RegisterMessage(GetAttributeReq)
+
+GetAttributeResp = _reflection.GeneratedProtocolMessageType(&#39;GetAttributeResp&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _GETATTRIBUTERESP,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.GetAttributeResp)
+  })
+_sym_db.RegisterMessage(GetAttributeResp)
+
+SetAttributeReq = _reflection.GeneratedProtocolMessageType(&#39;SetAttributeReq&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _SETATTRIBUTEREQ,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.SetAttributeReq)
+  })
+_sym_db.RegisterMessage(SetAttributeReq)
+
+SetAttributeResp = _reflection.GeneratedProtocolMessageType(&#39;SetAttributeResp&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _SETATTRIBUTERESP,
+  &#39;__module__&#39; : &#39;bento.protos.services_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.SetAttributeResp)
+  })
+_sym_db.RegisterMessage(SetAttributeResp)
+
+
+
+_SIMULATIONSERVICE = _descriptor.ServiceDescriptor(
+  name=&#39;SimulationService&#39;,
+  full_name=&#39;bento.protos.SimulationService&#39;,
+  file=DESCRIPTOR,
+  index=0,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_start=732,
+  serialized_end=1334,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name=&#39;ApplySimulation&#39;,
+    full_name=&#39;bento.protos.SimulationService.ApplySimulation&#39;,
+    index=0,
+    containing_service=None,
+    input_type=_APPLYSIMULATIONREQ,
+    output_type=_APPLYSIMULATIONRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name=&#39;GetSimulation&#39;,
+    full_name=&#39;bento.protos.SimulationService.GetSimulation&#39;,
+    index=1,
+    containing_service=None,
+    input_type=_GETSIMULATIONREQ,
+    output_type=_GETSIMULATIONRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name=&#39;ListSimulation&#39;,
+    full_name=&#39;bento.protos.SimulationService.ListSimulation&#39;,
+    index=2,
+    containing_service=None,
+    input_type=_LISTSIMULATIONREQ,
+    output_type=_LISTSIMULATIONRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name=&#39;DropSimulation&#39;,
+    full_name=&#39;bento.protos.SimulationService.DropSimulation&#39;,
+    index=3,
+    containing_service=None,
+    input_type=_DROPSIMULATIONREQ,
+    output_type=_DROPSIMULATIONRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name=&#39;StepSimulation&#39;,
+    full_name=&#39;bento.protos.SimulationService.StepSimulation&#39;,
+    index=4,
+    containing_service=None,
+    input_type=_STEPSIMULATIONREQ,
+    output_type=_STEPSIMULATIONRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name=&#39;GetAttribute&#39;,
+    full_name=&#39;bento.protos.SimulationService.GetAttribute&#39;,
+    index=5,
+    containing_service=None,
+    input_type=_GETATTRIBUTEREQ,
+    output_type=_GETATTRIBUTERESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name=&#39;SetAttribute&#39;,
+    full_name=&#39;bento.protos.SimulationService.SetAttribute&#39;,
+    index=6,
+    containing_service=None,
+    input_type=_SETATTRIBUTEREQ,
+    output_type=_SETATTRIBUTERESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_SIMULATIONSERVICE)
+
+DESCRIPTOR.services_by_name[&#39;SimulationService&#39;] = _SIMULATIONSERVICE
+
+# @@protoc_insertion_point(module_scope)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="bento.protos.services_pb2.ApplySimulationReq"><code class="flex name class">
+<span>class <span class="ident">ApplySimulationReq</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.ApplySimulationReq.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.ApplySimulationReq.simulation"><code class="name">var <span class="ident">simulation</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.ApplySimulationReq.simulation</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.ApplySimulationResp"><code class="flex name class">
+<span>class <span class="ident">ApplySimulationResp</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.ApplySimulationResp.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.DropSimulationReq"><code class="flex name class">
+<span>class <span class="ident">DropSimulationReq</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.DropSimulationReq.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.DropSimulationReq.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.DropSimulationReq.name</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.DropSimulationResp"><code class="flex name class">
+<span>class <span class="ident">DropSimulationResp</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.DropSimulationResp.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.GetAttributeReq"><code class="flex name class">
+<span>class <span class="ident">GetAttributeReq</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.GetAttributeReq.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.GetAttributeReq.attribute"><code class="name">var <span class="ident">attribute</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.GetAttributeReq.attribute</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.GetAttributeResp"><code class="flex name class">
+<span>class <span class="ident">GetAttributeResp</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.GetAttributeResp.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.GetAttributeResp.value"><code class="name">var <span class="ident">value</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.GetAttributeResp.value</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.GetSimulationReq"><code class="flex name class">
+<span>class <span class="ident">GetSimulationReq</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.GetSimulationReq.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.GetSimulationReq.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.GetSimulationReq.name</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.GetSimulationResp"><code class="flex name class">
+<span>class <span class="ident">GetSimulationResp</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.GetSimulationResp.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.GetSimulationResp.simulation"><code class="name">var <span class="ident">simulation</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.GetSimulationResp.simulation</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.ListSimulationReq"><code class="flex name class">
+<span>class <span class="ident">ListSimulationReq</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.ListSimulationReq.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.ListSimulationResp"><code class="flex name class">
+<span>class <span class="ident">ListSimulationResp</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.ListSimulationResp.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.ListSimulationResp.sim_names"><code class="name">var <span class="ident">sim_names</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.ListSimulationResp.sim_names</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.SetAttributeReq"><code class="flex name class">
+<span>class <span class="ident">SetAttributeReq</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.SetAttributeReq.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.SetAttributeReq.attribute"><code class="name">var <span class="ident">attribute</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.SetAttributeReq.attribute</p></div>
+</dd>
+<dt id="bento.protos.services_pb2.SetAttributeReq.value"><code class="name">var <span class="ident">value</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.SetAttributeReq.value</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.SetAttributeResp"><code class="flex name class">
+<span>class <span class="ident">SetAttributeResp</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.SetAttributeResp.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.StepSimulationReq"><code class="flex name class">
+<span>class <span class="ident">StepSimulationReq</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.StepSimulationReq.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.services_pb2.StepSimulationResp"><code class="flex name class">
+<span>class <span class="ident">StepSimulationResp</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.StepSimulationResp.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="bento.protos" href="index.html">bento.protos</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="bento.protos.services_pb2.ApplySimulationReq" href="#bento.protos.services_pb2.ApplySimulationReq">ApplySimulationReq</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.ApplySimulationReq.DESCRIPTOR" href="#bento.protos.services_pb2.ApplySimulationReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.ApplySimulationReq.simulation" href="#bento.protos.services_pb2.ApplySimulationReq.simulation">simulation</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.ApplySimulationResp" href="#bento.protos.services_pb2.ApplySimulationResp">ApplySimulationResp</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.ApplySimulationResp.DESCRIPTOR" href="#bento.protos.services_pb2.ApplySimulationResp.DESCRIPTOR">DESCRIPTOR</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.DropSimulationReq" href="#bento.protos.services_pb2.DropSimulationReq">DropSimulationReq</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.DropSimulationReq.DESCRIPTOR" href="#bento.protos.services_pb2.DropSimulationReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.DropSimulationReq.name" href="#bento.protos.services_pb2.DropSimulationReq.name">name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.DropSimulationResp" href="#bento.protos.services_pb2.DropSimulationResp">DropSimulationResp</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.DropSimulationResp.DESCRIPTOR" href="#bento.protos.services_pb2.DropSimulationResp.DESCRIPTOR">DESCRIPTOR</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.GetAttributeReq" href="#bento.protos.services_pb2.GetAttributeReq">GetAttributeReq</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.GetAttributeReq.DESCRIPTOR" href="#bento.protos.services_pb2.GetAttributeReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.GetAttributeReq.attribute" href="#bento.protos.services_pb2.GetAttributeReq.attribute">attribute</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.GetAttributeResp" href="#bento.protos.services_pb2.GetAttributeResp">GetAttributeResp</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.GetAttributeResp.DESCRIPTOR" href="#bento.protos.services_pb2.GetAttributeResp.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.GetAttributeResp.value" href="#bento.protos.services_pb2.GetAttributeResp.value">value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.GetSimulationReq" href="#bento.protos.services_pb2.GetSimulationReq">GetSimulationReq</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.GetSimulationReq.DESCRIPTOR" href="#bento.protos.services_pb2.GetSimulationReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.GetSimulationReq.name" href="#bento.protos.services_pb2.GetSimulationReq.name">name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.GetSimulationResp" href="#bento.protos.services_pb2.GetSimulationResp">GetSimulationResp</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.GetSimulationResp.DESCRIPTOR" href="#bento.protos.services_pb2.GetSimulationResp.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.GetSimulationResp.simulation" href="#bento.protos.services_pb2.GetSimulationResp.simulation">simulation</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.ListSimulationReq" href="#bento.protos.services_pb2.ListSimulationReq">ListSimulationReq</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.ListSimulationReq.DESCRIPTOR" href="#bento.protos.services_pb2.ListSimulationReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.ListSimulationResp" href="#bento.protos.services_pb2.ListSimulationResp">ListSimulationResp</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.ListSimulationResp.DESCRIPTOR" href="#bento.protos.services_pb2.ListSimulationResp.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.ListSimulationResp.sim_names" href="#bento.protos.services_pb2.ListSimulationResp.sim_names">sim_names</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.SetAttributeReq" href="#bento.protos.services_pb2.SetAttributeReq">SetAttributeReq</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.SetAttributeReq.DESCRIPTOR" href="#bento.protos.services_pb2.SetAttributeReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.SetAttributeReq.attribute" href="#bento.protos.services_pb2.SetAttributeReq.attribute">attribute</a></code></li>
+<li><code><a title="bento.protos.services_pb2.SetAttributeReq.value" href="#bento.protos.services_pb2.SetAttributeReq.value">value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.SetAttributeResp" href="#bento.protos.services_pb2.SetAttributeResp">SetAttributeResp</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.SetAttributeResp.DESCRIPTOR" href="#bento.protos.services_pb2.SetAttributeResp.DESCRIPTOR">DESCRIPTOR</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.StepSimulationReq" href="#bento.protos.services_pb2.StepSimulationReq">StepSimulationReq</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.StepSimulationReq.DESCRIPTOR" href="#bento.protos.services_pb2.StepSimulationReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.services_pb2.StepSimulationResp" href="#bento.protos.services_pb2.StepSimulationResp">StepSimulationResp</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.services_pb2.StepSimulationResp.DESCRIPTOR" href="#bento.protos.services_pb2.StepSimulationResp.DESCRIPTOR">DESCRIPTOR</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>

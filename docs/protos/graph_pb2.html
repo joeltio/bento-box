@@ -1,0 +1,2140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>bento.protos.graph_pb2 API documentation</title>
+<meta name="description" content="Generated protocol buffer code." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>bento.protos.graph_pb2</code></h1>
+</header>
+<section id="section-intro">
+<p>Generated protocol buffer code.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+# Generated by the protocol buffer compiler.  DO NOT EDIT!
+# source: bento/protos/graph.proto
+&#34;&#34;&#34;Generated protocol buffer code.&#34;&#34;&#34;
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import message as _message
+from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
+# @@protoc_insertion_point(imports)
+
+_sym_db = _symbol_database.Default()
+
+
+from bento.protos import values_pb2 as bento_dot_protos_dot_values__pb2
+from bento.protos import references_pb2 as bento_dot_protos_dot_references__pb2
+
+
+DESCRIPTOR = _descriptor.FileDescriptor(
+  name=&#39;bento/protos/graph.proto&#39;,
+  package=&#39;bento.protos&#39;,
+  syntax=&#39;proto3&#39;,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_pb=b&#39;\n\x18\x62\x65nto/protos/graph.proto\x12\x0c\x62\x65nto.protos\x1a\x19\x62\x65nto/protos/values.proto\x1a\x1d\x62\x65nto/protos/references.proto\&#34;\xb0\x17\n\x04Node\x12,\n\x08\x63onst_op\x18\x01 \x01(\x0b\x32\x18.bento.protos.Node.ConstH\x00\x12\x32\n\x0bretrieve_op\x18\x02 \x01(\x0b\x32\x1b.bento.protos.Node.RetrieveH\x00\x12.\n\tmutate_op\x18\x03 \x01(\x0b\x32\x19.bento.protos.Node.MutateH\x00\x12.\n\tswitch_op\x18\x04 \x01(\x0b\x32\x19.bento.protos.Node.SwitchH\x00\x12(\n\x06\x61\x64\x64_op\x18\x07 \x01(\x0b\x32\x16.bento.protos.Node.AddH\x00\x12(\n\x06sub_op\x18\x08 \x01(\x0b\x32\x16.bento.protos.Node.SubH\x00\x12(\n\x06mul_op\x18\t \x01(\x0b\x32\x16.bento.protos.Node.MulH\x00\x12(\n\x06\x64iv_op\x18\n \x01(\x0b\x32\x16.bento.protos.Node.DivH\x00\x12(\n\x06max_op\x18\x0b \x01(\x0b\x32\x16.bento.protos.Node.MaxH\x00\x12(\n\x06min_op\x18\x0c \x01(\x0b\x32\x16.bento.protos.Node.MinH\x00\x12(\n\x06\x61\x62s_op\x18\r \x01(\x0b\x32\x16.bento.protos.Node.AbsH\x00\x12(\n\x06pow_op\x18\x0e \x01(\x0b\x32\x16.bento.protos.Node.PowH\x00\x12(\n\x06mod_op\x18\x0f \x01(\x0b\x32\x16.bento.protos.Node.ModH\x00\x12(\n\x06sin_op\x18\x10 \x01(\x0b\x32\x16.bento.protos.Node.SinH\x00\x12.\n\tarcsin_op\x18\x11 \x01(\x0b\x32\x19.bento.protos.Node.ArcSinH\x00\x12(\n\x06\x63os_op\x18\x12 \x01(\x0b\x32\x16.bento.protos.Node.CosH\x00\x12.\n\tarccos_op\x18\x13 \x01(\x0b\x32\x19.bento.protos.Node.ArcCosH\x00\x12(\n\x06tan_op\x18\x14 \x01(\x0b\x32\x16.bento.protos.Node.TanH\x00\x12.\n\tarctan_op\x18\x15 \x01(\x0b\x32\x19.bento.protos.Node.ArcTanH\x00\x12.\n\trandom_op\x18\x16 \x01(\x0b\x32\x19.bento.protos.Node.RandomH\x00\x12(\n\x06\x61nd_op\x18\x17 \x01(\x0b\x32\x16.bento.protos.Node.AndH\x00\x12&amp;\n\x05or_op\x18\x18 \x01(\x0b\x32\x15.bento.protos.Node.OrH\x00\x12(\n\x06not_op\x18\x19 \x01(\x0b\x32\x16.bento.protos.Node.NotH\x00\x12&amp;\n\x05\x65q_op\x18\x1a \x01(\x0b\x32\x15.bento.protos.Node.EqH\x00\x12&amp;\n\x05gt_op\x18\x1b \x01(\x0b\x32\x15.bento.protos.Node.GtH\x00\x12&amp;\n\x05lt_op\x18\x1c \x01(\x0b\x32\x15.bento.protos.Node.LtH\x00\x12&amp;\n\x05ge_op\x18\x1d \x01(\x0b\x32\x15.bento.protos.Node.GeH\x00\x12&amp;\n\x05le_op\x18\x1e \x01(\x0b\x32\x15.bento.protos.Node.LeH\x00\x1a\x30\n\x05\x43onst\x12\&#39;\n\nheld_value\x18\x01 \x01(\x0b\x32\x13.bento.protos.Value\x1a=\n\x08Retrieve\x12\x31\n\rretrieve_attr\x18\x01 \x01(\x0b\x32\x1a.bento.protos.AttributeRef\x1a\x62\n\x06Mutate\x12\&#39;\n\x0btarget_node\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12/\n\x0bmutate_attr\x18\x02 \x01(\x0b\x32\x1a.bento.protos.AttributeRef\x1a\x83\x01\n\x06Switch\x12*\n\x0e\x63ondition_node\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12&amp;\n\nfalse_node\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x12%\n\ttrue_node\x18\x03 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03\x41\x64\x64\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03Sub\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03Mul\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03\x44iv\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03Max\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03Min\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a$\n\x03\x41\x62s\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03Pow\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03Mod\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a$\n\x03Sin\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x1a\&#39;\n\x06\x41rcSin\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x1a$\n\x03\x43os\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x1a\&#39;\n\x06\x41rcCos\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x1a$\n\x03Tan\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x1a\&#39;\n\x06\x41rcTan\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x1aK\n\x06Random\x12\x1f\n\x03low\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12 \n\x04high\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x43\n\x03\x41nd\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x42\n\x02Or\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a$\n\x03Not\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x42\n\x02\x45q\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x42\n\x02Gt\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x42\n\x02Lt\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x42\n\x02Ge\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.Node\x1a\x42\n\x02Le\x12\x1d\n\x01x\x18\x01 \x01(\x0b\x32\x12.bento.protos.Node\x12\x1d\n\x01y\x18\x02 \x01(\x0b\x32\x12.bento.protos.NodeB\x04\n\x02op\&#34;`\n\x05Graph\x12+\n\x06inputs\x18\x01 \x03(\x0b\x32\x1b.bento.protos.Node.Retrieve\x12*\n\x07outputs\x18\x02 \x03(\x0b\x32\x19.bento.protos.Node.Mutateb\x06proto3&#39;
+  ,
+  dependencies=[bento_dot_protos_dot_values__pb2.DESCRIPTOR,bento_dot_protos_dot_references__pb2.DESCRIPTOR,])
+
+
+
+
+_NODE_CONST = _descriptor.Descriptor(
+  name=&#39;Const&#39;,
+  full_name=&#39;bento.protos.Node.Const&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;held_value&#39;, full_name=&#39;bento.protos.Node.Const.held_value&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1323,
+  serialized_end=1371,
+)
+
+_NODE_RETRIEVE = _descriptor.Descriptor(
+  name=&#39;Retrieve&#39;,
+  full_name=&#39;bento.protos.Node.Retrieve&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;retrieve_attr&#39;, full_name=&#39;bento.protos.Node.Retrieve.retrieve_attr&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1373,
+  serialized_end=1434,
+)
+
+_NODE_MUTATE = _descriptor.Descriptor(
+  name=&#39;Mutate&#39;,
+  full_name=&#39;bento.protos.Node.Mutate&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;target_node&#39;, full_name=&#39;bento.protos.Node.Mutate.target_node&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;mutate_attr&#39;, full_name=&#39;bento.protos.Node.Mutate.mutate_attr&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1436,
+  serialized_end=1534,
+)
+
+_NODE_SWITCH = _descriptor.Descriptor(
+  name=&#39;Switch&#39;,
+  full_name=&#39;bento.protos.Node.Switch&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;condition_node&#39;, full_name=&#39;bento.protos.Node.Switch.condition_node&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;false_node&#39;, full_name=&#39;bento.protos.Node.Switch.false_node&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;true_node&#39;, full_name=&#39;bento.protos.Node.Switch.true_node&#39;, index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1537,
+  serialized_end=1668,
+)
+
+_NODE_ADD = _descriptor.Descriptor(
+  name=&#39;Add&#39;,
+  full_name=&#39;bento.protos.Node.Add&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Add.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Add.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1670,
+  serialized_end=1737,
+)
+
+_NODE_SUB = _descriptor.Descriptor(
+  name=&#39;Sub&#39;,
+  full_name=&#39;bento.protos.Node.Sub&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Sub.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Sub.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1739,
+  serialized_end=1806,
+)
+
+_NODE_MUL = _descriptor.Descriptor(
+  name=&#39;Mul&#39;,
+  full_name=&#39;bento.protos.Node.Mul&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Mul.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Mul.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1808,
+  serialized_end=1875,
+)
+
+_NODE_DIV = _descriptor.Descriptor(
+  name=&#39;Div&#39;,
+  full_name=&#39;bento.protos.Node.Div&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Div.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Div.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1877,
+  serialized_end=1944,
+)
+
+_NODE_MAX = _descriptor.Descriptor(
+  name=&#39;Max&#39;,
+  full_name=&#39;bento.protos.Node.Max&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Max.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Max.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1946,
+  serialized_end=2013,
+)
+
+_NODE_MIN = _descriptor.Descriptor(
+  name=&#39;Min&#39;,
+  full_name=&#39;bento.protos.Node.Min&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Min.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Min.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2015,
+  serialized_end=2082,
+)
+
+_NODE_ABS = _descriptor.Descriptor(
+  name=&#39;Abs&#39;,
+  full_name=&#39;bento.protos.Node.Abs&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Abs.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2084,
+  serialized_end=2120,
+)
+
+_NODE_POW = _descriptor.Descriptor(
+  name=&#39;Pow&#39;,
+  full_name=&#39;bento.protos.Node.Pow&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Pow.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Pow.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2122,
+  serialized_end=2189,
+)
+
+_NODE_MOD = _descriptor.Descriptor(
+  name=&#39;Mod&#39;,
+  full_name=&#39;bento.protos.Node.Mod&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Mod.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Mod.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2191,
+  serialized_end=2258,
+)
+
+_NODE_SIN = _descriptor.Descriptor(
+  name=&#39;Sin&#39;,
+  full_name=&#39;bento.protos.Node.Sin&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Sin.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2260,
+  serialized_end=2296,
+)
+
+_NODE_ARCSIN = _descriptor.Descriptor(
+  name=&#39;ArcSin&#39;,
+  full_name=&#39;bento.protos.Node.ArcSin&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.ArcSin.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2298,
+  serialized_end=2337,
+)
+
+_NODE_COS = _descriptor.Descriptor(
+  name=&#39;Cos&#39;,
+  full_name=&#39;bento.protos.Node.Cos&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Cos.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2339,
+  serialized_end=2375,
+)
+
+_NODE_ARCCOS = _descriptor.Descriptor(
+  name=&#39;ArcCos&#39;,
+  full_name=&#39;bento.protos.Node.ArcCos&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.ArcCos.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2377,
+  serialized_end=2416,
+)
+
+_NODE_TAN = _descriptor.Descriptor(
+  name=&#39;Tan&#39;,
+  full_name=&#39;bento.protos.Node.Tan&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Tan.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2418,
+  serialized_end=2454,
+)
+
+_NODE_ARCTAN = _descriptor.Descriptor(
+  name=&#39;ArcTan&#39;,
+  full_name=&#39;bento.protos.Node.ArcTan&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.ArcTan.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2456,
+  serialized_end=2495,
+)
+
+_NODE_RANDOM = _descriptor.Descriptor(
+  name=&#39;Random&#39;,
+  full_name=&#39;bento.protos.Node.Random&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;low&#39;, full_name=&#39;bento.protos.Node.Random.low&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;high&#39;, full_name=&#39;bento.protos.Node.Random.high&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2497,
+  serialized_end=2572,
+)
+
+_NODE_AND = _descriptor.Descriptor(
+  name=&#39;And&#39;,
+  full_name=&#39;bento.protos.Node.And&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.And.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.And.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2574,
+  serialized_end=2641,
+)
+
+_NODE_OR = _descriptor.Descriptor(
+  name=&#39;Or&#39;,
+  full_name=&#39;bento.protos.Node.Or&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Or.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Or.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2643,
+  serialized_end=2709,
+)
+
+_NODE_NOT = _descriptor.Descriptor(
+  name=&#39;Not&#39;,
+  full_name=&#39;bento.protos.Node.Not&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Not.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2711,
+  serialized_end=2747,
+)
+
+_NODE_EQ = _descriptor.Descriptor(
+  name=&#39;Eq&#39;,
+  full_name=&#39;bento.protos.Node.Eq&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Eq.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Eq.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2749,
+  serialized_end=2815,
+)
+
+_NODE_GT = _descriptor.Descriptor(
+  name=&#39;Gt&#39;,
+  full_name=&#39;bento.protos.Node.Gt&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Gt.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Gt.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2817,
+  serialized_end=2883,
+)
+
+_NODE_LT = _descriptor.Descriptor(
+  name=&#39;Lt&#39;,
+  full_name=&#39;bento.protos.Node.Lt&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Lt.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Lt.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2885,
+  serialized_end=2951,
+)
+
+_NODE_GE = _descriptor.Descriptor(
+  name=&#39;Ge&#39;,
+  full_name=&#39;bento.protos.Node.Ge&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Ge.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Ge.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2953,
+  serialized_end=3019,
+)
+
+_NODE_LE = _descriptor.Descriptor(
+  name=&#39;Le&#39;,
+  full_name=&#39;bento.protos.Node.Le&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;x&#39;, full_name=&#39;bento.protos.Node.Le.x&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;y&#39;, full_name=&#39;bento.protos.Node.Le.y&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3021,
+  serialized_end=3087,
+)
+
+_NODE = _descriptor.Descriptor(
+  name=&#39;Node&#39;,
+  full_name=&#39;bento.protos.Node&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;const_op&#39;, full_name=&#39;bento.protos.Node.const_op&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;retrieve_op&#39;, full_name=&#39;bento.protos.Node.retrieve_op&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;mutate_op&#39;, full_name=&#39;bento.protos.Node.mutate_op&#39;, index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;switch_op&#39;, full_name=&#39;bento.protos.Node.switch_op&#39;, index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;add_op&#39;, full_name=&#39;bento.protos.Node.add_op&#39;, index=4,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;sub_op&#39;, full_name=&#39;bento.protos.Node.sub_op&#39;, index=5,
+      number=8, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;mul_op&#39;, full_name=&#39;bento.protos.Node.mul_op&#39;, index=6,
+      number=9, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;div_op&#39;, full_name=&#39;bento.protos.Node.div_op&#39;, index=7,
+      number=10, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;max_op&#39;, full_name=&#39;bento.protos.Node.max_op&#39;, index=8,
+      number=11, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;min_op&#39;, full_name=&#39;bento.protos.Node.min_op&#39;, index=9,
+      number=12, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;abs_op&#39;, full_name=&#39;bento.protos.Node.abs_op&#39;, index=10,
+      number=13, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;pow_op&#39;, full_name=&#39;bento.protos.Node.pow_op&#39;, index=11,
+      number=14, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;mod_op&#39;, full_name=&#39;bento.protos.Node.mod_op&#39;, index=12,
+      number=15, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;sin_op&#39;, full_name=&#39;bento.protos.Node.sin_op&#39;, index=13,
+      number=16, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;arcsin_op&#39;, full_name=&#39;bento.protos.Node.arcsin_op&#39;, index=14,
+      number=17, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;cos_op&#39;, full_name=&#39;bento.protos.Node.cos_op&#39;, index=15,
+      number=18, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;arccos_op&#39;, full_name=&#39;bento.protos.Node.arccos_op&#39;, index=16,
+      number=19, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;tan_op&#39;, full_name=&#39;bento.protos.Node.tan_op&#39;, index=17,
+      number=20, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;arctan_op&#39;, full_name=&#39;bento.protos.Node.arctan_op&#39;, index=18,
+      number=21, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;random_op&#39;, full_name=&#39;bento.protos.Node.random_op&#39;, index=19,
+      number=22, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;and_op&#39;, full_name=&#39;bento.protos.Node.and_op&#39;, index=20,
+      number=23, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;or_op&#39;, full_name=&#39;bento.protos.Node.or_op&#39;, index=21,
+      number=24, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;not_op&#39;, full_name=&#39;bento.protos.Node.not_op&#39;, index=22,
+      number=25, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;eq_op&#39;, full_name=&#39;bento.protos.Node.eq_op&#39;, index=23,
+      number=26, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;gt_op&#39;, full_name=&#39;bento.protos.Node.gt_op&#39;, index=24,
+      number=27, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;lt_op&#39;, full_name=&#39;bento.protos.Node.lt_op&#39;, index=25,
+      number=28, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;ge_op&#39;, full_name=&#39;bento.protos.Node.ge_op&#39;, index=26,
+      number=29, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;le_op&#39;, full_name=&#39;bento.protos.Node.le_op&#39;, index=27,
+      number=30, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_NODE_CONST, _NODE_RETRIEVE, _NODE_MUTATE, _NODE_SWITCH, _NODE_ADD, _NODE_SUB, _NODE_MUL, _NODE_DIV, _NODE_MAX, _NODE_MIN, _NODE_ABS, _NODE_POW, _NODE_MOD, _NODE_SIN, _NODE_ARCSIN, _NODE_COS, _NODE_ARCCOS, _NODE_TAN, _NODE_ARCTAN, _NODE_RANDOM, _NODE_AND, _NODE_OR, _NODE_NOT, _NODE_EQ, _NODE_GT, _NODE_LT, _NODE_GE, _NODE_LE, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name=&#39;op&#39;, full_name=&#39;bento.protos.Node.op&#39;,
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=101,
+  serialized_end=3093,
+)
+
+
+_GRAPH = _descriptor.Descriptor(
+  name=&#39;Graph&#39;,
+  full_name=&#39;bento.protos.Graph&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;inputs&#39;, full_name=&#39;bento.protos.Graph.inputs&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;outputs&#39;, full_name=&#39;bento.protos.Graph.outputs&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax=&#39;proto3&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3095,
+  serialized_end=3191,
+)
+
+_NODE_CONST.fields_by_name[&#39;held_value&#39;].message_type = bento_dot_protos_dot_values__pb2._VALUE
+_NODE_CONST.containing_type = _NODE
+_NODE_RETRIEVE.fields_by_name[&#39;retrieve_attr&#39;].message_type = bento_dot_protos_dot_references__pb2._ATTRIBUTEREF
+_NODE_RETRIEVE.containing_type = _NODE
+_NODE_MUTATE.fields_by_name[&#39;target_node&#39;].message_type = _NODE
+_NODE_MUTATE.fields_by_name[&#39;mutate_attr&#39;].message_type = bento_dot_protos_dot_references__pb2._ATTRIBUTEREF
+_NODE_MUTATE.containing_type = _NODE
+_NODE_SWITCH.fields_by_name[&#39;condition_node&#39;].message_type = _NODE
+_NODE_SWITCH.fields_by_name[&#39;false_node&#39;].message_type = _NODE
+_NODE_SWITCH.fields_by_name[&#39;true_node&#39;].message_type = _NODE
+_NODE_SWITCH.containing_type = _NODE
+_NODE_ADD.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_ADD.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_ADD.containing_type = _NODE
+_NODE_SUB.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_SUB.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_SUB.containing_type = _NODE
+_NODE_MUL.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_MUL.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_MUL.containing_type = _NODE
+_NODE_DIV.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_DIV.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_DIV.containing_type = _NODE
+_NODE_MAX.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_MAX.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_MAX.containing_type = _NODE
+_NODE_MIN.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_MIN.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_MIN.containing_type = _NODE
+_NODE_ABS.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_ABS.containing_type = _NODE
+_NODE_POW.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_POW.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_POW.containing_type = _NODE
+_NODE_MOD.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_MOD.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_MOD.containing_type = _NODE
+_NODE_SIN.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_SIN.containing_type = _NODE
+_NODE_ARCSIN.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_ARCSIN.containing_type = _NODE
+_NODE_COS.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_COS.containing_type = _NODE
+_NODE_ARCCOS.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_ARCCOS.containing_type = _NODE
+_NODE_TAN.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_TAN.containing_type = _NODE
+_NODE_ARCTAN.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_ARCTAN.containing_type = _NODE
+_NODE_RANDOM.fields_by_name[&#39;low&#39;].message_type = _NODE
+_NODE_RANDOM.fields_by_name[&#39;high&#39;].message_type = _NODE
+_NODE_RANDOM.containing_type = _NODE
+_NODE_AND.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_AND.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_AND.containing_type = _NODE
+_NODE_OR.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_OR.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_OR.containing_type = _NODE
+_NODE_NOT.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_NOT.containing_type = _NODE
+_NODE_EQ.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_EQ.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_EQ.containing_type = _NODE
+_NODE_GT.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_GT.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_GT.containing_type = _NODE
+_NODE_LT.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_LT.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_LT.containing_type = _NODE
+_NODE_GE.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_GE.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_GE.containing_type = _NODE
+_NODE_LE.fields_by_name[&#39;x&#39;].message_type = _NODE
+_NODE_LE.fields_by_name[&#39;y&#39;].message_type = _NODE
+_NODE_LE.containing_type = _NODE
+_NODE.fields_by_name[&#39;const_op&#39;].message_type = _NODE_CONST
+_NODE.fields_by_name[&#39;retrieve_op&#39;].message_type = _NODE_RETRIEVE
+_NODE.fields_by_name[&#39;mutate_op&#39;].message_type = _NODE_MUTATE
+_NODE.fields_by_name[&#39;switch_op&#39;].message_type = _NODE_SWITCH
+_NODE.fields_by_name[&#39;add_op&#39;].message_type = _NODE_ADD
+_NODE.fields_by_name[&#39;sub_op&#39;].message_type = _NODE_SUB
+_NODE.fields_by_name[&#39;mul_op&#39;].message_type = _NODE_MUL
+_NODE.fields_by_name[&#39;div_op&#39;].message_type = _NODE_DIV
+_NODE.fields_by_name[&#39;max_op&#39;].message_type = _NODE_MAX
+_NODE.fields_by_name[&#39;min_op&#39;].message_type = _NODE_MIN
+_NODE.fields_by_name[&#39;abs_op&#39;].message_type = _NODE_ABS
+_NODE.fields_by_name[&#39;pow_op&#39;].message_type = _NODE_POW
+_NODE.fields_by_name[&#39;mod_op&#39;].message_type = _NODE_MOD
+_NODE.fields_by_name[&#39;sin_op&#39;].message_type = _NODE_SIN
+_NODE.fields_by_name[&#39;arcsin_op&#39;].message_type = _NODE_ARCSIN
+_NODE.fields_by_name[&#39;cos_op&#39;].message_type = _NODE_COS
+_NODE.fields_by_name[&#39;arccos_op&#39;].message_type = _NODE_ARCCOS
+_NODE.fields_by_name[&#39;tan_op&#39;].message_type = _NODE_TAN
+_NODE.fields_by_name[&#39;arctan_op&#39;].message_type = _NODE_ARCTAN
+_NODE.fields_by_name[&#39;random_op&#39;].message_type = _NODE_RANDOM
+_NODE.fields_by_name[&#39;and_op&#39;].message_type = _NODE_AND
+_NODE.fields_by_name[&#39;or_op&#39;].message_type = _NODE_OR
+_NODE.fields_by_name[&#39;not_op&#39;].message_type = _NODE_NOT
+_NODE.fields_by_name[&#39;eq_op&#39;].message_type = _NODE_EQ
+_NODE.fields_by_name[&#39;gt_op&#39;].message_type = _NODE_GT
+_NODE.fields_by_name[&#39;lt_op&#39;].message_type = _NODE_LT
+_NODE.fields_by_name[&#39;ge_op&#39;].message_type = _NODE_GE
+_NODE.fields_by_name[&#39;le_op&#39;].message_type = _NODE_LE
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;const_op&#39;])
+_NODE.fields_by_name[&#39;const_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;retrieve_op&#39;])
+_NODE.fields_by_name[&#39;retrieve_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;mutate_op&#39;])
+_NODE.fields_by_name[&#39;mutate_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;switch_op&#39;])
+_NODE.fields_by_name[&#39;switch_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;add_op&#39;])
+_NODE.fields_by_name[&#39;add_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;sub_op&#39;])
+_NODE.fields_by_name[&#39;sub_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;mul_op&#39;])
+_NODE.fields_by_name[&#39;mul_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;div_op&#39;])
+_NODE.fields_by_name[&#39;div_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;max_op&#39;])
+_NODE.fields_by_name[&#39;max_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;min_op&#39;])
+_NODE.fields_by_name[&#39;min_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;abs_op&#39;])
+_NODE.fields_by_name[&#39;abs_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;pow_op&#39;])
+_NODE.fields_by_name[&#39;pow_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;mod_op&#39;])
+_NODE.fields_by_name[&#39;mod_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;sin_op&#39;])
+_NODE.fields_by_name[&#39;sin_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;arcsin_op&#39;])
+_NODE.fields_by_name[&#39;arcsin_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;cos_op&#39;])
+_NODE.fields_by_name[&#39;cos_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;arccos_op&#39;])
+_NODE.fields_by_name[&#39;arccos_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;tan_op&#39;])
+_NODE.fields_by_name[&#39;tan_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;arctan_op&#39;])
+_NODE.fields_by_name[&#39;arctan_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;random_op&#39;])
+_NODE.fields_by_name[&#39;random_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;and_op&#39;])
+_NODE.fields_by_name[&#39;and_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;or_op&#39;])
+_NODE.fields_by_name[&#39;or_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;not_op&#39;])
+_NODE.fields_by_name[&#39;not_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;eq_op&#39;])
+_NODE.fields_by_name[&#39;eq_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;gt_op&#39;])
+_NODE.fields_by_name[&#39;gt_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;lt_op&#39;])
+_NODE.fields_by_name[&#39;lt_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;ge_op&#39;])
+_NODE.fields_by_name[&#39;ge_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_NODE.oneofs_by_name[&#39;op&#39;].fields.append(
+  _NODE.fields_by_name[&#39;le_op&#39;])
+_NODE.fields_by_name[&#39;le_op&#39;].containing_oneof = _NODE.oneofs_by_name[&#39;op&#39;]
+_GRAPH.fields_by_name[&#39;inputs&#39;].message_type = _NODE_RETRIEVE
+_GRAPH.fields_by_name[&#39;outputs&#39;].message_type = _NODE_MUTATE
+DESCRIPTOR.message_types_by_name[&#39;Node&#39;] = _NODE
+DESCRIPTOR.message_types_by_name[&#39;Graph&#39;] = _GRAPH
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+Node = _reflection.GeneratedProtocolMessageType(&#39;Node&#39;, (_message.Message,), {
+
+  &#39;Const&#39; : _reflection.GeneratedProtocolMessageType(&#39;Const&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_CONST,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Const)
+    })
+  ,
+
+  &#39;Retrieve&#39; : _reflection.GeneratedProtocolMessageType(&#39;Retrieve&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_RETRIEVE,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Retrieve)
+    })
+  ,
+
+  &#39;Mutate&#39; : _reflection.GeneratedProtocolMessageType(&#39;Mutate&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_MUTATE,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Mutate)
+    })
+  ,
+
+  &#39;Switch&#39; : _reflection.GeneratedProtocolMessageType(&#39;Switch&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_SWITCH,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Switch)
+    })
+  ,
+
+  &#39;Add&#39; : _reflection.GeneratedProtocolMessageType(&#39;Add&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_ADD,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Add)
+    })
+  ,
+
+  &#39;Sub&#39; : _reflection.GeneratedProtocolMessageType(&#39;Sub&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_SUB,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Sub)
+    })
+  ,
+
+  &#39;Mul&#39; : _reflection.GeneratedProtocolMessageType(&#39;Mul&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_MUL,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Mul)
+    })
+  ,
+
+  &#39;Div&#39; : _reflection.GeneratedProtocolMessageType(&#39;Div&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_DIV,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Div)
+    })
+  ,
+
+  &#39;Max&#39; : _reflection.GeneratedProtocolMessageType(&#39;Max&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_MAX,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Max)
+    })
+  ,
+
+  &#39;Min&#39; : _reflection.GeneratedProtocolMessageType(&#39;Min&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_MIN,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Min)
+    })
+  ,
+
+  &#39;Abs&#39; : _reflection.GeneratedProtocolMessageType(&#39;Abs&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_ABS,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Abs)
+    })
+  ,
+
+  &#39;Pow&#39; : _reflection.GeneratedProtocolMessageType(&#39;Pow&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_POW,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Pow)
+    })
+  ,
+
+  &#39;Mod&#39; : _reflection.GeneratedProtocolMessageType(&#39;Mod&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_MOD,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Mod)
+    })
+  ,
+
+  &#39;Sin&#39; : _reflection.GeneratedProtocolMessageType(&#39;Sin&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_SIN,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Sin)
+    })
+  ,
+
+  &#39;ArcSin&#39; : _reflection.GeneratedProtocolMessageType(&#39;ArcSin&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_ARCSIN,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.ArcSin)
+    })
+  ,
+
+  &#39;Cos&#39; : _reflection.GeneratedProtocolMessageType(&#39;Cos&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_COS,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Cos)
+    })
+  ,
+
+  &#39;ArcCos&#39; : _reflection.GeneratedProtocolMessageType(&#39;ArcCos&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_ARCCOS,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.ArcCos)
+    })
+  ,
+
+  &#39;Tan&#39; : _reflection.GeneratedProtocolMessageType(&#39;Tan&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_TAN,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Tan)
+    })
+  ,
+
+  &#39;ArcTan&#39; : _reflection.GeneratedProtocolMessageType(&#39;ArcTan&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_ARCTAN,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.ArcTan)
+    })
+  ,
+
+  &#39;Random&#39; : _reflection.GeneratedProtocolMessageType(&#39;Random&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_RANDOM,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Random)
+    })
+  ,
+
+  &#39;And&#39; : _reflection.GeneratedProtocolMessageType(&#39;And&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_AND,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.And)
+    })
+  ,
+
+  &#39;Or&#39; : _reflection.GeneratedProtocolMessageType(&#39;Or&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_OR,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Or)
+    })
+  ,
+
+  &#39;Not&#39; : _reflection.GeneratedProtocolMessageType(&#39;Not&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_NOT,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Not)
+    })
+  ,
+
+  &#39;Eq&#39; : _reflection.GeneratedProtocolMessageType(&#39;Eq&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_EQ,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Eq)
+    })
+  ,
+
+  &#39;Gt&#39; : _reflection.GeneratedProtocolMessageType(&#39;Gt&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_GT,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Gt)
+    })
+  ,
+
+  &#39;Lt&#39; : _reflection.GeneratedProtocolMessageType(&#39;Lt&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_LT,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Lt)
+    })
+  ,
+
+  &#39;Ge&#39; : _reflection.GeneratedProtocolMessageType(&#39;Ge&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_GE,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Ge)
+    })
+  ,
+
+  &#39;Le&#39; : _reflection.GeneratedProtocolMessageType(&#39;Le&#39;, (_message.Message,), {
+    &#39;DESCRIPTOR&#39; : _NODE_LE,
+    &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+    # @@protoc_insertion_point(class_scope:bento.protos.Node.Le)
+    })
+  ,
+  &#39;DESCRIPTOR&#39; : _NODE,
+  &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.Node)
+  })
+_sym_db.RegisterMessage(Node)
+_sym_db.RegisterMessage(Node.Const)
+_sym_db.RegisterMessage(Node.Retrieve)
+_sym_db.RegisterMessage(Node.Mutate)
+_sym_db.RegisterMessage(Node.Switch)
+_sym_db.RegisterMessage(Node.Add)
+_sym_db.RegisterMessage(Node.Sub)
+_sym_db.RegisterMessage(Node.Mul)
+_sym_db.RegisterMessage(Node.Div)
+_sym_db.RegisterMessage(Node.Max)
+_sym_db.RegisterMessage(Node.Min)
+_sym_db.RegisterMessage(Node.Abs)
+_sym_db.RegisterMessage(Node.Pow)
+_sym_db.RegisterMessage(Node.Mod)
+_sym_db.RegisterMessage(Node.Sin)
+_sym_db.RegisterMessage(Node.ArcSin)
+_sym_db.RegisterMessage(Node.Cos)
+_sym_db.RegisterMessage(Node.ArcCos)
+_sym_db.RegisterMessage(Node.Tan)
+_sym_db.RegisterMessage(Node.ArcTan)
+_sym_db.RegisterMessage(Node.Random)
+_sym_db.RegisterMessage(Node.And)
+_sym_db.RegisterMessage(Node.Or)
+_sym_db.RegisterMessage(Node.Not)
+_sym_db.RegisterMessage(Node.Eq)
+_sym_db.RegisterMessage(Node.Gt)
+_sym_db.RegisterMessage(Node.Lt)
+_sym_db.RegisterMessage(Node.Ge)
+_sym_db.RegisterMessage(Node.Le)
+
+Graph = _reflection.GeneratedProtocolMessageType(&#39;Graph&#39;, (_message.Message,), {
+  &#39;DESCRIPTOR&#39; : _GRAPH,
+  &#39;__module__&#39; : &#39;bento.protos.graph_pb2&#39;
+  # @@protoc_insertion_point(class_scope:bento.protos.Graph)
+  })
+_sym_db.RegisterMessage(Graph)
+
+
+# @@protoc_insertion_point(module_scope)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="bento.protos.graph_pb2.Graph"><code class="flex name class">
+<span>class <span class="ident">Graph</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.graph_pb2.Graph.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.graph_pb2.Graph.inputs"><code class="name">var <span class="ident">inputs</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Graph.inputs</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Graph.outputs"><code class="name">var <span class="ident">outputs</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Graph.outputs</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="bento.protos.graph_pb2.Node"><code class="flex name class">
+<span>class <span class="ident">Node</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="bento.protos.graph_pb2.Node.Abs"><code class="name">var <span class="ident">Abs</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Add"><code class="name">var <span class="ident">Add</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.And"><code class="name">var <span class="ident">And</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.ArcCos"><code class="name">var <span class="ident">ArcCos</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.ArcSin"><code class="name">var <span class="ident">ArcSin</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.ArcTan"><code class="name">var <span class="ident">ArcTan</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Const"><code class="name">var <span class="ident">Const</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Cos"><code class="name">var <span class="ident">Cos</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Div"><code class="name">var <span class="ident">Div</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Eq"><code class="name">var <span class="ident">Eq</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Ge"><code class="name">var <span class="ident">Ge</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Gt"><code class="name">var <span class="ident">Gt</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Le"><code class="name">var <span class="ident">Le</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Lt"><code class="name">var <span class="ident">Lt</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Max"><code class="name">var <span class="ident">Max</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Min"><code class="name">var <span class="ident">Min</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Mod"><code class="name">var <span class="ident">Mod</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Mul"><code class="name">var <span class="ident">Mul</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Mutate"><code class="name">var <span class="ident">Mutate</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Not"><code class="name">var <span class="ident">Not</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Or"><code class="name">var <span class="ident">Or</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Pow"><code class="name">var <span class="ident">Pow</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Random"><code class="name">var <span class="ident">Random</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Retrieve"><code class="name">var <span class="ident">Retrieve</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Sin"><code class="name">var <span class="ident">Sin</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Sub"><code class="name">var <span class="ident">Sub</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Switch"><code class="name">var <span class="ident">Switch</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.Tan"><code class="name">var <span class="ident">Tan</span></code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.graph_pb2.Node.abs_op"><code class="name">var <span class="ident">abs_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.abs_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.add_op"><code class="name">var <span class="ident">add_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.add_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.and_op"><code class="name">var <span class="ident">and_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.and_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.arccos_op"><code class="name">var <span class="ident">arccos_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.arccos_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.arcsin_op"><code class="name">var <span class="ident">arcsin_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.arcsin_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.arctan_op"><code class="name">var <span class="ident">arctan_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.arctan_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.const_op"><code class="name">var <span class="ident">const_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.const_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.cos_op"><code class="name">var <span class="ident">cos_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.cos_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.div_op"><code class="name">var <span class="ident">div_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.div_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.eq_op"><code class="name">var <span class="ident">eq_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.eq_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.ge_op"><code class="name">var <span class="ident">ge_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.ge_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.gt_op"><code class="name">var <span class="ident">gt_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.gt_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.le_op"><code class="name">var <span class="ident">le_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.le_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.lt_op"><code class="name">var <span class="ident">lt_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.lt_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.max_op"><code class="name">var <span class="ident">max_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.max_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.min_op"><code class="name">var <span class="ident">min_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.min_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.mod_op"><code class="name">var <span class="ident">mod_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.mod_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.mul_op"><code class="name">var <span class="ident">mul_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.mul_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.mutate_op"><code class="name">var <span class="ident">mutate_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.mutate_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.not_op"><code class="name">var <span class="ident">not_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.not_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.or_op"><code class="name">var <span class="ident">or_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.or_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.pow_op"><code class="name">var <span class="ident">pow_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.pow_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.random_op"><code class="name">var <span class="ident">random_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.random_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.retrieve_op"><code class="name">var <span class="ident">retrieve_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.retrieve_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.sin_op"><code class="name">var <span class="ident">sin_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.sin_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.sub_op"><code class="name">var <span class="ident">sub_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.sub_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.switch_op"><code class="name">var <span class="ident">switch_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.switch_op</p></div>
+</dd>
+<dt id="bento.protos.graph_pb2.Node.tan_op"><code class="name">var <span class="ident">tan_op</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Node.tan_op</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="bento.protos" href="index.html">bento.protos</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="bento.protos.graph_pb2.Graph" href="#bento.protos.graph_pb2.Graph">Graph</a></code></h4>
+<ul class="">
+<li><code><a title="bento.protos.graph_pb2.Graph.DESCRIPTOR" href="#bento.protos.graph_pb2.Graph.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Graph.inputs" href="#bento.protos.graph_pb2.Graph.inputs">inputs</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Graph.outputs" href="#bento.protos.graph_pb2.Graph.outputs">outputs</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="bento.protos.graph_pb2.Node" href="#bento.protos.graph_pb2.Node">Node</a></code></h4>
+<ul class="two-column">
+<li><code><a title="bento.protos.graph_pb2.Node.Abs" href="#bento.protos.graph_pb2.Node.Abs">Abs</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Add" href="#bento.protos.graph_pb2.Node.Add">Add</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.And" href="#bento.protos.graph_pb2.Node.And">And</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.ArcCos" href="#bento.protos.graph_pb2.Node.ArcCos">ArcCos</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.ArcSin" href="#bento.protos.graph_pb2.Node.ArcSin">ArcSin</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.ArcTan" href="#bento.protos.graph_pb2.Node.ArcTan">ArcTan</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Const" href="#bento.protos.graph_pb2.Node.Const">Const</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Cos" href="#bento.protos.graph_pb2.Node.Cos">Cos</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.DESCRIPTOR" href="#bento.protos.graph_pb2.Node.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Div" href="#bento.protos.graph_pb2.Node.Div">Div</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Eq" href="#bento.protos.graph_pb2.Node.Eq">Eq</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Ge" href="#bento.protos.graph_pb2.Node.Ge">Ge</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Gt" href="#bento.protos.graph_pb2.Node.Gt">Gt</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Le" href="#bento.protos.graph_pb2.Node.Le">Le</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Lt" href="#bento.protos.graph_pb2.Node.Lt">Lt</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Max" href="#bento.protos.graph_pb2.Node.Max">Max</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Min" href="#bento.protos.graph_pb2.Node.Min">Min</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Mod" href="#bento.protos.graph_pb2.Node.Mod">Mod</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Mul" href="#bento.protos.graph_pb2.Node.Mul">Mul</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Mutate" href="#bento.protos.graph_pb2.Node.Mutate">Mutate</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Not" href="#bento.protos.graph_pb2.Node.Not">Not</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Or" href="#bento.protos.graph_pb2.Node.Or">Or</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Pow" href="#bento.protos.graph_pb2.Node.Pow">Pow</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Random" href="#bento.protos.graph_pb2.Node.Random">Random</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Retrieve" href="#bento.protos.graph_pb2.Node.Retrieve">Retrieve</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Sin" href="#bento.protos.graph_pb2.Node.Sin">Sin</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Sub" href="#bento.protos.graph_pb2.Node.Sub">Sub</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Switch" href="#bento.protos.graph_pb2.Node.Switch">Switch</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.Tan" href="#bento.protos.graph_pb2.Node.Tan">Tan</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.abs_op" href="#bento.protos.graph_pb2.Node.abs_op">abs_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.add_op" href="#bento.protos.graph_pb2.Node.add_op">add_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.and_op" href="#bento.protos.graph_pb2.Node.and_op">and_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.arccos_op" href="#bento.protos.graph_pb2.Node.arccos_op">arccos_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.arcsin_op" href="#bento.protos.graph_pb2.Node.arcsin_op">arcsin_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.arctan_op" href="#bento.protos.graph_pb2.Node.arctan_op">arctan_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.const_op" href="#bento.protos.graph_pb2.Node.const_op">const_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.cos_op" href="#bento.protos.graph_pb2.Node.cos_op">cos_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.div_op" href="#bento.protos.graph_pb2.Node.div_op">div_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.eq_op" href="#bento.protos.graph_pb2.Node.eq_op">eq_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.ge_op" href="#bento.protos.graph_pb2.Node.ge_op">ge_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.gt_op" href="#bento.protos.graph_pb2.Node.gt_op">gt_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.le_op" href="#bento.protos.graph_pb2.Node.le_op">le_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.lt_op" href="#bento.protos.graph_pb2.Node.lt_op">lt_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.max_op" href="#bento.protos.graph_pb2.Node.max_op">max_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.min_op" href="#bento.protos.graph_pb2.Node.min_op">min_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.mod_op" href="#bento.protos.graph_pb2.Node.mod_op">mod_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.mul_op" href="#bento.protos.graph_pb2.Node.mul_op">mul_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.mutate_op" href="#bento.protos.graph_pb2.Node.mutate_op">mutate_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.not_op" href="#bento.protos.graph_pb2.Node.not_op">not_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.or_op" href="#bento.protos.graph_pb2.Node.or_op">or_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.pow_op" href="#bento.protos.graph_pb2.Node.pow_op">pow_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.random_op" href="#bento.protos.graph_pb2.Node.random_op">random_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.retrieve_op" href="#bento.protos.graph_pb2.Node.retrieve_op">retrieve_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.sin_op" href="#bento.protos.graph_pb2.Node.sin_op">sin_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.sub_op" href="#bento.protos.graph_pb2.Node.sub_op">sub_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.switch_op" href="#bento.protos.graph_pb2.Node.switch_op">switch_op</a></code></li>
+<li><code><a title="bento.protos.graph_pb2.Node.tan_op" href="#bento.protos.graph_pb2.Node.tan_op">tan_op</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>
