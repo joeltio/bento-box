@@ -24,5 +24,5 @@ COPY protos /repo/protos
 COPY sim /repo/sim
 RUN make clean-sim build-sim
 
-# run simlulator
+# run simulator
 CMD make run-sim
