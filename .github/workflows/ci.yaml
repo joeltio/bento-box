@@ -84,3 +84,20 @@ jobs:
       - name: "Unit Test bentobox-sdk"
         run: |
           make test-sdk
+
+  # builds docs for the sdk component
+  build-docs-sdk:
+    need: build-test-sdk
+    runs-on: ubuntu-20.04
+    name: "Build & Push bentobox-sdk Docs"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Pull dependencies"
+        run: |
+          make dep-sdk-dev
+      - name: "Build bentobox-sdk Docs"
+        run: |
+          env make build-sdk-docs
