@@ -81,22 +81,6 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.python}}
-
-      # cache pip dependencies to speed up job
-      - name: "Find pip Cache Directory"
-        id: pip-cache-dir
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-      - name: "Retrieve Cached dependencies"
-        uses: actions/cache@v2
-        # ignore the failure of noncritical cache step
-        continue-on-error: true
-        with:
-          path: ${{ steps.pip-cache-dir.outputs.dir }}
-          key: pip-${{ matrix.python }}-${{ matrix.os }}-${{ hashFiles('sdk/requirements*.txt') }}
-          restore-keys: |
-            pip-${{ matrix.python }}-${{ matrix.os }}-
-
       - name: "Pull dependencies"
         run: |
           make dep-sdk-dev
