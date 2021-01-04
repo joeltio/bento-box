@@ -55,10 +55,8 @@ def test_analyze_func():
     fn_asts = [parse_ast(f[1]) for f in n_arg_fns]
     analyzed_asts = [analyze_func(ast) for ast in fn_asts]
     assert all(
-        [
-            get_fn_ast(ast).n_args == expected_n_arg[0]
-            for ast, expected_n_arg in zip(analyzed_asts, n_arg_fns)
-        ]
+        get_fn_ast(ast).n_args == expected_n_arg[0]
+        for ast, expected_n_arg in zip(analyzed_asts, n_arg_fns)
     )
 
     # test docstring detection
