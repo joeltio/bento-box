@@ -155,14 +155,14 @@ class Plotter:
 
     # random number operation
     def random(self, low: Any, high: Any) -> GraphNode:
-        """Creates a Random Node that evaluates to a random float between given `low` and `high`
+        """Creates a Random Node that evaluates to a random float in range [`low`,`high`]
 
         Args:
             low: Expression that evaluates to the lower bound of the random number generated (inclusive).
             high: Expression that evaluates to the upper bound of the random number generated (inclusive).
 
         Returns:
-            Random Graph Node that evaluates to a random float between given `low` and `high`
+            Random Graph Node that evaluates to a random float in range [`low`,`high`]
         """
         low, high = GraphNode.wrap(low), GraphNode.wrap(high)
         return GraphNode(node=Node(random_op=Node.Random(low=low.node, high=high.node)))
