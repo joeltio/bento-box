@@ -37,7 +37,6 @@ def analyze_func(ast: AST) -> AST:
     - `docstr`: the function's docstring if present, otherwise None
     - `is_empty`: whether the function is empty.
     - `is_generator`: whether the function produces a generator via `yield`.
-    - `is_convert_fn`: whether the conversion.
 
     Args:
         ast:
