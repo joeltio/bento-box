@@ -20,7 +20,7 @@ class FuncASTTransform(gast.NodeTransformer):
 
     def visit(self, node: AST) -> AST:
         # recursively visit child nodes
-        new_node = super().visit(node)
+        super().visit(node)
         # on visit: transform node and fix code locations
         new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
         new_node = gast.fix_missing_locations(new_node)
