@@ -64,7 +64,7 @@ def analyze_func(ast: AST) -> AST:
             fn_ast.is_empty = False
         # detect as generator if contains yield statement
         fn_ast.is_generator = any(
-            [isinstance(node, gast.Yield) for node in gast.walk(fn_ast)]
+            isinstance(node, gast.Yield) for node in gast.walk(fn_ast)
         )
 
     return ast
