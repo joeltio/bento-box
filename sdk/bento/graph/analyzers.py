@@ -87,6 +87,7 @@ def analyze_convert_fn(ast: AST) -> AST:
     Returns:
         The given AST with the target convert function annotated as `convert_fn`
     """
+    # TODO(mrzzy): Allow convert_fn with default args ie def convert_fn(g, a=2, b=3):
     # walk through the AST to find the top level node with min nesting
     candidate_fns = [
         n for n in gast.iter_child_nodes(ast) if isinstance(n, FunctionDef)
