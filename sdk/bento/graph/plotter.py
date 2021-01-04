@@ -40,7 +40,7 @@ class Plotter:
         if len(comp_set) != len(components):
             raise ValueError("Given component names should not contain duplicates")
         # retrieve entity for components, create if not does not yet exist
-        if not comp_set in self.entity_map:
+        if comp_set not in self.entity_map:
             self.entity_map[comp_set] = GraphEntity(comp_set)
         return self.entity_map[comp_set]
 
