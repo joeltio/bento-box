@@ -59,7 +59,8 @@ def compile_graph(
         convert_fn:
             Target function containing the source to convert to the computation graph.
             The function should take in one parameter: a `Plotter` instance which
-            allows users to access graphing specific operations.
+            allows users to access graphing specific operations. Must be a plain Python
+            Function, not a Callable class, method, classmethod or staticmethod.
         analyzers:
             List of `Analyzer`s that are run sequentially on the AST perform static analysis.
             Analyzers can add attributes to AST nodes but not modify the AST tree.
