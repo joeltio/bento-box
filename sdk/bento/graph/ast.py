@@ -50,7 +50,7 @@ def call_func_ast(
     # collect names of parameters from fn_call
     param_names = set(param.id for param in fn.args.args)
     # extract arguments and apply to params
-    apply_arg = {name: value for name, value in args.items() if name in param_names}
+    apply_arg = {name: args[name] for name in param_names}
     # create qualified reference to function
     if attr_parent is not None:
         func_ref = Attribute(
