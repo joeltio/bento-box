@@ -48,7 +48,7 @@ def call_func_ast(
         Call AST with the given args applied that represents the function call.
     """
     # collect names of parameters from fn_call
-    param_names = set([param.id for param in fn.args.args])
+    param_names = set(param.id for param in fn.args.args)
     # extract arguments and apply to params
     apply_arg = {name: value for name, value in args.items() if name in param_names}
     # create qualified reference to function

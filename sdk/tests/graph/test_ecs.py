@@ -11,7 +11,7 @@ def test_graph_ecs_entity():
     components = ["position"]
     entity = GraphEntity(components=components)
     # check Entity's components accessible via `.components`
-    assert len(set([c._name for c in entity.components]) - set(components)) == 0
+    assert len(set(c._name for c in entity.components) - set(components)) == 0
     # check component accessible by name using [] notation
     position = entity[components[0]]
     assert isinstance(position, GraphComponent)
