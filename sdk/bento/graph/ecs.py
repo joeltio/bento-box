@@ -52,101 +52,101 @@ class GraphNode:
             return val
         # convert to Constant node if native value
         node = val if isinstance(val, Node) else wrap_const(val)
-        return GraphNode(node=node)
+        return cls(node=node)
 
     # arithmetic overloads
     def __add__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(add_op=Node.Add(x=self.node, y=other.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(add_op=Node.Add(x=self.node, y=other.node)))
 
     def __radd__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(add_op=Node.Add(x=other.node, y=self.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(add_op=Node.Add(x=other.node, y=self.node)))
 
     def __iadd__(self, other: Any):
-        other = GraphNode.wrap(other)
+        other = type(self).wrap(other)
         # add in-place
         self.node = Node(add_op=Node.Add(x=self.node, y=other.node))
         return self
 
     def __sub__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(sub_op=Node.Sub(x=self.node, y=other.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(sub_op=Node.Sub(x=self.node, y=other.node)))
 
     def __rsub__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(sub_op=Node.Sub(x=other.node, y=self.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(sub_op=Node.Sub(x=other.node, y=self.node)))
 
     def __isub__(self, other: Any):
-        other = GraphNode.wrap(other)
+        other = type(self).wrap(other)
         # subtract in-place
         self.node = Node(add_op=Node.Sub(x=self.node, y=other.node))
         return self
 
     def __mul__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(mul_op=Node.Mul(x=self.node, y=other.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(mul_op=Node.Mul(x=self.node, y=other.node)))
 
     def __rmul__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(mul_op=Node.Mul(x=other.node, y=self.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(mul_op=Node.Mul(x=other.node, y=self.node)))
 
     def __imul__(self, other: Any):
-        other = GraphNode.wrap(other)
+        other = type(self).wrap(other)
         # multiply in-place
         self.node = Node(add_op=Node.Mul(x=self.node, y=other.node))
         return self
 
     def __truediv__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(div_op=Node.Div(x=self.node, y=other.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(div_op=Node.Div(x=self.node, y=other.node)))
 
     def __truediv__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(div_op=Node.Div(x=other.node, y=self.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(div_op=Node.Div(x=other.node, y=self.node)))
 
     def __itruediv__(self, other: Any):
-        other = GraphNode.wrap(other)
+        other = type(self).wrap(other)
         # divide in-place
         self.node = Node(add_op=Node.Div(x=self.node, y=other.node))
         return self
 
     def __mod__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(mod_op=Node.Mod(x=self.node, y=other.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(mod_op=Node.Mod(x=self.node, y=other.node)))
 
     def __rmod__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(mod_op=Node.Mod(x=other.node, y=self.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(mod_op=Node.Mod(x=other.node, y=self.node)))
 
     def __neg__(self):
         # -x is equivalent to 0 - x
-        return GraphNode.wrap(Node(sub_op=Node.Sub(x=wrap_const(0), y=self.node)))
+        return type(self).wrap(Node(sub_op=Node.Sub(x=wrap_const(0), y=self.node)))
 
     def __pos__(self):
         # +x is equivalent to x
-        return GraphNode.wrap(self.node)
+        return type(self).wrap(self.node)
 
     # boolean overloads
     def __lt__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(lt_op=Node.Lt(x=self.node, y=other.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(lt_op=Node.Lt(x=self.node, y=other.node)))
 
     def __gt__(self, other: Any):
-        other = GraphNode.wrap(other)
+        other = type(self).wrap(other)
         return other.__lt__(self)
 
     def __eq__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(Node(eq_op=Node.Eq(x=self.node, y=other.node)))
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(eq_op=Node.Eq(x=self.node, y=other.node)))
 
     def __ne__(self, other: Any):
-        other = GraphNode.wrap(other)
+        other = type(self).wrap(other)
         return Node(not_op=Node.Not(x=self.__eq__(other).node))
 
     def __le__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(
+        other = type(self).wrap(other)
+        return type(self).wrap(
             Node(
                 or_op=Node.Or(
                     x=self.__lt__(other.node).node, y=self.__eq__(other.node).node
@@ -155,8 +155,8 @@ class GraphNode:
         )
 
     def __ge__(self, other: Any):
-        other = GraphNode.wrap(other)
-        return GraphNode.wrap(
+        other = type(self).wrap(other)
+        return type(self).wrap(
             Node(
                 or_op=Node.Or(
                     x=self.__gt__(other.node).node, y=self.__eq__(other.node).node
@@ -165,7 +165,7 @@ class GraphNode:
         )
 
     def __str__(self):
-        return f"{self.__class__.__name___}<{self.node}>"
+        return f"{type(self).__name___}<{self.node}>"
 
     def __hash__(self):
         return hash(self.node)
