@@ -98,6 +98,9 @@ message Node {
     message Floor {
         Node x = 1;
     }
+    message Ceil {
+        Node x = 1;
+    }
     message Pow {
         Node x = 1;
         Node y = 2;
@@ -181,23 +184,24 @@ message Node {
         Min min_op = 12;
         Abs abs_op = 13;
         Floor floor_op = 14;
-        Pow pow_op = 15;
-        Mod mod_op = 16;
-        Sin sin_op = 17;
-        ArcSin arcsin_op = 18;
-        Cos cos_op = 19;
-        ArcCos arccos_op = 20;
-        Tan tan_op = 21;
-        ArcTan arctan_op = 22;
-        Random random_op = 23;
-        And and_op = 24;
-        Or or_op = 25;
-        Not not_op = 26;
-        Eq eq_op = 27;
-        Gt gt_op = 28;
-        Lt lt_op = 29;
-        Ge ge_op = 30;
-        Le le_op = 31;
+        Ceil ceil_op = 15;
+        Pow pow_op = 16;
+        Mod mod_op = 17;
+        Sin sin_op = 18;
+        ArcSin arcsin_op = 19;
+        Cos cos_op = 20;
+        ArcCos arccos_op = 21;
+        Tan tan_op = 22;
+        ArcTan arctan_op = 23;
+        Random random_op = 24;
+        And and_op = 25;
+        Or or_op = 26;
+        Not not_op = 27;
+        Eq eq_op = 28;
+        Gt gt_op = 29;
+        Lt lt_op = 30;
+        Ge ge_op = 31;
+        Le le_op = 32;
     }
 }
 

@@ -116,6 +116,10 @@ class Plotter:
         x = GraphNode.wrap(x)
         return GraphNode(node=Node(floor_op=Node.Floor(x=x.node)))
 
+    def ceil(self, x: Any) -> GraphNode:
+        x = GraphNode.wrap(x)
+        return GraphNode(node=Node(ceil_op=Node.Ceil(x=x.node)))
+
     def pow(self, x: Any, y: Any) -> GraphNode:
         x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(pow_op=Node.Pow(x=x.node, y=y.node)))
