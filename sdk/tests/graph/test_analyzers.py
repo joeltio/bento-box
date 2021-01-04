@@ -92,10 +92,8 @@ def test_convert_fn_analyzer():
         analyze_convert_fn(analyze_func(parse_ast(f[0]))) for f in convert_fns
     ]
 
-    def check_ast(fn_ast, expected_fn):
+    for ast, expected_fn in zip(analyzed_asts, convert_fns):
+        fn_ast = ast.convert_fn
         assert (fn_ast is not None) == expected_fn[1]
         if fn_ast is not None:
             assert fn_ast.plotter_name == fn_ast.args.args[0].id
-
-    for ast, expected_fn in zip(analyzed_asts, convert_fns):
-        check_ast(ast.convert_fn, expected_fn)
