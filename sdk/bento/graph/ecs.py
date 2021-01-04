@@ -258,7 +258,7 @@ class GraphEntity(Entity):
         try:
             return self.component_map[name]
         except KeyError:
-            raise ValueError(
+            raise KeyError(
                 f"Cannot get component: Component {name} not attached for entity"
             )
 
