@@ -26,7 +26,7 @@ def parse_ast(obj: Any) -> AST:
         The AST parsed from the the given `obj`
     """
     src = getsource(obj)
-    clean_src = dedent((src))
+    clean_src = dedent(src)
     return gast.parse(clean_src)
 
 
