@@ -5,8 +5,6 @@
 
 name: "CI Pipeline"
 on: push
-env:
-  DOCKER_BUILDKIT: 1
 jobs:
   # quick check that protos can be compiled by protoc
   check-protos:
@@ -47,6 +45,17 @@ jobs:
     name: "Build & Test bentobox-sim"
     steps:
       - uses: actions/checkout@v2
+
+      # cache docker layers to speed up docker build
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of noncritical cache step
+        continue-on-error: true
+        with:
+          # {hash} replace with hash of the built sim container
+          key: docker-{hash}
+          restore-keys: |
+            docker-
+
       - name: "Build bentobox-sim"
         run: |
           docker build -t bentobox-sim -f infra/docker/sim/Dockerfile .
@@ -84,3 +93,23 @@ jobs:
       - name: "Unit Test bentobox-sdk"
         run: |
           make test-sdk
+
+  # builds docs for the sdk component
+  build-docs-sdk:
+    needs: build-test-sdk
+    runs-on: ubuntu-20.04
+    name: "Build & Push bentobox-sdk Docs"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Pull dependencies"
+        run: |
+          make dep-sdk-dev
+      - name: "Build bentobox-sdk"
+        run: |
+          make build-sdk
+      - name: "Build bentobox-sdk Docs"
+        run: |
+          make build-sdk-docs

@@ -1,0 +1,58 @@
+#
+# bento-box
+# continuous deployment (cd) pipeline
+#
+
+name: "CD Pipeline"
+on:
+  push:
+    branches:
+      - master
+jobs:
+  # builds & publishes docs for the sdk component to Github 
+  publish-docs-sdk:
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-sdk Docs to Github Pages"
+    env:
+      SDK_DOC_DIR: /tmp/docs
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # fetch all history for all branches and tags
+          fetch-depth: 0 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Pull dependencies"
+        run: |
+          make dep-sdk-dev
+      - name: "Build bentobox-sdk"
+        run: |
+          make build-sdk
+      - name: "Build bentobox-sdk Docs"
+        run: |
+          make build-sdk-docs SDK_DOC_DIR=${SDK_DOC_DIR}
+      - name: "Publish bentobox-sdk Docs to Github Pages"
+        run: |
+          git checkout gh-pages
+          # move generated docs to top level docs/ and stage changes
+          rm -rf docs
+          mv -f ${SDK_DOC_DIR}/bento docs
+          git add docs
+
+          # check for staged changes to SDK docs
+          if git diff --staged --quiet
+          then
+            echo "No SDK Docs changes to commit."
+            exit 0
+          fi
+
+          # Commit changes as Github Actions bot
+          git config user.name 'github-actions'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          GIT_REF_NAME="$(echo ${GITHUB_REF} | sed -e "s|\w*/\w*/||")"
+          git commit -a -m "CI: Update docs built from ${GIT_REF_NAME} commit: ${GITHUB_SHA}"
+          
+          # Publish changes by pushing to Github
+          git push
