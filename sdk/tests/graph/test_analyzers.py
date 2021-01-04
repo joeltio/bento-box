@@ -29,14 +29,20 @@ def test_analyze_func():
         """
         pass
 
+    def nonempty_fn():
+        print()
+
+    # test cases => whether the function is expected to be empty
     empty_fns = [
-        empty_fn_pass,
-        empty_fn_docstr,
-        empty_fn_docstr_pass,
+        (empty_fn_pass, True),
+        (empty_fn_docstr, True),
+        (empty_fn_docstr_pass, True),
+        (nonempty_fn, False),
     ]
-    fn_asts = [parse_ast(f) for f in empty_fns]
-    analyzed_asts = [analyze_func(ast) for ast in fn_asts]
-    assert all([get_fn_ast(ast).is_empty for ast in analyzed_asts])
+    for fn, expected_empty in empty_fns:
+        fn_ast = parse_ast(fn)
+        analyzed_ast = analyze_func(fn_ast)
+        assert get_fn_ast(analyzed_ast).is_empty == expected_empty
 
     # test analyze func can detect number of arguments
     def multi_args(a, b, c=2):
