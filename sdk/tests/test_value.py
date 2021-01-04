@@ -10,6 +10,7 @@ wrap_primitive_types = [
     (1, Type.Primitive.INT32),
     (-1, Type.Primitive.INT32),
     # 2**31-1 should be the largest integer representable in int32
+    (-(2 ** 31), Type.Primitive.INT32),
     (2 ** 31 - 1, Type.Primitive.INT32),
     (2 ** 31, Type.Primitive.INT64),
     ("test", Type.Primitive.STRING),
