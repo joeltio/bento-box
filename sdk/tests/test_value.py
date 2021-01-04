@@ -9,7 +9,9 @@ from bento.protos.types_pb2 import Type
 wrap_primitive_types = [
     (1, Type.Primitive.INT32),
     (-1, Type.Primitive.INT32),
-    (0xFFFFFFFF + 1, Type.Primitive.INT64),
+    # 2**31-1 should be the largest integer representable in int32
+    (2 ** 31 - 1, Type.Primitive.INT32),
+    (2 ** 31, Type.Primitive.INT64),
     ("test", Type.Primitive.STRING),
     (0.2, Type.Primitive.FLOAT64),
     (True, Type.Primitive.BOOL),
@@ -83,7 +85,6 @@ def test_wrap():
             continue
         # check wrapped value's shape
         dtype = proto.data_type.array
-        print(val)
         assert dtype == expect_type
         assert len(proto.array.values) == sum(expect_type.dimensions)
         # check wrapped primitive's data types are identical

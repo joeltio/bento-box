@@ -22,7 +22,8 @@ def wrap_primitive(val: Any) -> Value:
         TypeError: If the given native value is not of a supported primitive type.
     """
     # check if int value is 32 bit via fit within max 32 bit int value
-    is_int32 = lambda x: abs(x) < 0xFFFFFFFF
+    # +1 bit required to represent sign in signed int
+    is_int32 = lambda x: (int(x).bit_length() + 1) <= 32
     if type(val) in [int, np.int32] and is_int32(val):
         return Value(
             data_type=Type(primitive=Type.Primitive.INT32),
