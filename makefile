@@ -22,7 +22,7 @@ clean: clean-sim
 ARCH:=$(shell uname -m)
 OS:=$(if $(filter Darwin,$(shell uname -s)),osx,linux)
 BIN_DIR:=/usr/local/bin
-deps: dep-protoc dev-sdk-dev
+deps: dep-protoc dep-sim dev-sdk-dev
 
 PROTOC_VERSION:=3.13.0
 
@@ -40,10 +40,13 @@ SIM_TEST:=bentobox-test
 SIM_SRC:=sim
 SIM_BUILD_DIR:=sim/build
 
-.PHONY: build-sim test-sim clean-sim
+.PHONY: build-sim test-sim clean-sim dep-sim
 
-build-sim:
+dep-sim:
 	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) --target deps
+
+build-sim: dep-sim
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) \
 		--target $(SIM_TARGET) --target $(SIM_TEST)
 
