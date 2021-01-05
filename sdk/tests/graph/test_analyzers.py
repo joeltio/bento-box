@@ -96,9 +96,6 @@ def test_convert_fn_analyzer():
         if fn_ast is not None:
             assert fn_ast.plotter_name == fn_ast.args.args[0].id
 
-    for ast, expected_fn in zip(analyzed_asts, convert_fns):
-        check_ast(ast.convert_fn, expected_fn)
-
 
 # test assign analyzer annotates assignments
 def test_assign_analyzer():
