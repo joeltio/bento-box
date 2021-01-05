@@ -1,7 +1,7 @@
 #
 # bento-box
 # sim component container
-# 
+#
 
 FROM ubuntu:20.04 AS build
 
@@ -19,15 +19,18 @@ RUN apt-get update && apt-get install -y  --no-install-recommends \
 
 # pull build dependencies
 COPY makefile /repo/makefile
-RUN mkdir -p sim/lib/core sim/build
-COPY sim/CMakeLists.txt sim/
-COPY sim/lib/core/CMakeLists.txt sim/lib/core/
+COPY sim/dependencies.cmake /repo/sim/CMakeLists.txt
+RUN mkdir -p sim/build
 RUN make dep-sim
 
 # build simulator
 COPY protos /repo/protos
-COPY sim /repo/sim
-RUN make clean-sim build-sim
+COPY sim/CMakeLists.txt /repo/sim/CMakeLists.txt
+COPY sim/dependencies.cmake /repo/sim/dependencies.cmake
+COPY sim/lib /repo/sim/lib
+COPY sim/src /repo/sim/src
+COPY sim/include /repo/sim/include
+RUN make build-sim
 
 # run simulator
 CMD make run-sim
