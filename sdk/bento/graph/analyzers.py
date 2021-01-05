@@ -380,7 +380,7 @@ def analyze_block(ast: AST) -> AST:
         if not block is None:
             ast.block = block
         # detect code blocks by checking for attributes
-        ast.is_block = any([hasattr(ast, attr) for attr in ["body", "orelse"]])
+        ast.is_block = any(hasattr(ast, attr) for attr in ["body", "orelse"])
         if ast.is_block:
             block = ast
         # recursively resolve code blocks of child nodes

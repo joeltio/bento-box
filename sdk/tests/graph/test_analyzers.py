@@ -187,7 +187,7 @@ def test_const_analyzer():
         [get_const_ast(i) for i in range(5)]
         + [const for const in fn_ast.body[5].value.elts]
     )
-    const_asts = set([n for n in gast.walk(ast) if n.is_constant])
+    const_asts = set(n for n in gast.walk(ast) if n.is_constant)
     assert const_asts == expected_asts
 
 
@@ -447,7 +447,7 @@ def test_analyze_activity():
             block_ast.output_syms.items()
         )
         for symbol, sym_asts in combined_syms:
-            assert all([ast.symbol == symbol for ast in sym_asts])
+            assert all(ast.symbol == symbol for ast in sym_asts)
             # check sym_asts sorted by order of appearance in source code
             # (ie code pos does not decrease) https://stackoverflow.com/a/4983359
             if len(sym_asts) > 1:
