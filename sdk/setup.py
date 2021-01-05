@@ -9,6 +9,7 @@ from setuptools import setup
 from distutils.cmd import Command
 from distutils.command.clean import clean
 from setuptools.command.build_py import build_py
+from setuptools.command.build_ext import build_ext
 from pathlib import Path
 from grpc_tools import protoc
 from shutil import rmtree
@@ -25,7 +26,7 @@ class GenProtos(Command):
     protos_dir = Path("..") / "protos"
     binds_dir = Path(".") / "bento" / "protos"
 
-    # Empty implementation to statisfy abstract Command class requirements
+    # Empty implementation to satisfy abstract Command class requirements
     def initialize_options(self):
         pass
 
@@ -54,10 +55,22 @@ class GenProtos(Command):
 
 class ProtoBuildPy(build_py):
     """
-    Custom Build step to generate protobuf bindings before build
+    Custom Build step to generate protobuf bindings before build_py
     """
 
     command_name = "build_py"
+
+    def run(self):
+        # run protoc to compile bindings form proto defintions
+        self.run_command("build_protos")
+        super().run()
+
+class ProtoBuildExt(build_ext):
+    """
+    Custom Build step to generate protobuf bindings before build_ext
+    """
+
+    command_name = "build_ext"
 
     def run(self):
         # run protoc to compile bindings form proto defintions

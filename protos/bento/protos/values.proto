@@ -11,7 +11,7 @@ import "bento/protos/types.proto";
 
 message Value {
     // Data type held by this value
-    Type type = 1;
+    Type data_type = 1;
 
     // Defines a value of the primitive kind
     message Primitive {
@@ -21,14 +21,15 @@ message Value {
             int64 int_64 = 2;
             float float_33 = 3;
             double float_64 = 4;
-            string str = 5;
+            string str_val = 5;
+            bool boolean = 6;
         }
     }
     // Defines a value of the array kind
     message Array {
         repeated Primitive values = 1;
     }
-    
+
     oneof kind {
         Primitive primitive = 2;
         Array array = 3;
