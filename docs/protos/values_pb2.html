@@ -49,7 +49,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax=&#39;proto3&#39;,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b&#39;\n\x19\x62\x65nto/protos/values.proto\x12\x0c\x62\x65nto.protos\x1a\x18\x62\x65nto/protos/types.proto\&#34;\xba\x02\n\x05Value\x12 \n\x04type\x18\x01 \x01(\x0b\x32\x12.bento.protos.Type\x12\x32\n\tprimitive\x18\x02 \x01(\x0b\x32\x1d.bento.protos.Value.PrimitiveH\x00\x12*\n\x05\x61rray\x18\x03 \x01(\x0b\x32\x19.bento.protos.Value.ArrayH\x00\x1ao\n\tPrimitive\x12\x10\n\x06int_32\x18\x01 \x01(\x05H\x00\x12\x10\n\x06int_64\x18\x02 \x01(\x03H\x00\x12\x12\n\x08\x66loat_33\x18\x03 \x01(\x02H\x00\x12\x12\n\x08\x66loat_64\x18\x04 \x01(\x01H\x00\x12\r\n\x03str\x18\x05 \x01(\tH\x00\x42\x07\n\x05value\x1a\x36\n\x05\x41rray\x12-\n\x06values\x18\x01 \x03(\x0b\x32\x1d.bento.protos.Value.PrimitiveB\x06\n\x04kindb\x06proto3&#39;
+  serialized_pb=b&#39;\n\x19\x62\x65nto/protos/values.proto\x12\x0c\x62\x65nto.protos\x1a\x18\x62\x65nto/protos/types.proto\&#34;\xd7\x02\n\x05Value\x12%\n\tdata_type\x18\x01 \x01(\x0b\x32\x12.bento.protos.Type\x12\x32\n\tprimitive\x18\x02 \x01(\x0b\x32\x1d.bento.protos.Value.PrimitiveH\x00\x12*\n\x05\x61rray\x18\x03 \x01(\x0b\x32\x19.bento.protos.Value.ArrayH\x00\x1a\x86\x01\n\tPrimitive\x12\x10\n\x06int_32\x18\x01 \x01(\x05H\x00\x12\x10\n\x06int_64\x18\x02 \x01(\x03H\x00\x12\x12\n\x08\x66loat_33\x18\x03 \x01(\x02H\x00\x12\x12\n\x08\x66loat_64\x18\x04 \x01(\x01H\x00\x12\x11\n\x07str_val\x18\x05 \x01(\tH\x00\x12\x11\n\x07\x62oolean\x18\x06 \x01(\x08H\x00\x42\x07\n\x05value\x1a\x36\n\x05\x41rray\x12-\n\x06values\x18\x01 \x03(\x0b\x32\x1d.bento.protos.Value.PrimitiveB\x06\n\x04kindb\x06proto3&#39;
   ,
   dependencies=[bento_dot_protos_dot_types__pb2.DESCRIPTOR,])
 
@@ -93,9 +93,16 @@ _VALUE_PRIMITIVE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name=&#39;str&#39;, full_name=&#39;bento.protos.Value.Primitive.str&#39;, index=4,
+      name=&#39;str_val&#39;, full_name=&#39;bento.protos.Value.Primitive.str_val&#39;, index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b&#34;&#34;.decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;boolean&#39;, full_name=&#39;bento.protos.Value.Primitive.boolean&#39;, index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -116,8 +123,8 @@ _VALUE_PRIMITIVE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=209,
-  serialized_end=320,
+  serialized_start=215,
+  serialized_end=349,
 )
 
 _VALUE_ARRAY = _descriptor.Descriptor(
@@ -147,8 +154,8 @@ _VALUE_ARRAY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=322,
-  serialized_end=376,
+  serialized_start=351,
+  serialized_end=405,
 )
 
 _VALUE = _descriptor.Descriptor(
@@ -160,7 +167,7 @@ _VALUE = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name=&#39;type&#39;, full_name=&#39;bento.protos.Value.type&#39;, index=0,
+      name=&#39;data_type&#39;, full_name=&#39;bento.protos.Value.data_type&#39;, index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -198,7 +205,7 @@ _VALUE = _descriptor.Descriptor(
     fields=[]),
   ],
   serialized_start=70,
-  serialized_end=384,
+  serialized_end=413,
 )
 
 _VALUE_PRIMITIVE.containing_type = _VALUE
@@ -215,11 +222,14 @@ _VALUE_PRIMITIVE.oneofs_by_name[&#39;value&#39;].fields.append(
   _VALUE_PRIMITIVE.fields_by_name[&#39;float_64&#39;])
 _VALUE_PRIMITIVE.fields_by_name[&#39;float_64&#39;].containing_oneof = _VALUE_PRIMITIVE.oneofs_by_name[&#39;value&#39;]
 _VALUE_PRIMITIVE.oneofs_by_name[&#39;value&#39;].fields.append(
-  _VALUE_PRIMITIVE.fields_by_name[&#39;str&#39;])
-_VALUE_PRIMITIVE.fields_by_name[&#39;str&#39;].containing_oneof = _VALUE_PRIMITIVE.oneofs_by_name[&#39;value&#39;]
+  _VALUE_PRIMITIVE.fields_by_name[&#39;str_val&#39;])
+_VALUE_PRIMITIVE.fields_by_name[&#39;str_val&#39;].containing_oneof = _VALUE_PRIMITIVE.oneofs_by_name[&#39;value&#39;]
+_VALUE_PRIMITIVE.oneofs_by_name[&#39;value&#39;].fields.append(
+  _VALUE_PRIMITIVE.fields_by_name[&#39;boolean&#39;])
+_VALUE_PRIMITIVE.fields_by_name[&#39;boolean&#39;].containing_oneof = _VALUE_PRIMITIVE.oneofs_by_name[&#39;value&#39;]
 _VALUE_ARRAY.fields_by_name[&#39;values&#39;].message_type = _VALUE_PRIMITIVE
 _VALUE_ARRAY.containing_type = _VALUE
-_VALUE.fields_by_name[&#39;type&#39;].message_type = bento_dot_protos_dot_types__pb2._TYPE
+_VALUE.fields_by_name[&#39;data_type&#39;].message_type = bento_dot_protos_dot_types__pb2._TYPE
 _VALUE.fields_by_name[&#39;primitive&#39;].message_type = _VALUE_PRIMITIVE
 _VALUE.fields_by_name[&#39;array&#39;].message_type = _VALUE_ARRAY
 _VALUE.oneofs_by_name[&#39;kind&#39;].fields.append(
@@ -299,13 +309,13 @@ _sym_db.RegisterMessage(Value.Array)
 <dd>
 <div class="desc"><p>Field bento.protos.Value.array</p></div>
 </dd>
+<dt id="bento.protos.values_pb2.Value.data_type"><code class="name">var <span class="ident">data_type</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.Value.data_type</p></div>
+</dd>
 <dt id="bento.protos.values_pb2.Value.primitive"><code class="name">var <span class="ident">primitive</span></code></dt>
 <dd>
 <div class="desc"><p>Field bento.protos.Value.primitive</p></div>
-</dd>
-<dt id="bento.protos.values_pb2.Value.type"><code class="name">var <span class="ident">type</span></code></dt>
-<dd>
-<div class="desc"><p>Field bento.protos.Value.type</p></div>
 </dd>
 </dl>
 </dd>
@@ -332,8 +342,8 @@ _sym_db.RegisterMessage(Value.Array)
 <li><code><a title="bento.protos.values_pb2.Value.DESCRIPTOR" href="#bento.protos.values_pb2.Value.DESCRIPTOR">DESCRIPTOR</a></code></li>
 <li><code><a title="bento.protos.values_pb2.Value.Primitive" href="#bento.protos.values_pb2.Value.Primitive">Primitive</a></code></li>
 <li><code><a title="bento.protos.values_pb2.Value.array" href="#bento.protos.values_pb2.Value.array">array</a></code></li>
+<li><code><a title="bento.protos.values_pb2.Value.data_type" href="#bento.protos.values_pb2.Value.data_type">data_type</a></code></li>
 <li><code><a title="bento.protos.values_pb2.Value.primitive" href="#bento.protos.values_pb2.Value.primitive">primitive</a></code></li>
-<li><code><a title="bento.protos.values_pb2.Value.type" href="#bento.protos.values_pb2.Value.type">type</a></code></li>
 </ul>
 </li>
 </ul>
