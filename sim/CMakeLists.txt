@@ -111,3 +111,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 target_link_libraries(${TARGET_TEST} PRIVATE -Wl,--no-whole-archive gtest_main)
+
+# phony/target that does pulls in dependencies but does not build anything
+set(TARGET_DEPS "deps")
+add_custom_target(
+    ${TARGET_DEPS}
+    DEPENDS libprotobuf grpc++ grpc++_reflection gtest_main
+)
