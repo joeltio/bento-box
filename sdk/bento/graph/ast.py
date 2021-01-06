@@ -16,6 +16,23 @@ from textwrap import dedent
 from typing import Any, Dict, Optional
 
 
+class FuncASTTransform(gast.NodeTransformer):
+    """Defines a AST transformation with a given transform function"""
+
+    def __init__(self, transform_fn: Callable[[AST], AST]):
+        super().__init__()
+        self.transform_fn = transform_fn
+
+    def visit(self, node: AST) -> AST:
+        # recursively visit child nodes
+        super().visit(node)
+        # on visit: transform node and fix code locations
+        new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
+        new_node = gast.fix_missing_locations(new_node)
+
+        return new_node
+
+
 def parse_ast(obj: Any) -> AST:
     """Parse the AST of the given `obj`.
 
