@@ -13,7 +13,7 @@ from importlib.util import spec_from_file_location, module_from_spec
 from gast import AST, Call, FunctionDef, keyword, Name, Load, Attribute
 from inspect import getsource, cleandoc
 from textwrap import dedent
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Callable
 
 
 class FuncASTTransform(gast.NodeTransformer):
