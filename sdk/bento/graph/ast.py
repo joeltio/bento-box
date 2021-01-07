@@ -88,7 +88,7 @@ def call_func_ast(
 def load_ast_module(ast: AST) -> Any:
     # TODO(mrzzy) docs
     src = unparse(ast)
-    with NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+    with NamedTemporaryFile(mode="w", suffix=".py", delete=True) as f:
         f.write(src)
         f.flush()
         # import the source as a module
