@@ -4,7 +4,7 @@
 # AST Utils
 #
 
-
+import os
 import gast
 
 from tempfile import NamedTemporaryFile
@@ -88,12 +88,13 @@ def call_func_ast(
 def load_ast_module(ast: AST) -> Any:
     # TODO(mrzzy) docs
     src = unparse(ast)
-    with NamedTemporaryFile(mode="w", suffix=".py", delete=True) as f:
+    with NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(src)
-        f.flush()
+        f.close()
         # import the source as a module
         mod_spec = spec_from_file_location("compiled", f.name)
         module = module_from_spec(mod_spec)
         mod_spec.loader.exec_module(module)
+    os.remove(f.name)
 
     return module
