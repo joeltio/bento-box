@@ -11,7 +11,7 @@ import "bento/protos/values.proto";
 import "bento/protos/references.proto";
 import "bento/protos/sim.proto";
 
-service SimulationService {
+service EngineService {
     // Get version information
     rpc GetVersion(GetVersionReq) returns (GetVersionResp);
 
