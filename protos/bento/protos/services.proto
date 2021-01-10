@@ -12,7 +12,7 @@ import "bento/protos/references.proto";
 import "bento/protos/sim.proto";
 
 service SimulationService {
-    // Get version infomation
+    // Get version information
     rpc GetVersion(GetVersionReq) returns (GetVersionResp);
 
   // Create, Update, Get, List and Delete Simulations

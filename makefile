@@ -112,6 +112,7 @@ lint-sdk: dep-sdk-dev
 	$(BLACK_FMT) --check $(SDK_SRC)/tests
 
 test-sdk: dep-sdk-dev
+	$(PYTHON) -m pip install -e $(SDK_SRC)
 	cd $(SDK_SRC) && $(PYTEST)
 
 clean-sdk:
