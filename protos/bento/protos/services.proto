@@ -12,6 +12,9 @@ import "bento/protos/references.proto";
 import "bento/protos/sim.proto";
 
 service SimulationService {
+    // Get version infomation
+    rpc GetVersion(GetVersionReq) returns (GetVersionResp);
+
   // Create, Update, Get, List and Delete Simulations
   rpc ApplySimulation(ApplySimulationReq) returns (ApplySimulationResp);
   rpc GetSimulation(GetSimulationReq) returns (GetSimulationResp);
@@ -24,6 +27,14 @@ service SimulationService {
   // Set, Get component's Attributes
   rpc GetAttribute(GetAttributeReq) returns (GetAttributeResp);
   rpc SetAttribute(SetAttributeReq) returns (SetAttributeResp);
+}
+
+
+message GetVersionReq {}
+
+message GetVersionResp {
+    // VCS Commit Hash which the Engine running the simulation service is built on.
+    string commit_hash = 1;
 }
 
 message ApplySimulationReq {
