@@ -38,7 +38,7 @@ dep-protoc: /usr/local/bin/protoc
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
 
 dep-clang-fmt:
-	 echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main\ndeb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main" >/etc/apt/sources.list.d/llvm.list
+	 sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main\ndeb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main" >/etc/apt/sources.list.d/llvm.list'
 	 sudo apt-get update
 	 sudo apt-get install -y clang-format-11
 
