@@ -9,6 +9,7 @@ RM:=rm -rf
 PROTOC:=protoc
 MKDIR:=mkdir -p
 MV:=mv -f
+FIND:=find
 
 .PHONY: deps build test clean run
 
@@ -38,9 +39,12 @@ dep-protoc: /usr/local/bin/protoc
 SIM_TARGET:=bentobox
 SIM_TEST:=bentobox-test
 SIM_SRC:=sim
+SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib $(SIM_SRC)/include
 SIM_BUILD_DIR:=sim/build
+CLANG_FMT:=clang-format
+FIND_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 
-.PHONY: build-sim test-sim clean-sim
+.PHONY: build-sim test-sim run-sm clean-sim format-sim
 
 build-sim:
 	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
@@ -56,11 +60,17 @@ run-sim: build-sim
 clean-sim:
 	$(RM) $(SIM_BUILD_DIR)
 
+format-sim: .clang-format
+	$(FIND_SRC) | xargs $(CLANG_FMT) -style=file -i
+
+lint-sim: .clang-format
+	$(FIND_SRC) | xargs $(CLANG_FMT) -style=file --dry-run --Werror
+
 ## Bento - SDK component
 SDK_SRC:=sdk
 PYTHON:=python
 BLACK_FMT:=python -m black
-PYTEST:=python -m pytest
+PYTEST:=python -m pytest -s
 PDOC:=python -m pdoc
 
 .PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk
