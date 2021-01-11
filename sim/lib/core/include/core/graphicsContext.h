@@ -3,12 +3,14 @@
 
 #include <string>
 #include <unordered_map>
+
 #include "windowContext.h"
 
 class GraphicsContext {
-private:
+   private:
     std::unordered_map<std::string, unsigned int> textureCache;
-public:
+
+   public:
     GraphicsContext(WindowContext& windowContext);
     ~GraphicsContext();
     GraphicsContext(const GraphicsContext& other) = default;
@@ -19,4 +21,4 @@ public:
     unsigned int loadTexture2D(std::string const& filepath);
 };
 
-#endif //BENTOBOX_GRAPHICSCONTEXT_H
+#endif  // BENTOBOX_GRAPHICSCONTEXT_H

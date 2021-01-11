@@ -4,9 +4,9 @@
 #include "componentType.h"
 
 namespace ics::index {
-    struct IndexStore {
-        ComponentType componentType;
-    };
-}
+struct IndexStore {
+    ComponentType componentType;
+};
+}  // namespace ics::index
 
-#endif //BENTOBOX_INDEXSTORE_H
+#endif  // BENTOBOX_INDEXSTORE_H
