@@ -25,7 +25,7 @@ format: format-proto format-sim format-sdk
 ARCH:=$(shell uname -m)
 OS:=$(if $(filter Darwin,$(shell uname -s)),osx,linux)
 BIN_DIR:=/usr/local/bin
-deps: dep-protoc dev-sdk-dev
+deps: dep-protoc dev-sdk-dev dep-clang-fmt
 
 PROTOC_VERSION:=3.13.0
 
@@ -36,6 +36,11 @@ dep-protoc: /usr/local/bin/protoc
 	unzip -d /tmp/protoc protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip 
 	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
+
+dep-clang-fmt:
+	 echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main\ndeb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main" >/etc/apt/sources.list.d/llvm.list
+	 sudo apt-get update
+	 sudo apt-get install -y clang-format-11
 
 ## Bento protobuf API
 PROTO_SRC := protos
