@@ -10,7 +10,7 @@ PROTOC:=protoc
 MKDIR:=mkdir -p
 MV:=mv -f
 FIND:=find
-CLANG_FMT:=clang-format
+CLANG_FMT:=clang-format-11
 
 .PHONY: deps build test clean run
 build: build-sim build-sdk
@@ -42,7 +42,6 @@ dep-clang-fmt:
 	 sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main\ndeb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main" >/etc/apt/sources.list.d/llvm.list'
 	 sudo apt-get update
 	 sudo apt-get install -y clang-format-11
-	 sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-11 1
 
 ## Bento protobuf API
 PROTO_SRC := protos
