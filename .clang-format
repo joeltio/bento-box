@@ -146,7 +146,8 @@ RawStringFormats:
     CanonicalDelimiter: ''
     BasedOnStyle:    google
 ReflowComments:  true
-SortIncludes:    true
+# disable include sorting as glad.h must be imported before glfw3.h
+SortIncludes:    false
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
