@@ -10,16 +10,18 @@ PROTOC:=protoc
 MKDIR:=mkdir -p
 MV:=mv -f
 FIND:=find
+CLANG_FMT:=clang-format
 
 .PHONY: deps build test clean run
+build: build-sim build-sdk
 
-build: build-sim
+test: test-sim test-sdk
 
-test: test-sim
+clean: clean-sim clean-sdk
 
-clean: clean-sim
+format: format-proto format-sim format-sdk 
 	
-# deps: convenience rules for installing dependencies
+## Deps: convenience rules for installing dependencies
 ARCH:=$(shell uname -m)
 OS:=$(if $(filter Darwin,$(shell uname -s)),osx,linux)
 BIN_DIR:=/usr/local/bin
@@ -35,14 +37,25 @@ dep-protoc: /usr/local/bin/protoc
 	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
 
+## Bento protobuf API
+PROTO_SRC := protos
+FIND_PROTO_SRC:=$(FIND) $(PROTO_SRC) -type f -name "*.proto"
+
+.PHONY: format-proto lint-proto
+
+format-proto:
+	$(FIND_PROTO_SRC) | xargs $(CLANG_FMT) -style=file -i
+
+lint-proto:
+	$(FIND_PROTO_SRC) | xargs $(CLANG_FMT) -style=file --dry-run --Werror
+
 ## Bento - Simulator component
 SIM_TARGET:=bentobox
 SIM_TEST:=bentobox-test
 SIM_SRC:=sim
-SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib $(SIM_SRC)/include
+SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib/core/src $(SIM_SRC)/lib/core/include $(SIM_SRC)/include
 SIM_BUILD_DIR:=sim/build
-CLANG_FMT:=clang-format
-FIND_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
+FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 
 .PHONY: build-sim test-sim run-sm clean-sim format-sim
 
@@ -61,10 +74,10 @@ clean-sim:
 	$(RM) $(SIM_BUILD_DIR)
 
 format-sim: .clang-format
-	$(FIND_SRC) | xargs $(CLANG_FMT) -style=file -i
+	$(FIND_SIM_SRC) | xargs $(CLANG_FMT) -style=file -i
 
 lint-sim: .clang-format
-	$(FIND_SRC) | xargs $(CLANG_FMT) -style=file --dry-run --Werror
+	$(FIND_SIM_SRC) | xargs $(CLANG_FMT) -style=file --dry-run --Werror
 
 ## Bento - SDK component
 SDK_SRC:=sdk
