@@ -23,6 +23,7 @@ target_include_directories(${TARGET_SIM}
 
 add_executable(${TARGET_TEST}
     src/main.test.cpp
+    src/index/entity.test.cpp
     src/index/componentType.test.cpp
 )
 target_include_directories(${TARGET_TEST}
