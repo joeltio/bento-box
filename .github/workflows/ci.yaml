@@ -7,21 +7,25 @@ name: "CI Pipeline"
 on: push
 jobs:
   # quick check that protos can be compiled by protoc
+  # and lint proto formatting
   check-protos:
     runs-on: ubuntu-20.04
-    name: "Check Protos compilable"
+    name: "Check & Lint Protos"
     env:
       PROTO_DIR: protos
     steps:
       - uses: actions/checkout@v2
-      - name: "Install protoc"
+      - name: "Install protoc & clang-format"
         run: |
           mkdir bin
-          make BIN_DIR=bin dep-protoc
+          make BIN_DIR=bin dep-protoc dep-clang-fmt
       - name: "Compile Protos with protoc"
         run: |
           ./bin/protoc -I ${PROTO_DIR} --cpp_out=/tmp ${PROTO_DIR}/bento/protos/*.proto
-
+      - name: "Lint Protos"
+        run: |
+          make lint-proto
+      
   # check spelling typos in source code
   spellcheck-code:
     runs-on: ubuntu-20.04
@@ -45,7 +49,9 @@ jobs:
     name: "Build & Test bentobox-sim"
     steps:
       - uses: actions/checkout@v2
-
+      - name: "Install clang-format"
+        run: |
+          make dep-clang-fmt
       # cache docker layers to speed up docker build
       - uses: satackey/action-docker-layer-caching@v0.0.11
         # Ignore the failure of noncritical cache step
@@ -55,7 +61,9 @@ jobs:
           key: docker-{hash}
           restore-keys: |
             docker-
-
+      - name: "Lint bentobox-sim"
+        run: |
+          make lint-sim
       - name: "Build bentobox-sim"
         run: |
           docker build -t bentobox-sim -f infra/docker/sim/Dockerfile .

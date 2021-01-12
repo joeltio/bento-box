@@ -1,7 +1,7 @@
-#include <gtest/gtest.h>
-#include <core/ics/component.h>
 #include <core/ics/compVec.h>
+#include <core/ics/component.h>
 #include <core/ics/componentStore.h>
+#include <gtest/gtest.h>
 
 #define TEST_SUITE ComponentStoreTest
 
@@ -22,7 +22,7 @@ TEST(TEST_SUITE, CreateVec) {
 TEST(TEST_SUITE, CreateCompVecReturnsReference) {
     ComponentStore store;
     auto& vec = createCompVec<TestComponent>(store, 1);
-    vec.add(TestComponent { true, 20 });
+    vec.add(TestComponent{true, 20});
 
     auto retrievedVec = std::any_cast<CompVec<BaseComponent>>(*store.at(1));
     ASSERT_EQ(retrievedVec.size(), 1);
@@ -31,7 +31,7 @@ TEST(TEST_SUITE, CreateCompVecReturnsReference) {
 TEST(TEST_SUITE, GetComponentsRetrievesComponents) {
     ComponentStore store;
     auto& vec = createCompVec<TestComponent>(store, 1);
-    auto compId = vec.add(TestComponent { true, 20 });
+    auto compId = vec.add(TestComponent{true, 20});
 
     auto retrievedVec = getCompVec<TestComponent>(store, 1);
     ASSERT_EQ(retrievedVec.at(compId).height, 20);
@@ -42,7 +42,7 @@ TEST(TEST_SUITE, GetComponentsRetrievesComponentsByReference) {
     createCompVec<TestComponent>(store, 1);
 
     auto& vec1 = getCompVec<TestComponent>(store, 1);
-    vec1.add(TestComponent { true, 20 });
+    vec1.add(TestComponent{true, 20});
     auto& vec2 = getCompVec<TestComponent>(store, 1);
     ASSERT_EQ(vec2.size(), 1);
 }
@@ -50,7 +50,7 @@ TEST(TEST_SUITE, GetComponentsRetrievesComponentsByReference) {
 TEST(TEST_SUITE, AddComponentsCreatesNewVec) {
     ComponentStore store;
     ASSERT_EQ(store.size(), 0);
-    addComponent(store, TestComponent { true, 20 }, 1);
+    addComponent(store, TestComponent{true, 20}, 1);
     ASSERT_EQ(store.size(), 1);
 }
 
@@ -61,7 +61,7 @@ TEST(TEST_SUITE, AddComponentsAppendsToVec) {
     ASSERT_EQ(getCompVec<TestComponent>(store, 1).size(), 0);
 
     // Ensure that no new vectors are created
-    auto compFullId = addComponent(store, TestComponent { true, 20 }, 1);
+    auto compFullId = addComponent(store, TestComponent{true, 20}, 1);
     ASSERT_EQ(store.size(), 1);
 
     // Ensure that the item is actually appended
@@ -74,12 +74,12 @@ TEST(TEST_SUITE, AsCompSet) {
     ComponentStore store;
     ASSERT_EQ(asCompSet(store).size(), 0);
 
-    addComponent(store, TestComponent { true, 20 }, 1);
-    addComponent(store, TestComponent { true, 20 }, 1);
-    addComponent(store, TestComponent { true, 20 }, 1);
-    addComponent(store, TestComponent { true, 20 }, 1);
-    addComponent(store, TestComponent { true, 20 }, 2);
-    addComponent(store, TestComponent { true, 20 }, 2);
+    addComponent(store, TestComponent{true, 20}, 1);
+    addComponent(store, TestComponent{true, 20}, 1);
+    addComponent(store, TestComponent{true, 20}, 1);
+    addComponent(store, TestComponent{true, 20}, 1);
+    addComponent(store, TestComponent{true, 20}, 2);
+    addComponent(store, TestComponent{true, 20}, 2);
 
     int group1Count = 0;
     int group2Count = 0;
@@ -97,7 +97,7 @@ TEST(TEST_SUITE, AsCompSet) {
 
 TEST(TEST_SUITE, GetComponentByReference) {
     ComponentStore store;
-    auto compId = addComponent(store, TestComponent { true, 20 }, 1);
+    auto compId = addComponent(store, TestComponent{true, 20}, 1);
     ics::Component auto& comp = getComponent<TestComponent>(store, compId);
 
     ASSERT_EQ(comp.height, 20);

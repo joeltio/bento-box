@@ -6,7 +6,9 @@
 #include <index/indexStore.h>
 
 namespace ics::system {
-    void render(GraphicsContext& graphicsContext, ics::ComponentStore& componentStore, ics::index::IndexStore& indexStore);
+void render(GraphicsContext& graphicsContext,
+            ics::ComponentStore& componentStore,
+            ics::index::IndexStore& indexStore);
 }
 
-#endif //BENTOBOX_RENDER_H
+#endif  // BENTOBOX_RENDER_H

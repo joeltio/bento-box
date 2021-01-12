@@ -2,11 +2,11 @@
 #define BENTOBOX_POS1DCOMPONENT_H
 
 namespace ics::component {
-    struct Pos1DComponent : public ics::BaseComponent {
-        unsigned int x;
+struct Pos1DComponent : public ics::BaseComponent {
+    unsigned int x;
 
-        explicit Pos1DComponent(unsigned int x) : x(x) {}
-    };
-}
+    explicit Pos1DComponent(unsigned int x) : x(x) {}
+};
+}  // namespace ics::component
 
-#endif //BENTOBOX_POS1DCOMPONENT_H
+#endif  // BENTOBOX_POS1DCOMPONENT_H
