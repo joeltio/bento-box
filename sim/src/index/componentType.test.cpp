@@ -1,7 +1,7 @@
 #include <core/ics/component.h>
 #include <core/ics/componentSet.h>
 #include <gtest/gtest.h>
-#include <index/componentType.h>
+#include <index/componentTypeIndex.h>
 
 #define TEST_SUITE ComponentType
 
@@ -12,14 +12,14 @@ struct TestComponent : public ics::BaseComponent {
 };
 
 TEST(TEST_SUITE, AddAndRetrieveComponentType) {
-    ComponentType index;
+    ComponentTypeIndex index;
     auto group = index.addComponentType<TestComponent>();
     index.addComponentType<ics::BaseComponent>();
     ASSERT_EQ(index.getComponentType<TestComponent>(), group);
 }
 
 TEST(TEST_SUITE, CheckIfComponentTypeExists) {
-    ComponentType index;
+    ComponentTypeIndex index;
     ASSERT_FALSE(index.hasComponentType<TestComponent>());
     ASSERT_FALSE(index.hasComponentType<ics::BaseComponent>());
 
@@ -32,9 +32,9 @@ TEST(TEST_SUITE, CheckIfComponentTypeExists) {
 }
 
 TEST(TEST_SUITE, UseComponentTypeIsFilter) {
-    ComponentType index;
+    ComponentTypeIndex index;
     auto group = index.addComponentType<TestComponent>();
-    auto filter = index.is<TestComponent>();
+    auto filter = index.filterCompType<TestComponent>();
 
     ics::ComponentSet compSet;
     compSet.emplace(group, 2);
