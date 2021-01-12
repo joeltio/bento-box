@@ -5,10 +5,10 @@
 #include "entityIndex.h"
 
 namespace ics::index {
-    struct IndexStore {
-        ComponentTypeIndex componentType;
-        EntityIndex entity;
-    };
-}
+struct IndexStore {
+    ComponentTypeIndex componentType;
+    EntityIndex entity;
+};
+}  // namespace ics::index
 
-#endif //BENTOBOX_INDEXSTORE_H
+#endif  // BENTOBOX_INDEXSTORE_H

@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
 #include <core/ics/component.h>
 #include <core/ics/componentSet.h>
+#include <gtest/gtest.h>
 #include <index/componentTypeIndex.h>
 
 #define TEST_SUITE ComponentType
@@ -40,8 +40,8 @@ TEST(TEST_SUITE, UseComponentTypeIsFilter) {
     compSet.emplace(group, 2);
     compSet.emplace(group, 5);
     compSet.emplace(group, 13);
-    compSet.emplace(group+1, 3);
-    compSet.emplace(group+1, 7);
+    compSet.emplace(group + 1, 3);
+    compSet.emplace(group + 1, 7);
 
     auto filteredSet = filter(compSet);
     int cumProd = 1;
