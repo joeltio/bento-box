@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include <core/ics/component.h>
+#include <gtest/gtest.h>
 
 #define TEST_SUITE Component
 
@@ -11,12 +11,12 @@ struct DerivedComp : public BaseComponent {
 };
 
 TEST(TEST_SUITE, DerivedComponentsEquivalence) {
-    auto d1 = DerivedComp {
+    auto d1 = DerivedComp{
         .height = 3,
         .c = 'c',
     };
 
-    auto d2 = DerivedComp {
+    auto d2 = DerivedComp{
         .height = 3,
         .c = 'c',
     };

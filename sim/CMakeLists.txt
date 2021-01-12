@@ -1,7 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
-include(FetchContent)
-# show progress for when fetching FetchContent dependencies
-set(FETCHCONTENT_QUIET OFF)
 # use cmake policy to make option() to honor normal variables
 # http://shadow.nd.rl.ac.uk/ICP_Binaries/CMake/doc/cmake/html/policy/CMP0077.html
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
@@ -42,30 +39,10 @@ target_link_libraries(${TARGET_TEST}
 )
 
 ## Library Dependencies
-# target library dependencies to c++ 17
-set(CMAKE_CXX_STANDARD 17)
+# fetch dependencies
+include("dependencies.cmake")
 
 # GRPC/Protobuf
-FetchContent_Declare(
-    grpc
-    GIT_REPOSITORY https://github.com/grpc/grpc.git
-    GIT_TAG        v1.33.2
-    GIT_PROGRESS   TRUE
-)
-# disable redundant dependencies targets
-# disable unused protobuf targets
-set(protobuf_BUILD_TESTS OFF)
-# disable unused grpc plugin targets
-set(gRPC_BUILD_CSHARP_EXT OFF)
-set(gRPC_BUILD_GRPC_CSHARP_PLUGIN OFF)
-set(gRPC_BUILD_GRPC_NODE_PLUGIN OFF)
-set(gRPC_BUILD_GRPC_OBJECTIVE_C_PLUGIN OFF)
-set(gRPC_BUILD_GRPC_PHP_PLUGIN OFF)
-set(gRPC_BUILD_GRPC_PYTHON_PLUGIN OFF)
-set(gRPC_BUILD_GRPC_RUBY_PLUGIN OFF)
-# disable abseil tests targets
-set(BUILD_TESTING OFF)
-FetchContent_MakeAvailable(grpc)
 # link protobuf/grpc libraries
 foreach(target IN ITEMS ${TARGETS})
     target_include_directories(${target} PRIVATE "${PROTOBUF_DIR}/src")
@@ -102,12 +79,5 @@ foreach(target IN ITEMS ${TARGETS})
 endforeach()
 
 ## Test Dependencies
-# Google test
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        release-1.10.0
-  GIT_PROGRESS   TRUE
-)
-FetchContent_MakeAvailable(googletest)
+# link googletest
 target_link_libraries(${TARGET_TEST} PRIVATE -Wl,--no-whole-archive gtest_main)

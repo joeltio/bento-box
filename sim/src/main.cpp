@@ -1,9 +1,9 @@
+#include <component/textureComponent.h>
+#include <core/graphicsContext.h>
 #include <core/systemContext.h>
 #include <core/windowContext.h>
-#include <core/graphicsContext.h>
-#include <component/textureComponent.h>
-#include <system/render.h>
 #include <ics.h>
+#include <system/render.h>
 
 int main() {
     WindowContext windowContext = WindowContext(800, 600, "Bento Box");
@@ -24,8 +24,7 @@ int main() {
     const SystemFn<ics::index::IndexStore> a(&ics::system::render);
     systemContext.systems.push_front(a);
 
-    while(!windowContext.shouldClose())
-    {
+    while (!windowContext.shouldClose()) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
