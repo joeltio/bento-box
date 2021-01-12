@@ -4,16 +4,16 @@
 #include <concepts>
 
 namespace ics {
-    struct BaseComponent {
-        // isActive is used for memory pooling. When a component is marked as
-        // inactive, it is "deleted". The memory used by inactive components
-        // will be reused.
-        bool isActive = true;
-        bool operator==(const BaseComponent&) const = default;
-    };
+struct BaseComponent {
+    // isActive is used for memory pooling. When a component is marked as
+    // inactive, it is "deleted". The memory used by inactive components
+    // will be reused.
+    bool isActive = true;
+    bool operator==(const BaseComponent&) const = default;
+};
 
-    template<class C>
-    concept Component = std::derived_from<C, BaseComponent>;
-}
+template <class C>
+concept Component = std::derived_from<C, BaseComponent>;
+}  // namespace ics
 
-#endif //BENTOBOX_COMPONENT_H
+#endif  // BENTOBOX_COMPONENT_H

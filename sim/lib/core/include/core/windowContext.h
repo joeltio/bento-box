@@ -5,11 +5,12 @@
 #include <GLFW/glfw3.h>
 
 class WindowContext {
-private:
+   private:
     int width;
     int height;
     const char* title;
-public:
+
+   public:
     GLFWwindow* window = nullptr;
 
     WindowContext(int width, int height, const char* title);
@@ -24,4 +25,4 @@ public:
     void swapBuffers() const;
 };
 
-#endif //BENTOBOX_WINDOWCONTEXT_H
+#endif  // BENTOBOX_WINDOWCONTEXT_H

@@ -12,26 +12,26 @@ import "bento/protos/graph.proto";
 
 // EntityDef - registerable definition for a entity in ECS
 message EntityDef {
-    // Unique id that identifies this entity
-    // This should be auto assigned by bentobox when first registered.
-    uint32 id = 1;
-    // list of names of the components types held by this entity
-    repeated string components = 2;
+  // Unique id that identifies this entity
+  // This should be auto assigned by bentobox when first registered.
+  uint32 id = 1;
+  // list of names of the components types held by this entity
+  repeated string components = 2;
 }
 
 // ComponentDef - registerable definition for a component in ECS
 message ComponentDef {
-    // Name of the Component type
-    string name = 1;
-    // Schema definition the attributes that are held by components of this type
-    map<string, Type> schema = 2;
+  // Name of the Component type
+  string name = 1;
+  // Schema definition the attributes that are held by components of this type
+  map<string, Type> schema = 2;
 }
 
 // SystemDef - registerable definition for a system in ECS
 message SystemDef {
-    // Unique id that identifies the system.
-    // This should be auto assigned by bentobox when first registered.
-    uint32 id = 1;
-    // Computation Graph containing the implementation of the system
-    Graph graph = 2;
+  // Unique id that identifies the system.
+  // This should be auto assigned by bentobox when first registered.
+  uint32 id = 1;
+  // Computation Graph containing the implementation of the system
+  Graph graph = 2;
 }
