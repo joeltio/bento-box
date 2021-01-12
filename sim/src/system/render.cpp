@@ -10,9 +10,9 @@ void render(GraphicsContext &graphicsContext,
             ics::ComponentStore &componentStore,
             ics::index::IndexStore &indexStore) {
     auto &componentType = indexStore.componentType;
-    auto components = util::Composable<ComponentStore &>(componentStore) |
-                      ics::asCompSet |
-                      componentType.filterCompType<ics::component::Texture2DComponent>();
+    auto components =
+        util::Composable<ComponentStore &>(componentStore) | ics::asCompSet |
+        componentType.filterCompType<ics::component::Texture2DComponent>();
 
     for (auto componentId : components.data) {
         auto component = ics::getComponent<ics::component::Texture2DComponent>(

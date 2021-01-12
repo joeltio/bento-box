@@ -7,45 +7,48 @@
 
 namespace ics::index {
 
-    class EntityIndex {
-    public:
-        typedef unsigned int EntityId;
-    private:
-        EntityId nextEntityId = 0;
-        std::unordered_map<EntityId, std::unordered_set<CompStoreId>> entityCompMap;
-    public:
-        // Creates a filter to find CompStoreIds with the given entityId.
-        // Returns a lambda which is the filter. The lambda has the following signature:
-        // ComponentSet -> ComponentSet
-        auto filterEntityId(EntityId entityId) {
-            return [this, entityId](const ics::ComponentSet& compSet) -> ics::ComponentSet {
-                const auto& compStoreIds = this->entityCompMap.at(entityId);
-                return util::setIntersection(compStoreIds, compSet);
-            };
-        }
+class EntityIndex {
+   public:
+    typedef unsigned int EntityId;
 
-        EntityId addEntityId() {
-            // Update the next entity id
-            auto entityId = nextEntityId;
-            nextEntityId++;
+   private:
+    EntityId nextEntityId = 0;
+    std::unordered_map<EntityId, std::unordered_set<CompStoreId>> entityCompMap;
 
-            // Update the entityCompMap
-            entityCompMap.emplace(entityId, std::unordered_set<CompStoreId>());
-            return entityId;
-        }
+   public:
+    // Creates a filter to find CompStoreIds with the given entityId.
+    // Returns a lambda which is the filter. The lambda has the following
+    // signature: ComponentSet -> ComponentSet
+    auto filterEntityId(EntityId entityId) {
+        return [this, entityId](
+                   const ics::ComponentSet& compSet) -> ics::ComponentSet {
+            const auto& compStoreIds = this->entityCompMap.at(entityId);
+            return util::setIntersection(compStoreIds, compSet);
+        };
+    }
 
-        void addComponent(EntityId entityId, const CompStoreId& compStoreId) {
-            entityCompMap.at(entityId).insert(compStoreId);
-        }
+    EntityId addEntityId() {
+        // Update the next entity id
+        auto entityId = nextEntityId;
+        nextEntityId++;
 
-        std::unordered_set<CompStoreId> getComponents(EntityId entityId) const {
-            return entityCompMap.at(entityId);
-        }
+        // Update the entityCompMap
+        entityCompMap.emplace(entityId, std::unordered_set<CompStoreId>());
+        return entityId;
+    }
 
-        void removeComponent(EntityId entityId, const CompStoreId& compStoreId) {
-            entityCompMap.at(entityId).erase(compStoreId);
-        }
-    };
-}
+    void addComponent(EntityId entityId, const CompStoreId& compStoreId) {
+        entityCompMap.at(entityId).insert(compStoreId);
+    }
 
-#endif //BENTOBOX_ENTITYINDEX_H
+    std::unordered_set<CompStoreId> getComponents(EntityId entityId) const {
+        return entityCompMap.at(entityId);
+    }
+
+    void removeComponent(EntityId entityId, const CompStoreId& compStoreId) {
+        entityCompMap.at(entityId).erase(compStoreId);
+    }
+};
+}  // namespace ics::index
+
+#endif  // BENTOBOX_ENTITYINDEX_H

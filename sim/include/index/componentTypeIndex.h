@@ -9,12 +9,12 @@
 
 namespace ics::index {
 class ComponentTypeIndex {
-private:
+   private:
     std::unordered_map<std::type_index, CompGroup> typeGroupMap;
     CompGroup compGroup = 0;
 
-public:
-    template<Component C>
+   public:
+    template <Component C>
     // The return type is left as auto so that the capturing lambda is properly
     // represented. Type errors can occur at build-time when using function
     // pointer return types or std::function.
