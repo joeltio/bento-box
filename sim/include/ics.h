@@ -3,7 +3,7 @@
 
 #include <core/ics/component.h>
 #include <core/ics/componentStore.h>
-#include <index/componentType.h>
+#include <index/componentTypeIndex.h>
 #include <index/indexStore.h>
 
 namespace ics {

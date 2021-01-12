@@ -5,7 +5,7 @@ namespace ics::component {
 struct Pos1DComponent : public ics::BaseComponent {
     unsigned int x;
 
-    explicit Pos1DComponent(unsigned int x) : x(x) {}
+    Pos1DComponent(unsigned int x) : x(x) {}
 };
 }  // namespace ics::component
 

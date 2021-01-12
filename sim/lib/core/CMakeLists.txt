@@ -36,6 +36,7 @@ add_library(core-test
     src/ics/componentStore.test.cpp
     src/ics/compVec.test.cpp
     src/ics/util/composable.test.cpp
+    src/ics/util/setIntersection.test.cpp
     src/ics/util/typeMap.test.cpp
 )
 target_link_libraries(core-test

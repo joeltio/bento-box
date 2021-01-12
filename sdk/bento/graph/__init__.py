@@ -6,7 +6,6 @@
 import gast
 
 from gast import FunctionDef, AST
-from inspect import getsource
 from textwrap import dedent
 from typing import Callable, List
 
@@ -14,8 +13,18 @@ from bento.graph.preprocessors import preprocess_augassign
 from bento.graph.analyzers import (
     analyze_func,
     analyze_convert_fn,
+    analyze_symbol,
+    analyze_assign,
+    resolve_symbol,
+    analyze_parent,
+    analyze_block,
+    analyze_activity,
 )
-from bento.graph.transforms import transform_build_graph
+from bento.graph.transforms import (
+    transform_build_graph,
+    transform_ternary,
+    transform_ifelse,
+)
 from bento.graph.ast import parse_ast, load_ast_module
 from bento.graph.plotter import Plotter
 from bento.protos.graph_pb2 import Graph, Node
@@ -32,12 +41,20 @@ def compile_graph(
         preprocess_augassign,
     ],
     analyzers: List[Analyzer] = [
+        analyze_parent,
         analyze_func,
         analyze_convert_fn,
+        analyze_symbol,
+        analyze_assign,
+        resolve_symbol,
+        analyze_block,
+        analyze_activity,
     ],
     linters: List[Linter] = [],
     transforms: List[Transform] = [
         transform_build_graph,
+        transform_ternary,
+        transform_ifelse,
     ],
 ) -> Graph:
     """Compiles the given `convert_fn` into a computation Graph.
@@ -92,8 +109,6 @@ def compile_graph(
     Returns:
         The converted computational Graph as a `Graph` protobuf message.
     """
-
-    # TODO(mrzzy): capture globals with convert_fn.__globals__
 
     # parse ast from function source
     ast = parse_ast(convert_fn)

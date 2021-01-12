@@ -6,7 +6,7 @@ struct Pos2DComponent : public ics::BaseComponent {
     unsigned int x;
     unsigned int y;
 
-    explicit Pos1DComponent(unsigned int x, unsigned int y) : x(x), y(y) {}
+    Pos2DComponent(unsigned int x, unsigned int y) : x(x), y(y) {}
 };
 }  // namespace ics::component
 

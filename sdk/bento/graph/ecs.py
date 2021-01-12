@@ -4,13 +4,17 @@
 # Graph ECS
 #
 
-from random import randint
+from binascii import crc32
 from typing import Any, Iterable, Set, List
 from bento.ecs.base import Component, Entity
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
 from bento.protos.values_pb2 import Value
+
+
+def to_str_attr(attr: AttributeRef):
+    return f"{attr.entity_id}/{attr.component}/{attr.attribute}"
 
 
 class GraphNode:
@@ -64,10 +68,7 @@ class GraphNode:
         return type(self).wrap(Node(add_op=Node.Add(x=other.node, y=self.node)))
 
     def __iadd__(self, other: Any):
-        other = type(self).wrap(other)
-        # add in-place
-        self.node = Node(add_op=Node.Add(x=self.node, y=other.node))
-        return self
+        return self.__add__(other)
 
     def __sub__(self, other: Any):
         other = type(self).wrap(other)
@@ -78,10 +79,7 @@ class GraphNode:
         return type(self).wrap(Node(sub_op=Node.Sub(x=other.node, y=self.node)))
 
     def __isub__(self, other: Any):
-        other = type(self).wrap(other)
-        # subtract in-place
-        self.node = Node(add_op=Node.Sub(x=self.node, y=other.node))
-        return self
+        return self.__sub__(other)
 
     def __mul__(self, other: Any):
         other = type(self).wrap(other)
@@ -92,10 +90,7 @@ class GraphNode:
         return type(self).wrap(Node(mul_op=Node.Mul(x=other.node, y=self.node)))
 
     def __imul__(self, other: Any):
-        other = type(self).wrap(other)
-        # multiply in-place
-        self.node = Node(add_op=Node.Mul(x=self.node, y=other.node))
-        return self
+        return self.__mul__(other)
 
     def __truediv__(self, other: Any):
         other = type(self).wrap(other)
@@ -106,10 +101,7 @@ class GraphNode:
         return type(self).wrap(Node(div_op=Node.Div(x=other.node, y=self.node)))
 
     def __itruediv__(self, other: Any):
-        other = type(self).wrap(other)
-        # divide in-place
-        self.node = Node(add_op=Node.Div(x=self.node, y=other.node))
-        return self
+        return self.__truediv__(other)
 
     def __mod__(self, other: Any):
         other = type(self).wrap(other)
@@ -183,61 +175,60 @@ class GraphComponent(Component):
         component.y = component.x
 
         # Obtain graph input/output nodes corresponding to the input/output nodes
-        graph_ins, graph_outputs =  component.inputs, component.outputs
+        graph_ins, graph_outputs = component.inputs, component.outputs
     """
 
     def __init__(self, entity_id: int, name: str):
         # use __dict__ assignment to prevent triggering __setattr__()
         self.__dict__["_entity_id"] = entity_id
         self.__dict__["_name"] = name
-        self.__dict__["_inputs"] = []
-        self.__dict__["_outputs"] = []
+        # _inputs/_outputs are dict with AttributeRef as key and Retrieve/Mutate nodes as value
+        # ensuring that we record unique input and output nodes
+        self.__dict__["_inputs"] = {}
+        self.__dict__["_outputs"] = {}
 
     def get_attr(self, name: str) -> Node:
         # Record the attribute retrieve operation as input graph node
-        get_op = GraphNode(
-            node=Node(
-                retrieve_op=Node.Retrieve(
-                    retrieve_attr=AttributeRef(
-                        entity_id=self._entity_id,
-                        component=self._name,
-                        attribute=name,
-                    )
-                )
-            )
+        attr_ref = AttributeRef(
+            entity_id=self._entity_id,
+            component=self._name,
+            attribute=name,
         )
-        self._inputs.append(get_op)
+        get_op = GraphNode(node=Node(retrieve_op=Node.Retrieve(retrieve_attr=attr_ref)))
+        # print(get_op)
+        self._inputs[to_str_attr(attr_ref)] = get_op
         return get_op
 
     def set_attr(self, name: str, value: Any):
         value = GraphNode.wrap(value)
         # Record the attribute set/mutate operation as output graph node
+        attr_ref = AttributeRef(
+            entity_id=self._entity_id,
+            component=self._name,
+            attribute=name,
+        )
         set_op = GraphNode(
             node=Node(
                 mutate_op=Node.Mutate(
-                    mutate_attr=AttributeRef(
-                        entity_id=self._entity_id,
-                        component=self._name,
-                        attribute=name,
-                    ),
+                    mutate_attr=attr_ref,
                     to_node=value.node,
                 )
             )
         )
-        self._outputs.append(set_op)
+        self._outputs[to_str_attr(attr_ref)] = set_op
 
     @property
     def inputs(self) -> List[GraphNode]:
-        """Get the graph input nodes recorded by this Graph component"""
-        return self._inputs
+        """Get the graph unique input nodes recorded by this Graph component"""
+        return list(self._inputs.values())
 
     @property
     def outputs(self) -> List[GraphNode]:
-        """Get the graph output nodes recorded by this Graph component"""
-        return self._outputs
+        """Get the graph unique output nodes recorded by this Graph component"""
+        return list(self._outputs.values())
 
     def __str__(self):
-        return f"{self.__class__.__name___}<{self._name}, {self._name}>"
+        return f"{type(self).__name__}<{self._name}, {self._name}>"
 
 
 class GraphEntity(Entity):
@@ -248,8 +239,9 @@ class GraphEntity(Entity):
     """
 
     def __init__(self, components: Iterable[str]):
-        # TODO(zzy): obtain id from actual entity
-        self.id = randint(1, int(1e5))
+        # TODO(zzy): obtain id from actual entity in engine
+        # compute entity id from hash of components to make entity id deterministic
+        self.id = crc32(",".join(sorted(components)).encode())
         self.component_map = {
             name: GraphComponent(self.id, name) for name in components
         }
@@ -268,4 +260,4 @@ class GraphEntity(Entity):
         return set(self.component_map.values())
 
     def __str__(self):
-        return f"{self.__class__.__name___}<{self.id}>"
+        return f"{type(self).__name__}<{self.id}>"
