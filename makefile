@@ -25,7 +25,11 @@ format: format-proto format-sim format-sdk
 ARCH:=$(shell uname -m)
 OS:=$(if $(filter Darwin,$(shell uname -s)),osx,linux)
 BIN_DIR:=/usr/local/bin
+<<<<<<< HEAD
 deps: dep-protoc dev-sdk-dev dep-clang-fmt
+=======
+deps: dep-protoc dep-sim dev-sdk-dev
+>>>>>>> master
 
 PROTOC_VERSION:=3.13.0
 
@@ -63,10 +67,13 @@ SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib/core/src $(SIM_SRC)/lib/core/include
 SIM_BUILD_DIR:=sim/build
 FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 
-.PHONY: build-sim test-sim run-sm clean-sim format-sim
+.PHONY: dep-sim build-sim test-sim run-sim clean-sim format-sim
 
-build-sim:
+dep-sim:
 	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) --target deps
+
+build-sim: dep-sim
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) \
 		--target $(SIM_TARGET) --target $(SIM_TEST)
 
