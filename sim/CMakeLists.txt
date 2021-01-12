@@ -10,18 +10,27 @@ set(TARGET_TEST "${PROJECT_NAME}-test")
 set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 # target bento simulator's executables to c++ 20
 set(CMAKE_CXX_STANDARD 20)
+
+# Set sources for target
+set(TARGET_SIM_SOURCES
+    src/interpreter/userValue.cpp
+    src/system/render.cpp
+)
+
 add_executable(${TARGET_SIM}
     src/main.cpp
-    src/system/render.cpp
+    ${TARGET_SIM_SOURCES}
 )
 target_include_directories(${TARGET_SIM}
     PUBLIC include
 )
 
 add_executable(${TARGET_TEST}
+    ${TARGET_SIM_SOURCES}
     src/main.test.cpp
     src/index/entity.test.cpp
     src/index/componentType.test.cpp
+    src/interpreter/userValue.test.cpp
 )
 target_include_directories(${TARGET_TEST}
     PUBLIC include
