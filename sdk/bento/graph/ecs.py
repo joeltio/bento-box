@@ -228,7 +228,7 @@ class GraphComponent(Component):
         return list(self._outputs.values())
 
     def __str__(self):
-        return f"{self.__class__.__name__}<{self._name}, {self._name}>"
+        return f"{type(self).__name__}<{self._name}, {self._name}>"
 
 
 class GraphEntity(Entity):
@@ -260,4 +260,4 @@ class GraphEntity(Entity):
         return set(self.component_map.values())
 
     def __str__(self):
-        return f"{self.__class__.__name__}<{self.id}>"
+        return f"{type(self).__name__}<{self.id}>"
