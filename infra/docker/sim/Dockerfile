@@ -19,14 +19,14 @@ RUN apt-get update && apt-get install -y  --no-install-recommends \
 
 # pull build dependencies
 COPY makefile /repo/makefile
-COPY sim/dependencies.cmake /repo/sim/CMakeLists.txt
+COPY sim/build/dependencies.cmake /repo/sim/CMakeLists.txt
 RUN mkdir -p sim/build
 RUN make dep-sim
 
 # build simulator
 COPY protos /repo/protos
 COPY sim/CMakeLists.txt /repo/sim/CMakeLists.txt
-COPY sim/dependencies.cmake /repo/sim/dependencies.cmake
+COPY sim/build/dependencies.cmake /repo/sim/dependencies.cmake
 COPY sim/lib /repo/sim/lib
 COPY sim/src /repo/sim/src
 COPY sim/include /repo/sim/include

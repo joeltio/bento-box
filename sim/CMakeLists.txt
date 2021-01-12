@@ -41,7 +41,8 @@ target_link_libraries(${TARGET_TEST}
 
 ## Library Dependencies
 # fetch dependencies
-include("dependencies.cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(dependencies)
 
 # GRPC/Protobuf
 # link protobuf/grpc libraries
