@@ -25,11 +25,7 @@ format: format-proto format-sim format-sdk
 ARCH:=$(shell uname -m)
 OS:=$(if $(filter Darwin,$(shell uname -s)),osx,linux)
 BIN_DIR:=/usr/local/bin
-<<<<<<< HEAD
-deps: dep-protoc dev-sdk-dev dep-clang-fmt
-=======
-deps: dep-protoc dep-sim dev-sdk-dev
->>>>>>> master
+deps: dep-protoc dev-sdk-dev dep-clang-fmt dep-sim
 
 PROTOC_VERSION:=3.13.0
 
