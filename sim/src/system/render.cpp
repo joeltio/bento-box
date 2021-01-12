@@ -10,7 +10,7 @@ namespace ics::system {
         auto& componentType = indexStore.componentType;
         auto components = util::Composable<ComponentStore&>(componentStore)
             | ics::asCompSet
-            | componentType.is<ics::component::Texture2DComponent>();
+            | componentType.filterCompType<ics::component::Texture2DComponent>();
 
         for (auto componentId : components.data) {
             auto component = ics::getComponent<ics::component::Texture2DComponent>(componentStore, componentId);
