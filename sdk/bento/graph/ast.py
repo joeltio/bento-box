@@ -95,6 +95,8 @@ def load_ast_module(ast: AST) -> Any:
         mod_spec = spec_from_file_location("compiled", f.name)
         module = module_from_spec(mod_spec)
         mod_spec.loader.exec_module(module)
+    # delete the temporary file manually as NamedTemporaryFile runs into
+    # permission issues trying to remove it on Windows.
     os.remove(f.name)
 
     return module
