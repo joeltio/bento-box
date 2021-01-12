@@ -34,13 +34,39 @@
 
 import gast
 from typing import Callable
-from gast import AST, Constant, Assign, List, Tuple
+from gast import (
+    AST,
+    Constant,
+    Assign,
+    List,
+    Tuple,
+    IfExp,
+    If,
+    Store,
+    Load,
+    ListComp,
+    comprehension,
+)
 from bento.graph.plotter import Plotter
-from bento.graph.ast import parse_ast, call_func_ast
+from bento.graph.ast import (
+    parse_ast,
+    call_func_ast,
+    wrap_func_ast,
+    wrap_block_ast,
+    load_ast_module,
+    name_ast,
+    assign_ast,
+)
 
 
 class FuncASTTransform(gast.NodeTransformer):
-    &#34;&#34;&#34;Defines a AST transformation with a given transform function&#34;&#34;&#34;
+    &#34;&#34;&#34;Defines a AST transformation with a given transform_fn transform function.
+
+    Walks the AST with the given transform_fn, allowing it to modify AST nodes.
+
+    Args:
+        transform_fn: transform function that takes in AST and returns the modified AST.
+    &#34;&#34;&#34;
 
     def __init__(self, transform_fn: Callable[[AST], AST]):
         super().__init__()
@@ -59,6 +85,7 @@ class FuncASTTransform(gast.NodeTransformer):
 def transform_build_graph(ast: AST) -&gt; AST:
     &#34;&#34;&#34;Transforms convert function to build graph function
 
+    Requires the `analyze_convert_fn()` to analyze the AST first.
     Removes the convert function&#39;s annotations and changes the name to `build_graph`
 
     Args:
@@ -68,6 +95,190 @@ def transform_build_graph(ast: AST) -&gt; AST:
     &#34;&#34;&#34;
     fn_ast = ast.convert_fn
     fn_ast.decorator_list, fn_ast.name = [], &#34;build_graph&#34;
+
+    return ast
+
+
+def transform_ternary(ast: AST) -&gt; AST:
+    &#34;&#34;&#34;Transforms ternary conditional to plot Switch Nodes on computational graph.
+
+    Requires the `analyze_convert_fn()` to analyze the AST first.
+    Transforms ternary statements in the form `a if b else c` into a call to the
+    Graph Plotter to plot a Switch Node `g.switch(b, a, c)` on the computation graph.
+
+    Args:
+        ast: AST to transform ternary into the plotting of a Switch Node.
+    Returns:
+        The given ast with ternary statements transformed into the plotting of a Switch Node.
+    &#34;&#34;&#34;
+
+    def do_transform(ternary_ast: AST) -&gt; AST:
+        # filter out non-ternary expressions
+        if not isinstance(ternary_ast, IfExp):
+            return ternary_ast
+        # obtain AST of calling the plotter to plotting a switch node
+        plot_switch_fn = parse_ast(Plotter.switch).body[0]
+        return call_func_ast(
+            fn_name=plot_switch_fn.name,
+            args={
+                &#34;condition&#34;: ternary_ast.test,
+                &#34;true&#34;: ternary_ast.body,
+                &#34;false&#34;: ternary_ast.orelse,
+            },
+            attr_parent=ast.convert_fn.plotter_name,
+        )
+
+    ternary_transform = FuncASTTransform(do_transform)
+
+    # apply ternary transform to AST
+    ast = ternary_transform.visit(ast)
+
+    return ast
+
+
+def transform_ifelse(ast: AST) -&gt; AST:
+    &#34;&#34;&#34;Transforms if/elif/else statements to plot Switch Nodes on computational graph.
+
+    Requires the `analyze_activity()` to analyze the AST first.
+    Transforms if/elif/else statements to a function that evaluates to calls to
+    the Graph Plotter to plot a Switch Node on the computational graph.
+
+    Note:
+        Defining a symbol inside the if statement requires that means that
+        that symbol has be defined in all conditional branches.
+
+    Example:
+         if a:
+             x = y
+             z = 1
+         elif b:
+             x = m
+             z = 2
+         else:
+             x = n
+             z = 3
+
+         # should be transformed into:
+         def __if_block(y, m, n):
+             x = y
+             z = 1
+             return x, z
+
+         def __else_block(b, m, n):
+             def __if_block(m, n):
+                 x = m
+                 z = 2
+                 return x, z
+
+             def __else_block(m, n):
+                 x = n
+                 z = 2
+                 return x, z
+
+             __if_outputs = if_block(m)
+             __else_outputs = else_block(m, n)
+
+             x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+             return x, z
+
+         __if_outputs = __if_block(y)
+         __else_outputs = __else_block(b, m, n)
+
+         x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+
+         # which will evaluate to:
+         x = g.switch(a, y, g.switch(b, m, n))
+         z = g.switch(a, 1, g.switch(b, 2, 3))
+
+     Args:
+         ast: AST to transform if else statements into the plotting of a Switch Node.
+     Returns:
+         The given ast with if else statements to be transformed into a the plotting of a Switch Node.
+    &#34;&#34;&#34;
+
+    def do_transform(ifelse_ast: AST) -&gt; AST:
+        # filter out non-ifelse statements
+        if not isinstance(ifelse_ast, If):
+            return ifelse_ast
+
+        # convert ifelse condition branches into functions with the arguments
+        # set to the names of the input symbols and return values set to output symbols
+        args = list(ifelse_ast.input_syms.keys())
+        returns = list(ifelse_ast.output_syms.keys())
+        fn_asts = [
+            wrap_func_ast(
+                name=name,
+                args=args,
+                block=block,
+                returns=returns,
+                # zip() requires the returned outputs to be iterable
+                return_tuple=True,
+            )
+            for name, block in zip(
+                [&#34;__if_block&#34;, &#34;__else_block&#34;], [ifelse_ast.body, ifelse_ast.orelse]
+            )
+        ]
+        # call if/else block functions to trace results of evaluating each branch of the conditional
+        # if/else block functions have arguments with the same names as symbols we have to pass in.
+        call_args = {a: name_ast(a) for a in args}
+        branch_outputs = [name_ast(n) for n in [&#34;__if_outputs&#34;, &#34;__else_outputs&#34;]]
+        call_fn_asts = [
+            assign_ast(
+                targets=[target],
+                values=[call_func_ast(fn_ast.name, args=call_args)],
+            )
+            for target, fn_ast in zip(branch_outputs, fn_asts)
+        ]
+
+        # create switch nodes for each output symbol via list comprehension
+        plot_switch_fn = parse_ast(Plotter.switch).body[0]
+        # g.switch(test, if_out, else_out)
+        call_switch_ast = call_func_ast(
+            fn_name=plot_switch_fn.name,
+            args={
+                &#34;condition&#34;: ifelse_ast.test,
+                &#34;true&#34;: name_ast(&#34;if_out&#34;),
+                &#34;false&#34;: name_ast(&#34;else_out&#34;),
+            },
+            attr_parent=ast.convert_fn.plotter_name,
+        )
+
+        # symbols = [g.switch(...) for if_out, else_out in zip(if_outputs, else_outputs)]
+        switch_asts = assign_ast(
+            targets=[name_ast(r, ctx=Store()) for r in returns],
+            values=[
+                ListComp(
+                    elt=call_switch_ast,
+                    generators=[
+                        comprehension(
+                            target=Tuple(
+                                elts=[
+                                    name_ast(&#34;if_out&#34;),
+                                    name_ast(&#34;else_out&#34;),
+                                ],
+                                ctx=Load(),
+                            ),
+                            iter=call_func_ast(
+                                fn_name=&#34;zip&#34;,
+                                args=branch_outputs,
+                            ),
+                            ifs=[],
+                            is_async=False,
+                        )
+                    ],
+                )
+            ],
+        )
+        # wrap transformed code block as single AST node
+        return wrap_block_ast(
+            block=fn_asts + call_fn_asts + [switch_asts],
+        )
+
+    ifelse_transform = FuncASTTransform(do_transform)
+
+    # apply ifelse transform to AST
+    ast = ifelse_transform.visit(ast)
+    mod = load_ast_module(ast)
 
     return ast</code></pre>
 </details>
@@ -84,7 +295,8 @@ def transform_build_graph(ast: AST) -&gt; AST:
 </code></dt>
 <dd>
 <div class="desc"><p>Transforms convert function to build graph function</p>
-<p>Removes the convert function's annotations and changes the name to <code>build_graph</code></p>
+<p>Requires the <code>analyze_convert_fn()</code> to analyze the AST first.
+Removes the convert function's annotations and changes the name to <code>build_graph</code></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>ast</code></strong></dt>
@@ -99,6 +311,7 @@ def transform_build_graph(ast: AST) -&gt; AST:
 <pre><code class="python">def transform_build_graph(ast: AST) -&gt; AST:
     &#34;&#34;&#34;Transforms convert function to build graph function
 
+    Requires the `analyze_convert_fn()` to analyze the AST first.
     Removes the convert function&#39;s annotations and changes the name to `build_graph`
 
     Args:
@@ -108,6 +321,265 @@ def transform_build_graph(ast: AST) -&gt; AST:
     &#34;&#34;&#34;
     fn_ast = ast.convert_fn
     fn_ast.decorator_list, fn_ast.name = [], &#34;build_graph&#34;
+
+    return ast</code></pre>
+</details>
+</dd>
+<dt id="bento.graph.transforms.transform_ifelse"><code class="name flex">
+<span>def <span class="ident">transform_ifelse</span></span>(<span>ast: _ast.AST) ‑> _ast.AST</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transforms if/elif/else statements to plot Switch Nodes on computational graph.</p>
+<p>Requires the <code>analyze_activity()</code> to analyze the AST first.
+Transforms if/elif/else statements to a function that evaluates to calls to
+the Graph Plotter to plot a Switch Node on the computational graph.</p>
+<h2 id="note">Note</h2>
+<p>Defining a symbol inside the if statement requires that means that
+that symbol has be defined in all conditional branches.</p>
+<h2 id="example">Example</h2>
+<p>if a:
+x = y
+z = 1
+elif b:
+x = m
+z = 2
+else:
+x = n
+z = 3</p>
+<h1 id="should-be-transformed-into">should be transformed into:</h1>
+<p>def __if_block(y, m, n):
+x = y
+z = 1
+return x, z</p>
+<p>def __else_block(b, m, n):
+def __if_block(m, n):
+x = m
+z = 2
+return x, z</p>
+<pre><code>def __else_block(m, n):
+    x = n
+    z = 2
+    return x, z
+
+__if_outputs = if_block(m)
+__else_outputs = else_block(m, n)
+
+x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+return x, z
+</code></pre>
+<p>__if_outputs = __if_block(y)
+__else_outputs = __else_block(b, m, n)</p>
+<p>x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]</p>
+<h1 id="which-will-evaluate-to">which will evaluate to:</h1>
+<p>x = g.switch(a, y, g.switch(b, m, n))
+z = g.switch(a, 1, g.switch(b, 2, 3))</p>
+<p>Args:
+ast: AST to transform if else statements into the plotting of a Switch Node.
+Returns:
+The given ast with if else statements to be transformed into a the plotting of a Switch Node.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform_ifelse(ast: AST) -&gt; AST:
+    &#34;&#34;&#34;Transforms if/elif/else statements to plot Switch Nodes on computational graph.
+
+    Requires the `analyze_activity()` to analyze the AST first.
+    Transforms if/elif/else statements to a function that evaluates to calls to
+    the Graph Plotter to plot a Switch Node on the computational graph.
+
+    Note:
+        Defining a symbol inside the if statement requires that means that
+        that symbol has be defined in all conditional branches.
+
+    Example:
+         if a:
+             x = y
+             z = 1
+         elif b:
+             x = m
+             z = 2
+         else:
+             x = n
+             z = 3
+
+         # should be transformed into:
+         def __if_block(y, m, n):
+             x = y
+             z = 1
+             return x, z
+
+         def __else_block(b, m, n):
+             def __if_block(m, n):
+                 x = m
+                 z = 2
+                 return x, z
+
+             def __else_block(m, n):
+                 x = n
+                 z = 2
+                 return x, z
+
+             __if_outputs = if_block(m)
+             __else_outputs = else_block(m, n)
+
+             x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+             return x, z
+
+         __if_outputs = __if_block(y)
+         __else_outputs = __else_block(b, m, n)
+
+         x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+
+         # which will evaluate to:
+         x = g.switch(a, y, g.switch(b, m, n))
+         z = g.switch(a, 1, g.switch(b, 2, 3))
+
+     Args:
+         ast: AST to transform if else statements into the plotting of a Switch Node.
+     Returns:
+         The given ast with if else statements to be transformed into a the plotting of a Switch Node.
+    &#34;&#34;&#34;
+
+    def do_transform(ifelse_ast: AST) -&gt; AST:
+        # filter out non-ifelse statements
+        if not isinstance(ifelse_ast, If):
+            return ifelse_ast
+
+        # convert ifelse condition branches into functions with the arguments
+        # set to the names of the input symbols and return values set to output symbols
+        args = list(ifelse_ast.input_syms.keys())
+        returns = list(ifelse_ast.output_syms.keys())
+        fn_asts = [
+            wrap_func_ast(
+                name=name,
+                args=args,
+                block=block,
+                returns=returns,
+                # zip() requires the returned outputs to be iterable
+                return_tuple=True,
+            )
+            for name, block in zip(
+                [&#34;__if_block&#34;, &#34;__else_block&#34;], [ifelse_ast.body, ifelse_ast.orelse]
+            )
+        ]
+        # call if/else block functions to trace results of evaluating each branch of the conditional
+        # if/else block functions have arguments with the same names as symbols we have to pass in.
+        call_args = {a: name_ast(a) for a in args}
+        branch_outputs = [name_ast(n) for n in [&#34;__if_outputs&#34;, &#34;__else_outputs&#34;]]
+        call_fn_asts = [
+            assign_ast(
+                targets=[target],
+                values=[call_func_ast(fn_ast.name, args=call_args)],
+            )
+            for target, fn_ast in zip(branch_outputs, fn_asts)
+        ]
+
+        # create switch nodes for each output symbol via list comprehension
+        plot_switch_fn = parse_ast(Plotter.switch).body[0]
+        # g.switch(test, if_out, else_out)
+        call_switch_ast = call_func_ast(
+            fn_name=plot_switch_fn.name,
+            args={
+                &#34;condition&#34;: ifelse_ast.test,
+                &#34;true&#34;: name_ast(&#34;if_out&#34;),
+                &#34;false&#34;: name_ast(&#34;else_out&#34;),
+            },
+            attr_parent=ast.convert_fn.plotter_name,
+        )
+
+        # symbols = [g.switch(...) for if_out, else_out in zip(if_outputs, else_outputs)]
+        switch_asts = assign_ast(
+            targets=[name_ast(r, ctx=Store()) for r in returns],
+            values=[
+                ListComp(
+                    elt=call_switch_ast,
+                    generators=[
+                        comprehension(
+                            target=Tuple(
+                                elts=[
+                                    name_ast(&#34;if_out&#34;),
+                                    name_ast(&#34;else_out&#34;),
+                                ],
+                                ctx=Load(),
+                            ),
+                            iter=call_func_ast(
+                                fn_name=&#34;zip&#34;,
+                                args=branch_outputs,
+                            ),
+                            ifs=[],
+                            is_async=False,
+                        )
+                    ],
+                )
+            ],
+        )
+        # wrap transformed code block as single AST node
+        return wrap_block_ast(
+            block=fn_asts + call_fn_asts + [switch_asts],
+        )
+
+    ifelse_transform = FuncASTTransform(do_transform)
+
+    # apply ifelse transform to AST
+    ast = ifelse_transform.visit(ast)
+    mod = load_ast_module(ast)
+
+    return ast</code></pre>
+</details>
+</dd>
+<dt id="bento.graph.transforms.transform_ternary"><code class="name flex">
+<span>def <span class="ident">transform_ternary</span></span>(<span>ast: _ast.AST) ‑> _ast.AST</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transforms ternary conditional to plot Switch Nodes on computational graph.</p>
+<p>Requires the <code>analyze_convert_fn()</code> to analyze the AST first.
+Transforms ternary statements in the form <code>a if b else c</code> into a call to the
+Graph Plotter to plot a Switch Node <code>g.switch(b, a, c)</code> on the computation graph.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ast</code></strong></dt>
+<dd>AST to transform ternary into the plotting of a Switch Node.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The given ast with ternary statements transformed into the plotting of a Switch Node.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform_ternary(ast: AST) -&gt; AST:
+    &#34;&#34;&#34;Transforms ternary conditional to plot Switch Nodes on computational graph.
+
+    Requires the `analyze_convert_fn()` to analyze the AST first.
+    Transforms ternary statements in the form `a if b else c` into a call to the
+    Graph Plotter to plot a Switch Node `g.switch(b, a, c)` on the computation graph.
+
+    Args:
+        ast: AST to transform ternary into the plotting of a Switch Node.
+    Returns:
+        The given ast with ternary statements transformed into the plotting of a Switch Node.
+    &#34;&#34;&#34;
+
+    def do_transform(ternary_ast: AST) -&gt; AST:
+        # filter out non-ternary expressions
+        if not isinstance(ternary_ast, IfExp):
+            return ternary_ast
+        # obtain AST of calling the plotter to plotting a switch node
+        plot_switch_fn = parse_ast(Plotter.switch).body[0]
+        return call_func_ast(
+            fn_name=plot_switch_fn.name,
+            args={
+                &#34;condition&#34;: ternary_ast.test,
+                &#34;true&#34;: ternary_ast.body,
+                &#34;false&#34;: ternary_ast.orelse,
+            },
+            attr_parent=ast.convert_fn.plotter_name,
+        )
+
+    ternary_transform = FuncASTTransform(do_transform)
+
+    # apply ternary transform to AST
+    ast = ternary_transform.visit(ast)
 
     return ast</code></pre>
 </details>
@@ -122,13 +594,25 @@ def transform_build_graph(ast: AST) -&gt; AST:
 <span>(</span><span>transform_fn: Callable[[_ast.AST], _ast.AST])</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Defines a AST transformation with a given transform function</p></div>
+<div class="desc"><p>Defines a AST transformation with a given transform_fn transform function.</p>
+<p>Walks the AST with the given transform_fn, allowing it to modify AST nodes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transform_fn</code></strong></dt>
+<dd>transform function that takes in AST and returns the modified AST.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class FuncASTTransform(gast.NodeTransformer):
-    &#34;&#34;&#34;Defines a AST transformation with a given transform function&#34;&#34;&#34;
+    &#34;&#34;&#34;Defines a AST transformation with a given transform_fn transform function.
+
+    Walks the AST with the given transform_fn, allowing it to modify AST nodes.
+
+    Args:
+        transform_fn: transform function that takes in AST and returns the modified AST.
+    &#34;&#34;&#34;
 
     def __init__(self, transform_fn: Callable[[AST], AST]):
         super().__init__()
@@ -188,6 +672,8 @@ def transform_build_graph(ast: AST) -&gt; AST:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="bento.graph.transforms.transform_build_graph" href="#bento.graph.transforms.transform_build_graph">transform_build_graph</a></code></li>
+<li><code><a title="bento.graph.transforms.transform_ifelse" href="#bento.graph.transforms.transform_ifelse">transform_ifelse</a></code></li>
+<li><code><a title="bento.graph.transforms.transform_ternary" href="#bento.graph.transforms.transform_ternary">transform_ternary</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

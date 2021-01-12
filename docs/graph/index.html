@@ -34,15 +34,24 @@
 import gast
 
 from gast import FunctionDef, AST
-from inspect import getsource
 from textwrap import dedent
 from typing import Callable, List
 
 from bento.graph.analyzers import (
     analyze_func,
     analyze_convert_fn,
+    analyze_symbol,
+    analyze_assign,
+    resolve_symbol,
+    analyze_parent,
+    analyze_block,
+    analyze_activity,
 )
-from bento.graph.transforms import transform_build_graph
+from bento.graph.transforms import (
+    transform_build_graph,
+    transform_ternary,
+    transform_ifelse,
+)
 from bento.graph.ast import parse_ast, load_ast_module
 from bento.graph.plotter import Plotter
 from bento.protos.graph_pb2 import Graph, Node
@@ -56,12 +65,20 @@ Transform = Callable[[AST], AST]
 def compile_graph(
     convert_fn: Callable,
     analyzers: List[Analyzer] = [
+        analyze_parent,
         analyze_func,
         analyze_convert_fn,
+        analyze_symbol,
+        analyze_assign,
+        resolve_symbol,
+        analyze_block,
+        analyze_activity,
     ],
     linters: List[Linter] = [],
     transforms: List[Transform] = [
         transform_build_graph,
+        transform_ternary,
+        transform_ifelse,
     ],
 ) -&gt; Graph:
     &#34;&#34;&#34;Compiles the given `convert_fn` into a computation Graph.
@@ -103,8 +120,6 @@ def compile_graph(
     Returns:
         The converted computational Graph as a `Graph` protobuf message.
     &#34;&#34;&#34;
-
-    # TODO(mrzzy): capture globals with convert_fn.__globals__
 
     # parse ast from function source
     ast = parse_ast(convert_fn)
@@ -166,7 +181,7 @@ def compile_graph(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="bento.graph.compile_graph"><code class="name flex">
-<span>def <span class="ident">compile_graph</span></span>(<span>convert_fn: Callable, analyzers: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function analyze_func&gt;, &lt;function analyze_convert_fn&gt;], linters: List[Callable[[_ast.AST], NoneType]] = [], transforms: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function transform_build_graph&gt;]) ‑> <a title="bento.protos.graph_pb2.Graph" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Graph">Graph</a></span>
+<span>def <span class="ident">compile_graph</span></span>(<span>convert_fn: Callable, analyzers: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function analyze_parent&gt;, &lt;function analyze_func&gt;, &lt;function analyze_convert_fn&gt;, &lt;function analyze_symbol&gt;, &lt;function analyze_assign&gt;, &lt;function resolve_symbol&gt;, &lt;function analyze_block&gt;, &lt;function analyze_activity&gt;], linters: List[Callable[[_ast.AST], NoneType]] = [], transforms: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function transform_build_graph&gt;, &lt;function transform_ternary&gt;, &lt;function transform_ifelse&gt;]) ‑> <a title="bento.protos.graph_pb2.Graph" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Graph">Graph</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Compiles the given <code>convert_fn</code> into a computation Graph.</p>
@@ -208,12 +223,20 @@ a compiled function (in AST form) that builds the computation graph when called.
 <pre><code class="python">def compile_graph(
     convert_fn: Callable,
     analyzers: List[Analyzer] = [
+        analyze_parent,
         analyze_func,
         analyze_convert_fn,
+        analyze_symbol,
+        analyze_assign,
+        resolve_symbol,
+        analyze_block,
+        analyze_activity,
     ],
     linters: List[Linter] = [],
     transforms: List[Transform] = [
         transform_build_graph,
+        transform_ternary,
+        transform_ifelse,
     ],
 ) -&gt; Graph:
     &#34;&#34;&#34;Compiles the given `convert_fn` into a computation Graph.
@@ -255,8 +278,6 @@ a compiled function (in AST form) that builds the computation graph when called.
     Returns:
         The converted computational Graph as a `Graph` protobuf message.
     &#34;&#34;&#34;
-
-    # TODO(mrzzy): capture globals with convert_fn.__globals__
 
     # parse ast from function source
     ast = parse_ast(convert_fn)
