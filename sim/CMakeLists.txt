@@ -4,18 +4,31 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(bentobox)
 
+# allow cmake modules under cmake/ to be imported
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 ## Executable
+# target bento simulator's executables to c++ 20
+set(CMAKE_CXX_STANDARD 20)
+
+# pull git commit hash from git and make it avaiable via a templated file
+include(GetGitRevisionDescription)
+set(GENERATED_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}/include")
+file(MAKE_DIRECTORY ${GENERATED_INCLUDES})
+get_git_head_revision(GIT_REF GIT_HASH ALLOW_LOOKING_ABOVE_CMAKE_SOURCE_DIR)
+configure_file("include/git.h.in" "${GENERATED_INCLUDES}/git.h" @ONLY)
+
+# define build targets
 set(TARGET_SIM ${PROJECT_NAME})
 set(TARGET_TEST "${PROJECT_NAME}-test")
 set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
-# target bento simulator's executables to c++ 20
-set(CMAKE_CXX_STANDARD 20)
 add_executable(${TARGET_SIM}
     src/main.cpp
     src/system/render.cpp
 )
 target_include_directories(${TARGET_SIM}
     PUBLIC include
+    ${GENERATED_INCLUDES}
 )
 
 add_executable(${TARGET_TEST}
@@ -25,6 +38,7 @@ add_executable(${TARGET_TEST}
 )
 target_include_directories(${TARGET_TEST}
     PUBLIC include
+    ${GENERATED_INCLUDES}
 )
 
 add_subdirectory("lib/core")
@@ -41,7 +55,6 @@ target_link_libraries(${TARGET_TEST}
 
 ## Library Dependencies
 # fetch dependencies
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(dependencies)
 
 # GRPC/Protobuf
