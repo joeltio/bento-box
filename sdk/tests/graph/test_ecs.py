@@ -33,13 +33,17 @@ def test_graph_ecs_component_get_attr():
     assert pos_x.node == expected_node
     # check that component records the retrieve in `.inputs`
     assert position.inputs[0].node == expected_node
+    # check that retrieving the same attribute only records it once
+    pos_y = position.x
+    assert len(position.inputs) == 1
 
 
 def test_graph_ecs_component_set_attr_node():
     entity_id, name = 1, "position"
     position = GraphComponent(entity_id=entity_id, name=name)
     pos_x = position.x
-    # check setting attribute to node sets expected output node node.
+    position.y = 10
+    # check setting attribute to node sets expected output node.
     position.y = pos_x
     expected_node = Node(
         mutate_op=Node.Mutate(
@@ -52,6 +56,9 @@ def test_graph_ecs_component_set_attr_node():
         )
     )
     assert position.outputs[0].node == expected_node
+    # check that setting attribute only takes the last definition
+    # the first definition should be ignored since the attribute is redefined
+    assert len(position.outputs) == 1
 
 
 def test_graph_ecs_component_set_attr_native_value():
@@ -70,6 +77,34 @@ def test_graph_ecs_component_set_attr_native_value():
         )
     )
     assert position.outputs[0].node == expected_node
+
+
+def test_graph_ecs_component_aug_assign_node():
+    entity_id, name = 1, "position"
+    position = GraphComponent(entity_id=entity_id, name=name)
+    # check augment assignment flags the attribute (position.x) as both input and output
+    position.y += 30
+    attr_ref = AttributeRef(
+        entity_id=entity_id,
+        component="position",
+        attribute="y",
+    )
+    expected_input = Node(retrieve_op=Node.Retrieve(retrieve_attr=attr_ref))
+    expected_output = Node(
+        mutate_op=Node.Mutate(
+            mutate_attr=attr_ref,
+            to_node=Node(
+                add_op=Node.Add(
+                    x=expected_input,
+                    y=wrap_const(30),
+                )
+            ),
+        )
+    )
+    assert len(position.inputs) == 1
+    assert position.inputs[0].node == expected_input
+    assert len(position.outputs) == 1
+    assert position.outputs[0].node == expected_output
 
 
 def test_graph_ecs_node_wrap():

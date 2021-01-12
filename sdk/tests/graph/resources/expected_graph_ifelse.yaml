@@ -1,0 +1,149 @@
+# expected graph for test_graph_compile_ifelse()
+inputs:
+- retrieveAttr:
+    attribute: x
+    component: position
+    entityId: 1177347317
+- retrieveAttr:
+    attribute: y
+    component: position
+    entityId: 1177347317
+- retrieveAttr:
+    attribute: tick_ms
+    component: clock
+    entityId: 3195780754
+outputs:
+- mutateAttr:
+    attribute: x
+    component: position
+    entityId: 1177347317
+  toNode:
+    addOp:
+      x:
+        retrieveOp:
+          retrieveAttr:
+            attribute: x
+            component: position
+            entityId: 1177347317
+      y:
+        switchOp:
+          conditionNode:
+            ltOp:
+              x:
+                constOp:
+                  heldValue:
+                    dataType:
+                      primitive: INT32
+                    primitive:
+                      int32: 2000
+              y:
+                retrieveOp:
+                  retrieveAttr:
+                    attribute: tick_ms
+                    component: clock
+                    entityId: 3195780754
+          falseNode:
+            switchOp:
+              conditionNode:
+                ltOp:
+                  x:
+                    constOp:
+                      heldValue:
+                        dataType:
+                          primitive: INT32
+                        primitive:
+                          int32: 5000
+                  y:
+                    retrieveOp:
+                      retrieveAttr:
+                        attribute: tick_ms
+                        component: clock
+                        entityId: 3195780754
+              falseNode:
+                constOp:
+                  heldValue:
+                    dataType:
+                      primitive: INT32
+                    primitive:
+                      int32: 10
+              trueNode:
+                constOp:
+                  heldValue:
+                    dataType:
+                      primitive: INT32
+                    primitive:
+                      int32: 50
+          trueNode:
+            constOp:
+              heldValue:
+                dataType:
+                  primitive: INT32
+                primitive:
+                  int32: 20
+- mutateAttr:
+    attribute: y
+    component: position
+    entityId: 1177347317
+  toNode:
+    addOp:
+      x:
+        retrieveOp:
+          retrieveAttr:
+            attribute: y
+            component: position
+            entityId: 1177347317
+      y:
+        switchOp:
+          conditionNode:
+            ltOp:
+              x:
+                constOp:
+                  heldValue:
+                    dataType:
+                      primitive: INT32
+                    primitive:
+                      int32: 2000
+              y:
+                retrieveOp:
+                  retrieveAttr:
+                    attribute: tick_ms
+                    component: clock
+                    entityId: 3195780754
+          falseNode:
+            switchOp:
+              conditionNode:
+                ltOp:
+                  x:
+                    constOp:
+                      heldValue:
+                        dataType:
+                          primitive: INT32
+                        primitive:
+                          int32: 5000
+                  y:
+                    retrieveOp:
+                      retrieveAttr:
+                        attribute: tick_ms
+                        component: clock
+                        entityId: 3195780754
+              falseNode:
+                constOp:
+                  heldValue:
+                    dataType:
+                      primitive: INT32
+                    primitive:
+                      int32: 5
+              trueNode:
+                constOp:
+                  heldValue:
+                    dataType:
+                      primitive: INT32
+                    primitive:
+                      int32: 60
+          trueNode:
+            constOp:
+              heldValue:
+                dataType:
+                  primitive: INT32
+                primitive:
+                  int32: 22
