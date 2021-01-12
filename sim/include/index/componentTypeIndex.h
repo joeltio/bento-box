@@ -7,7 +7,7 @@
 #include <core/ics/componentSet.h>
 
 namespace ics::index {
-    class ComponentType {
+    class ComponentTypeIndex {
     private:
         std::unordered_map<std::type_index, CompGroup> typeGroupMap;
         CompGroup compGroup = 0;
@@ -17,7 +17,7 @@ namespace ics::index {
         // The return type is left as auto so that the capturing lambda is properly
         // represented. Type errors can occur at build-time when using function
         // pointer return types or std::function.
-        auto is() {
+        auto filterCompType() {
             auto compIndex = typeGroupMap.at(std::type_index(typeid(C)));
 
             return [compIndex](const ics::ComponentSet& compSet) {

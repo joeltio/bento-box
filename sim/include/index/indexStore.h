@@ -1,11 +1,11 @@
 #ifndef BENTOBOX_INDEXSTORE_H
 #define BENTOBOX_INDEXSTORE_H
 
-#include "componentType.h"
+#include "componentTypeIndex.h"
 
 namespace ics::index {
     struct IndexStore {
-        ComponentType componentType;
+        ComponentTypeIndex componentType;
     };
 }
 

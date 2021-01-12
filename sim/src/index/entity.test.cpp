@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <core/ics/componentSet.h>
-#include <index/entity.h>
+#include <index/entityIndex.h>
 
 #define TEST_SUITE EntityIndex
 
 using namespace ics::index;
 
 TEST(TEST_SUITE, AddAndRemoveCompStoreId) {
-    Entity index;
+    EntityIndex index;
     auto entityId = index.addEntityId();
 
     ASSERT_EQ(index.getComponents(entityId).size(), 0);
@@ -25,7 +25,7 @@ TEST(TEST_SUITE, AddAndRemoveCompStoreId) {
 }
 
 TEST(TEST_SUITE, AddMultipleEntities) {
-    Entity index;
+    EntityIndex index;
     auto entityId1 = index.addEntityId();
     auto entityId2 = index.addEntityId();
 
@@ -40,9 +40,9 @@ TEST(TEST_SUITE, AddMultipleEntities) {
 }
 
 TEST(TEST_SUITE, UseIndexIdFilter) {
-    Entity index;
+    EntityIndex index;
     auto entityId = index.addEntityId();
-    auto filter = index.id(entityId);
+    auto filter = index.filterEntityId(entityId);
 
     ics::ComponentSet compSet;
     // These will be added to the entity
