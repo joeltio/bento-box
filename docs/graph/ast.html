@@ -158,12 +158,10 @@ def wrap_func_ast(
     Args:
         name: The name of the function wrapping the block of code.
         args: List of argument names which the wrapping function accepts
-        block:
-            List of AST nodes reprsenting the code block being wrapped by the
+        block: List of AST nodes reprsenting the code block being wrapped by the
             wrapping function. The code block should not contain `return` statements
         returns: List of variable names to return from the wrapping functions.
-        return_tuple:
-            Whether to force the wrapping function to return to be a tuple,
+        return_tuple: Whether to force the wrapping function to return to be a tuple,
             irregardless of whether multiple values are actually returned.
     Returns:
         The created function wrapping the given code block.
@@ -471,15 +469,15 @@ Without altering the function of the code within code block.</p>
 <dd>The name of the function wrapping the block of code.</dd>
 <dt><strong><code>args</code></strong></dt>
 <dd>List of argument names which the wrapping function accepts</dd>
-<dt>block:</dt>
-<dt>List of AST nodes reprsenting the code block being wrapped by the</dt>
-<dt>wrapping function. The code block should not contain <code>return</code> statements</dt>
+<dt><strong><code>block</code></strong></dt>
+<dd>List of AST nodes reprsenting the code block being wrapped by the
+wrapping function. The code block should not contain <code>return</code> statements</dd>
 <dt><strong><code>returns</code></strong></dt>
 <dd>List of variable names to return from the wrapping functions.</dd>
+<dt><strong><code>return_tuple</code></strong></dt>
+<dd>Whether to force the wrapping function to return to be a tuple,
+irregardless of whether multiple values are actually returned.</dd>
 </dl>
-<p>return_tuple:
-Whether to force the wrapping function to return to be a tuple,
-irregardless of whether multiple values are actually returned.</p>
 <h2 id="returns">Returns</h2>
 <p>The created function wrapping the given code block.</p></div>
 <details class="source">
@@ -498,12 +496,10 @@ irregardless of whether multiple values are actually returned.</p>
     Args:
         name: The name of the function wrapping the block of code.
         args: List of argument names which the wrapping function accepts
-        block:
-            List of AST nodes reprsenting the code block being wrapped by the
+        block: List of AST nodes reprsenting the code block being wrapped by the
             wrapping function. The code block should not contain `return` statements
         returns: List of variable names to return from the wrapping functions.
-        return_tuple:
-            Whether to force the wrapping function to return to be a tuple,
+        return_tuple: Whether to force the wrapping function to return to be a tuple,
             irregardless of whether multiple values are actually returned.
     Returns:
         The created function wrapping the given code block.

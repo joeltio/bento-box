@@ -95,26 +95,31 @@ def compile_graph(
     The analyzers and transforms that should be used should be preconfigured.
     Users should simply annotate the function they want converted with `@compile_graph`
 
-    Example:
+        Example:
         @compile_graph
-        def convert_fn(g: Plotter):
-            # ...
+        def car_pos_graph(g: Plotter):
+            car = g.entity(
+                components=[
+                    &#34;position&#34;,
+                ]
+            )
+            env = g.entity(components=[&#34;clock&#34;])
+            x_delta = 20 if env[&#34;clock&#34;].tick_ms &gt; 2000 else 10
+            car[&#34;position&#34;].x = x_delta
+
+        # use compiled graph &#39;car_pos_graph&#39; in code ...
 
     Args:
-        convert_fn:
-            Target function containing the source to convert to the computation graph.
+        convert_fn: Target function containing the source to convert to the computation graph.
             The function should take in one parameter: a `Plotter` instance which
             allows users to access graphing specific operations. Must be a plain Python
             Function, not a Callable class, method, classmethod or staticmethod.
-        analyzers:
-            List of `Analyzer`s that are run sequentially on the AST perform static analysis.
+        analyzers: List of `Analyzer`s that are run sequentially on the AST perform static analysis.
             Analyzers can add attributes to AST nodes but not modify the AST tree.
-        linters:
-            List of `Linter`s that are run sequentially on the AST to perform
+        linters: List of `Linter`s that are run sequentially on the AST to perform
             static checks on the convertability of the AST. `Linter`s are expected
             to throw exception when failing a check.
-        transforms:
-            List of `Transform`s that are run sequentially to transform the AST to
+        transforms: List of `Transform`s that are run sequentially to transform the AST to
             a compiled function (in AST form) that builds the computation graph when called.
 
     Returns:
@@ -194,26 +199,38 @@ to provide a compiled function that builds the graph using the given <code>Plott
 The graph obtained from the <code>Plotter</code> is finally returned.</p>
 <p>The analyzers and transforms that should be used should be preconfigured.
 Users should simply annotate the function they want converted with <code>@compile_graph</code></p>
-<h2 id="example">Example</h2>
-<p>@compile_graph
-def convert_fn(g: Plotter):
-# &hellip;</p>
+<pre><code>Example:
+@compile_graph
+def car_pos_graph(g: Plotter):
+    car = g.entity(
+        components=[
+            "position",
+        ]
+    )
+    env = g.entity(components=["clock"])
+    x_delta = 20 if env["clock"].tick_ms &gt; 2000 else 10
+    car["position"].x = x_delta
+
+# use compiled graph 'car_pos_graph' in code ...
+</code></pre>
 <h2 id="args">Args</h2>
-<p>convert_fn:
-Target function containing the source to convert to the computation graph.
+<dl>
+<dt><strong><code>convert_fn</code></strong></dt>
+<dd>Target function containing the source to convert to the computation graph.
 The function should take in one parameter: a <code>Plotter</code> instance which
 allows users to access graphing specific operations. Must be a plain Python
-Function, not a Callable class, method, classmethod or staticmethod.
-analyzers:
-List of <code>Analyzer</code>s that are run sequentially on the AST perform static analysis.
-Analyzers can add attributes to AST nodes but not modify the AST tree.
-linters:
-List of <code>Linter</code>s that are run sequentially on the AST to perform
+Function, not a Callable class, method, classmethod or staticmethod.</dd>
+<dt><strong><code>analyzers</code></strong></dt>
+<dd>List of <code>Analyzer</code>s that are run sequentially on the AST perform static analysis.
+Analyzers can add attributes to AST nodes but not modify the AST tree.</dd>
+<dt><strong><code>linters</code></strong></dt>
+<dd>List of <code>Linter</code>s that are run sequentially on the AST to perform
 static checks on the convertability of the AST. <code>Linter</code>s are expected
-to throw exception when failing a check.
-transforms:
-List of <code>Transform</code>s that are run sequentially to transform the AST to
-a compiled function (in AST form) that builds the computation graph when called.</p>
+to throw exception when failing a check.</dd>
+<dt><strong><code>transforms</code></strong></dt>
+<dd>List of <code>Transform</code>s that are run sequentially to transform the AST to
+a compiled function (in AST form) that builds the computation graph when called.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <p>The converted computational Graph as a <code>Graph</code> protobuf message.</p></div>
 <details class="source">
@@ -253,26 +270,31 @@ a compiled function (in AST form) that builds the computation graph when called.
     The analyzers and transforms that should be used should be preconfigured.
     Users should simply annotate the function they want converted with `@compile_graph`
 
-    Example:
+        Example:
         @compile_graph
-        def convert_fn(g: Plotter):
-            # ...
+        def car_pos_graph(g: Plotter):
+            car = g.entity(
+                components=[
+                    &#34;position&#34;,
+                ]
+            )
+            env = g.entity(components=[&#34;clock&#34;])
+            x_delta = 20 if env[&#34;clock&#34;].tick_ms &gt; 2000 else 10
+            car[&#34;position&#34;].x = x_delta
+
+        # use compiled graph &#39;car_pos_graph&#39; in code ...
 
     Args:
-        convert_fn:
-            Target function containing the source to convert to the computation graph.
+        convert_fn: Target function containing the source to convert to the computation graph.
             The function should take in one parameter: a `Plotter` instance which
             allows users to access graphing specific operations. Must be a plain Python
             Function, not a Callable class, method, classmethod or staticmethod.
-        analyzers:
-            List of `Analyzer`s that are run sequentially on the AST perform static analysis.
+        analyzers: List of `Analyzer`s that are run sequentially on the AST perform static analysis.
             Analyzers can add attributes to AST nodes but not modify the AST tree.
-        linters:
-            List of `Linter`s that are run sequentially on the AST to perform
+        linters: List of `Linter`s that are run sequentially on the AST to perform
             static checks on the convertability of the AST. `Linter`s are expected
             to throw exception when failing a check.
-        transforms:
-            List of `Transform`s that are run sequentially to transform the AST to
+        transforms: List of `Transform`s that are run sequentially to transform the AST to
             a compiled function (in AST form) that builds the computation graph when called.
 
     Returns:

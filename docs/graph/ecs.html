@@ -197,7 +197,7 @@ class GraphComponent(Component):
     Provides access to component&#39;s attributes during graph plotting.
     Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively.
 
-    Example:
+        Example:
         # Record operations on component
         component = GraphComponent(...)
         component.y = component.x
@@ -324,12 +324,14 @@ class GraphEntity(Entity):
 <div class="desc"><p>Shim that represents an ECS Component when plotting computation graph.</p>
 <p>Provides access to component's attributes during graph plotting.
 Records operations on attributes which can be accessed via <code>.inputs</code> and <code>.outputs</code> respectively.</p>
-<h2 id="example">Example</h2>
-<h1 id="record-operations-on-component">Record operations on component</h1>
-<p>component = GraphComponent(&hellip;)
-component.y = component.x</p>
-<h1 id="obtain-graph-inputoutput-nodes-corresponding-to-the-inputoutput-nodes">Obtain graph input/output nodes corresponding to the input/output nodes</h1>
-<p>graph_ins, graph_outputs = component.inputs, component.outputs</p></div>
+<pre><code>Example:
+# Record operations on component
+component = GraphComponent(...)
+component.y = component.x
+
+# Obtain graph input/output nodes corresponding to the input/output nodes
+graph_ins, graph_outputs = component.inputs, component.outputs
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -340,7 +342,7 @@ component.y = component.x</p>
     Provides access to component&#39;s attributes during graph plotting.
     Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively.
 
-    Example:
+        Example:
         # Record operations on component
         component = GraphComponent(...)
         component.y = component.x
