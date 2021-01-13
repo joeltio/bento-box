@@ -169,7 +169,7 @@ class GraphComponent(Component):
     Provides access to component's attributes during graph plotting.
     Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively.
 
-    Example:
+        Example:
         # Record operations on component
         component = GraphComponent(...)
         component.y = component.x

@@ -93,7 +93,7 @@ SDK_SRC:=sdk
 PYTHON:=python
 BLACK_FMT:=python -m black
 PYTEST:=python -m pytest -vv
-PDOC:=python -m pdoc
+PDOC:=python -m pdoc --force
 
 .PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk
 

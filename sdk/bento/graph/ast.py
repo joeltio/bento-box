@@ -130,12 +130,10 @@ def wrap_func_ast(
     Args:
         name: The name of the function wrapping the block of code.
         args: List of argument names which the wrapping function accepts
-        block:
-            List of AST nodes reprsenting the code block being wrapped by the
+        block: List of AST nodes reprsenting the code block being wrapped by the
             wrapping function. The code block should not contain `return` statements
         returns: List of variable names to return from the wrapping functions.
-        return_tuple:
-            Whether to force the wrapping function to return to be a tuple,
+        return_tuple: Whether to force the wrapping function to return to be a tuple,
             irregardless of whether multiple values are actually returned.
     Returns:
         The created function wrapping the given code block.
