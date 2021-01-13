@@ -25,6 +25,7 @@ set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 add_executable(${TARGET_SIM}
     src/main.cpp
     src/system/render.cpp
+    src/service/EngineServiceImpl.cpp
 )
 target_include_directories(${TARGET_SIM}
     PUBLIC include
