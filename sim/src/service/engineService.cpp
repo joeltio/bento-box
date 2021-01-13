@@ -3,8 +3,8 @@
  * Engine gRPC Service
  */
 
-#include "service/EngineServiceImpl.h"
 #include "git.h"
+#include "service/engineService.h"
 
 using bento::protos::GetVersionReq;
 using bento::protos::GetVersionResp;
