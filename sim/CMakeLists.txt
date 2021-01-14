@@ -10,7 +10,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 ## Executable
 # release: use optimzations
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-# debug: include debugging info
+# debug: include debugging info, show colors and enable warnings
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 # target bento simulator's executables to c++ 20
 set(CMAKE_CXX_STANDARD 20)
@@ -21,18 +21,12 @@ file(MAKE_DIRECTORY ${GENERATED_INCLUDES})
 get_git_head_revision(GIT_REF GIT_HASH ALLOW_LOOKING_ABOVE_CMAKE_SOURCE_DIR)
 configure_file("include/git.h.in" "${GENERATED_INCLUDES}/git.h" @ONLY)
 
-# define source files/tests (excluding main.cpp for each targetf)
-set(SOURCES
-    src/system/render.cpp
-    src/service/engineService.cpp
-    src/network/grpcServer.cpp
-)
-
-set(TEST_SOURCES
-    src/index/entity.test.cpp
-    src/index/componentType.test.cpp
-    src/network/grpcServer.test.cpp
-)
+# define source files/tests as any .cpp or .test.cpp under src/ respectively
+# (excluding main.cpp/main.test.cpp for each target)
+file(GLOB_RECURSE SOURCES  "src/*.cpp") 
+list(FILTER SOURCES EXCLUDE REGEX "(\.test\.cpp$|.*main\..*)")
+file(GLOB_RECURSE TEST_SOURCES "src/*.test.cpp")
+list(FILTER TEST_SOURCES EXCLUDE REGEX ".*main\..*")
 
 # define build targets
 set(TARGET_SIM ${PROJECT_NAME})
