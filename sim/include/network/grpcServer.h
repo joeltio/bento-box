@@ -23,14 +23,14 @@ class GRPCServer {
     /**
      * Creates and starts a gRPC server running the services listening on the
      * given host and port. The server will accept insecure gRPC requests on the
-     * given host andd port.
+     * given host and port.
      *
      * @param host The hostname to configure the gRPC server to listen on.
-     * @param services List of gRPC services to use to serve requests recieved.
+     * @param services List of gRPC services to use to serve requests received.
      *   At least  one service must be provided.
      * by the server.
      * @param port The port to configure the gRPC server to listen on. If unset,
-     *   the gRPC will listen on a automatically choosen port.
+     *   the gRPC will listen on a automatically chosen port.
      *
      * @throws runtime_error if the gRPC server fails to start.
      *

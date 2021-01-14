@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 # target bento simulator's executables to c++ 20
 set(CMAKE_CXX_STANDARD 20)
-# pull git commit hash from git and make it avaiable via a templated file
+# pull git commit hash from git and make it available via a templated file
 include(GetGitRevisionDescription)
 set(GENERATED_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}/include")
 file(MAKE_DIRECTORY ${GENERATED_INCLUDES})
