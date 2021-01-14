@@ -8,9 +8,12 @@ project(bentobox)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 ## Executable
+# release: use optimzations
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+# debug: include debugging info
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
 # target bento simulator's executables to c++ 20
 set(CMAKE_CXX_STANDARD 20)
-
 # pull git commit hash from git and make it avaiable via a templated file
 include(GetGitRevisionDescription)
 set(GENERATED_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}/include")
@@ -18,14 +21,27 @@ file(MAKE_DIRECTORY ${GENERATED_INCLUDES})
 get_git_head_revision(GIT_REF GIT_HASH ALLOW_LOOKING_ABOVE_CMAKE_SOURCE_DIR)
 configure_file("include/git.h.in" "${GENERATED_INCLUDES}/git.h" @ONLY)
 
+# define source files/tests (excluding main.cpp for each targetf)
+set(SOURCES
+    src/system/render.cpp
+    src/service/engineService.cpp
+    src/network/grpcServer.cpp
+)
+
+set(TEST_SOURCES
+    src/index/entity.test.cpp
+    src/index/componentType.test.cpp
+    src/network/grpcServer.test.cpp
+)
+
 # define build targets
 set(TARGET_SIM ${PROJECT_NAME})
 set(TARGET_TEST "${PROJECT_NAME}-test")
 set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
+
 add_executable(${TARGET_SIM}
+    ${SOURCES}
     src/main.cpp
-    src/system/render.cpp
-    src/service/engineService.cpp
 )
 target_include_directories(${TARGET_SIM}
     PUBLIC include
@@ -33,9 +49,9 @@ target_include_directories(${TARGET_SIM}
 )
 
 add_executable(${TARGET_TEST}
+    ${SOURCES}
+    ${TEST_SOURCES}
     src/main.test.cpp
-    src/index/entity.test.cpp
-    src/index/componentType.test.cpp
 )
 target_include_directories(${TARGET_TEST}
     PUBLIC include
@@ -71,7 +87,10 @@ get_filename_component(PROTOS_DIR "../protos" ABSOLUTE)
 set(PROTO_BINDS_DIR "${CMAKE_CURRENT_BINARY_DIR}/protos")
 file(MAKE_DIRECTORY ${PROTO_BINDS_DIR})
 # list protobuf definitions in protos/
-file(GLOB PROTO_DEFS "${PROTOS_DIR}/bento/protos/*.proto")
+file(GLOB BENTO_PROTO_DEFS "${PROTOS_DIR}/bento/protos/*.proto")
+file(GLOB GRPC_HEALTH_PROTO_DEFS "${PROTOS_DIR}/grpc/health/v1/*.proto")
+set(PROTO_DEFS ${BENTO_PROTO_DEFS} ${GRPC_HEALTH_PROTO_DEFS})
+
 # replace .proto with .pb.cc and .pb.h
 string(REPLACE "${PROTOS_DIR}" "${PROTO_BINDS_DIR}" PROTO_BINDS "${PROTO_DEFS}")
 string(REPLACE ".proto" ".pb.cc" PROTO_BIND_SOURCES "${PROTO_BINDS}")

@@ -62,11 +62,14 @@ SIM_SRC:=sim
 SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib/core/src $(SIM_SRC)/lib/core/include $(SIM_SRC)/include
 SIM_BUILD_DIR:=sim/build
 FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
+SIM_BUILD_TYPE:=Release
 
 .PHONY: dep-sim build-sim test-sim run-sim clean-sim format-sim
 
 dep-sim:
-	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) \
+		-D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
+		-D CMAKE_BUILD_TYPE=$(SIM_BUILD_TYPE)
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) --target deps
 
 build-sim: dep-sim

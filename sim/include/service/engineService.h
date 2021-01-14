@@ -1,5 +1,5 @@
 #ifndef ENGINESERVICEIMPL_H
-#define ENGINESERVICEIMPL_H value
+#define ENGINESERVICEIMPL_H
 /*
  * bentobox-sim
  * Engine gRPC Service
@@ -9,8 +9,6 @@
 
 class EngineServiceImpl final : public bento::protos::EngineService::Service {
    public:
-    EngineServiceImpl();
-
     /** Get version information about the engine */
     grpc::Status GetVersion(grpc::ServerContext *context,
                             const bento::protos::GetVersionReq *request,
