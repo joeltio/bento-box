@@ -62,9 +62,10 @@ SIM_SRC:=sim
 SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib/core/src $(SIM_SRC)/lib/core/include $(SIM_SRC)/include
 SIM_BUILD_DIR:=sim/build
 FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
-SIM_BUILD_TYPE:=Release
+SIM_BUILD_TYPE:=Debug
+DEBUGGER:=lldb
 
-.PHONY: dep-sim build-sim test-sim run-sim clean-sim format-sim
+.PHONY: dep-sim build-sim test-sim run-sim clean-sim format-sim debug-sim debug-sim-test
 
 dep-sim:
 	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) \
@@ -81,6 +82,12 @@ test-sim: build-sim
 
 run-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TARGET)
+
+debug-sim: build-sim
+	$(DEBUGGER) $(SIM_BUILD_DIR)/$(SIM_TARGET)
+
+debug-test-sim: build-sim
+	$(DEBUGGER) $(SIM_BUILD_DIR)/$(SIM_TEST)
 
 clean-sim:
 	$(RM) $(SIM_BUILD_DIR)
