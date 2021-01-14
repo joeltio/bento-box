@@ -26,7 +26,8 @@ class GRPCServer {
      * given host andd port.
      *
      * @param host The hostname to configure the gRPC server to listen on.
-     * @param services List of gRPC services to use to serve requests recieved
+     * @param services List of gRPC services to use to serve requests recieved.
+     *   At least  one service must be provided.
      * by the server.
      * @param port The port to configure the gRPC server to listen on. If unset,
      *   the gRPC will listen on a automatically choosen port.
@@ -46,7 +47,6 @@ class GRPCServer {
 
     /** Shutdown the gRPC server, stopping it from serving requests */
     void shutdown() { this->server->Shutdown(); }
-
     // Getters
     /* Get the port that gRPC server listens on */
     int port() const { return port_; }

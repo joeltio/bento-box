@@ -25,6 +25,7 @@ using grpc::health::v1::HealthCheckRequest;
 using grpc::health::v1::HealthCheckResponse;
 using network::GRPCServer;
 using std::list;
+using std::runtime_error;
 using std::string;
 using std::to_string;
 
@@ -49,4 +50,16 @@ TEST(TEST_SUITE, StartGRPCServer) {
     Status s = healthClient->Check(&context, healthCheckReq, &healthCheckResp);
     ASSERT_TRUE(s.ok());
     ASSERT_EQ(healthCheckResp.status(), HealthCheckResponse::SERVING);
+}
+
+TEST(TEST_SUITE, RejectMissingService) {
+    // run server listening without required services
+    list<Service *> services;
+    bool hasError = false;
+    try {
+        GRPCServer server("localhost", TEST_PORT, services);
+    } catch (runtime_error e) {
+        hasError = true;
+    }
+    ASSERT_TRUE(hasError);
 }

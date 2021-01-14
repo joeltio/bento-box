@@ -32,6 +32,11 @@ using std::unique_ptr;
 namespace network {
 GRPCServer::GRPCServer(const string host, const int port,
                        const list<Service *> &services) {
+    // check at least one service is provided
+    if (services.size() <= 0) {
+        throw runtime_error(
+            "At least one service must be provided when starting gRPC server");
+    }
     // form address from host and port in form HOST[:PORT}
     address_ = "localhost:" + to_string(port);
     host_ = host;
