@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <condition_variable>
+#include <grpcpp/ext/proto_server_reflection_plugin.h>
 
 #include "network/grpcServer.h"
 
@@ -43,6 +44,7 @@ GRPCServer::GRPCServer(const string host, const int port,
 
     // construct grpc server with builder and register services
     grpc::EnableDefaultHealthCheckService(true);
+    grpc::reflection::InitProtoReflectionServerBuilderPlugin();
     ServerBuilder builder;
     builder.AddListeningPort(address_, InsecureServerCredentials(), &port_);
     for (auto service : services) {
