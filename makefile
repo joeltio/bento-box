@@ -12,15 +12,15 @@ MV:=mv -f
 FIND:=find
 CLANG_FMT:=clang-format-11
 
-.PHONY: deps build test clean run
+.PHONY: deps build test clean test
 build: build-sim build-sdk
 
-test: test-sim test-sdk
+test: test-sim test-sdk test-e2e
 
 clean: clean-sim clean-sdk
 
-format: format-proto format-sim format-sdk 
-	
+format: format-proto format-sim format-sdk
+
 ## Deps: convenience rules for installing dependencies
 ARCH:=$(shell uname -m)
 OS:=$(if $(filter Darwin,$(shell uname -s)),osx,linux)
@@ -64,8 +64,9 @@ SIM_BUILD_DIR:=sim/build
 FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 SIM_BUILD_TYPE:=Debug
 DEBUGGER:=lldb
+DOCKER_TAG:=bentobox-sim
 
-.PHONY: dep-sim build-sim test-sim run-sim clean-sim format-sim debug-sim debug-sim-test
+.PHONY: dep-sim build-sim build-sim-docker test-sim run-sim clean-sim format-sim debug-sim debug-sim-test
 
 dep-sim:
 	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) \
@@ -76,6 +77,9 @@ dep-sim:
 build-sim: dep-sim
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) \
 		--target $(SIM_TARGET) --target $(SIM_TEST)
+
+build-sim-docker:
+	docker build -t $(DOCKER_TAG) -f infra/docker/sim/Dockerfile .
 
 test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
@@ -105,7 +109,7 @@ BLACK_FMT:=python -m black
 PYTEST:=python -m pytest -vv
 PDOC:=python -m pdoc --force
 
-.PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk
+.PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk install-sdl
 
 dep-sdk-dev:
 	pip install -r $(SDK_SRC)/requirements-dev.txt
@@ -121,8 +125,10 @@ lint-sdk: dep-sdk-dev
 	$(BLACK_FMT) --check $(SDK_SRC)/bento
 	$(BLACK_FMT) --check $(SDK_SRC)/tests
 
-test-sdk: dep-sdk-dev
+install-sdk:
 	$(PYTHON) -m pip install -e $(SDK_SRC)
+
+test-sdk: dep-sdk-dev install-sdk
 	cd $(SDK_SRC) && $(PYTEST)
 
 clean-sdk:
@@ -139,6 +145,15 @@ $(SDK_DOC_DIR): dep-sdk-dev
 
 clean-sdk-docs: $(SDK_DOC_DIR)
 	$(RM) $<
+
+## End to End tests
+E2E_TESTS:=e2e
+
+.PHONY: test-e2e
+
+test-e2e: dep-sdk-dev install-sdk build-sim-docker
+	$(PYTHON) -m pip install -e $(SDK_SRC)
+	cd $(E2E_TESTS) && $(PYTEST)
 
 # spellcheck bentobox codebase
 .PHONY: spellcheck autocorrect
