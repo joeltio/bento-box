@@ -22,6 +22,7 @@ using grpc::InsecureChannelCredentials;
 using grpc::Service;
 using grpc::Status;
 using network::GRPCServer;
+using service::EngineServiceImpl;
 using std::list;
 using std::make_shared;
 using std::make_unique;

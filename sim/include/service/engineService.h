@@ -7,6 +7,7 @@
 
 #include "bento/protos/services.grpc.pb.h"
 
+namespace service {
 class EngineServiceImpl final : public bento::protos::EngineService::Service {
    public:
     // See services.proto for documentation on service calls
@@ -14,5 +15,6 @@ class EngineServiceImpl final : public bento::protos::EngineService::Service {
                             const bento::protos::GetVersionReq *request,
                             bento::protos::GetVersionResp *response) override;
 };
+}  // namespace service
 
 #endif /* ifndef ENGINESERVICEIMPL_H */

@@ -24,6 +24,7 @@ using grpc::health::v1::Health;
 using grpc::health::v1::HealthCheckRequest;
 using grpc::health::v1::HealthCheckResponse;
 using network::GRPCServer;
+using service::EngineServiceImpl;
 using std::list;
 using std::runtime_error;
 using std::string;

@@ -11,9 +11,11 @@ using bento::protos::GetVersionResp;
 using grpc::ServerContext;
 using grpc::Status;
 
+namespace service {
 Status EngineServiceImpl::GetVersion(ServerContext *context,
                                      const GetVersionReq *request,
                                      GetVersionResp *response) {
     response->set_commit_hash(GIT_HASH);
     return Status::OK;
 }
+}  // namespace service
