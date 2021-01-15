@@ -64,7 +64,7 @@ SIM_BUILD_DIR:=sim/build
 FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 SIM_BUILD_TYPE:=Debug
 DEBUGGER:=lldb
-DOCKER_TAG:=bentobox-sim
+SIM_DOCKER_TAG:=bentobox-sim
 
 .PHONY: dep-sim build-sim build-sim-docker test-sim run-sim clean-sim format-sim debug-sim debug-sim-test
 
@@ -79,7 +79,7 @@ build-sim: dep-sim
 		--target $(SIM_TARGET) --target $(SIM_TEST)
 
 build-sim-docker:
-	docker build -t $(DOCKER_TAG) -f infra/docker/sim/Dockerfile .
+	docker build -t $(SIM_DOCKER_TAG) -f infra/docker/sim/Dockerfile .
 
 test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
@@ -108,11 +108,12 @@ PYTHON:=python
 BLACK_FMT:=python -m black
 PYTEST:=python -m pytest -vv
 PDOC:=python -m pdoc --force
+PIP=python -m pip
 
 .PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk install-sdl
 
 dep-sdk-dev:
-	pip install -r $(SDK_SRC)/requirements-dev.txt
+	$(PIP) install -r $(SDK_SRC)/requirements-dev.txt
 
 build-sdk: dep-sdk-dev lint-sdk
 	cd $(SDK_SRC) && $(PYTHON) setup.py sdist bdist_wheel
@@ -126,7 +127,7 @@ lint-sdk: dep-sdk-dev
 	$(BLACK_FMT) --check $(SDK_SRC)/tests
 
 install-sdk:
-	$(PYTHON) -m pip install -e $(SDK_SRC)
+	$(PIP) install -e $(SDK_SRC)
 
 test-sdk: dep-sdk-dev install-sdk
 	cd $(SDK_SRC) && $(PYTEST)
@@ -149,11 +150,15 @@ clean-sdk-docs: $(SDK_DOC_DIR)
 ## End to End tests
 E2E_TESTS:=e2e
 
-.PHONY: test-e2e
+.PHONY: dep-e2e ftest-e2e
 
-test-e2e: dep-sdk-dev install-sdk build-sim-docker
+# dep-e2e adds on to the requirements defined in  SDK's requirements-dev.txt
+dep-e2e: dep-sdk-dev
+	$(PIP) install -r $(E2E_TESTS)/requirements-e2e.txt
+
+test-e2e: dep-e2e install-sdk build-sim-docker
 	$(PYTHON) -m pip install -e $(SDK_SRC)
-	cd $(E2E_TESTS) && $(PYTEST)
+	cd $(E2E_TESTS) && env SIM_DOCKER_TAG=$(SIM_DOCKER_TAG) $(PYTEST)
 
 # spellcheck bentobox codebase
 .PHONY: spellcheck autocorrect
