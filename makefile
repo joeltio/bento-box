@@ -73,11 +73,12 @@ SIM_BUILD_TYPE:=Debug
 DEBUGGER:=lldb
 SIM_DOCKER:=bentobox-sim
 SIM_PORT:=54242
+CMAKE_GENERATOR:=Ninja
 
 .PHONY: dep-sim build-sim build-sim-docker test-sim run-sim clean-sim format-sim debug-sim debug-sim-test
 
 dep-sim:
-	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) \
+	$(CMAKE) -S $(SIM_SRC) -B $(SIM_BUILD_DIR) -G $(CMAKE_GENERATOR) \
 		-D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
 		-D CMAKE_BUILD_TYPE=$(SIM_BUILD_TYPE)
 	$(CMAKE) --build $(SIM_BUILD_DIR) --parallel $(shell nproc --all) --target deps
@@ -171,13 +172,11 @@ lint-e2e: dep-e2e
 	$(BLACK_FMT) --check $(E2E_TESTS)
 
 test-e2e: dep-e2e install-sdk build-sim-docker
-	$(PYTHON) -m pip install -e $(SDK_SRC)
 	cd $(E2E_TESTS) && \
 		env BENTOBOX_SIM_DOCKER=$(SIM_DOCKER) $(PYTEST)
 
 # spellcheck bentobox codebase
 .PHONY: spellcheck autocorrect
-
 spellcheck:
 	codespell -s
 

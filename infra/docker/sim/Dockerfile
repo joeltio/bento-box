@@ -11,7 +11,7 @@ RUN mkdir /repo
 WORKDIR /repo
 # install apt package dependencies
 RUN apt-get update && apt-get install -y  --no-install-recommends \
-    build-essential g++-10 cmake git \
+    build-essential g++-10 cmake git ninja-build \
     libglfw3-dev xvfb xorg-dev \
     ca-certificates \
     # use g++ 10 as compiler
@@ -32,5 +32,5 @@ COPY sim/src /repo/sim/src
 COPY sim/include /repo/sim/include
 RUN make build-sim
 
-# run simulator
-CMD make run-sim
+# run simulator in virtual framebuffer
+CMD xvfb-run -e /dev/stderr make run-sim
