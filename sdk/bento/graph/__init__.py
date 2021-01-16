@@ -79,10 +79,19 @@ def compile_graph(
     The analyzers and transforms that should be used should be preconfigured.
     Users should simply annotate the function they want converted with `@compile_graph`
 
-    Example:
+        Example:
         @compile_graph
-        def convert_fn(g: Plotter):
-            # ...
+        def car_pos_graph(g: Plotter):
+            car = g.entity(
+                components=[
+                    "position",
+                ]
+            )
+            env = g.entity(components=["clock"])
+            x_delta = 20 if env["clock"].tick_ms > 2000 else 10
+            car["position"].x = x_delta
+
+        # use compiled graph 'car_pos_graph' in code ...
 
     Args:
         convert_fn: Target function containing the source to convert to the computation graph.

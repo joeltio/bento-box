@@ -93,57 +93,57 @@ def transform_ifelse(ast: AST) -> AST:
     Transforms if/elif/else statements to a function that evaluates to calls to
     the Graph Plotter to plot a Switch Node on the computational graph.
 
+        Example:
+        if a:
+            x = y
+            z = 1
+        elif b:
+            x = m
+            z = 2
+        else:
+            x = n
+            z = 3
+
+        # should be transformed into:
+        def __if_block(y, m, n):
+            x = y
+            z = 1
+            return x, z
+
+        def __else_block(b, m, n):
+            def __if_block(m, n):
+                x = m
+                z = 2
+                return x, z
+
+            def __else_block(m, n):
+                x = n
+                z = 2
+                return x, z
+
+            __if_outputs = if_block(m)
+            __else_outputs = else_block(m, n)
+
+            x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+            return x, z
+
+        __if_outputs = __if_block(y)
+        __else_outputs = __else_block(b, m, n)
+
+        x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+
+        # which will evaluate to:
+        x = g.switch(a, y, g.switch(b, m, n))
+        z = g.switch(a, 1, g.switch(b, 2, 3))
+
     Note:
         Defining a symbol inside the if statement requires that means that
         that symbol has be defined in all conditional branches.
 
-    Example:
-         if a:
-             x = y
-             z = 1
-         elif b:
-             x = m
-             z = 2
-         else:
-             x = n
-             z = 3
-
-         # should be transformed into:
-         def __if_block(y, m, n):
-             x = y
-             z = 1
-             return x, z
-
-         def __else_block(b, m, n):
-             def __if_block(m, n):
-                 x = m
-                 z = 2
-                 return x, z
-
-             def __else_block(m, n):
-                 x = n
-                 z = 2
-                 return x, z
-
-             __if_outputs = if_block(m)
-             __else_outputs = else_block(m, n)
-
-             x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
-             return x, z
-
-         __if_outputs = __if_block(y)
-         __else_outputs = __else_block(b, m, n)
-
-         x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
-
-         # which will evaluate to:
-         x = g.switch(a, y, g.switch(b, m, n))
-         z = g.switch(a, 1, g.switch(b, 2, 3))
-
-     Args:
-         ast: AST to transform if else statements into the plotting of a Switch Node.
-     Returns:
-         The given ast with if else statements to be transformed into a the plotting of a Switch Node.
+    Args:
+        ast: AST to transform if else statements into the plotting of a Switch Node.
+    Returns:
+        The given ast with if else statements to be transformed into a the plotting of a Switch Node.
     """
 
     def do_transform(ifelse_ast: AST) -> AST:
