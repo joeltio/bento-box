@@ -39,7 +39,7 @@ GRPCServer::GRPCServer(const string host, const int port,
             "At least one service must be provided when starting gRPC server");
     }
     // form address from host and port in form HOST[:PORT}
-    address_ = "localhost:" + to_string(port);
+    address_ = host + ":" + to_string(port);
     host_ = host;
 
     // construct grpc server with builder and register services
