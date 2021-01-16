@@ -42,8 +42,8 @@ string getEnv(const string name, const string defaultValue) {
  * Bentobox-sim engine main entrypoint
  *
  * Environment Variable parameters:
- * - BENTOBOX_HOST - the host/ip that bentobox-sim listens on.
- * - BENTOBOX_PORT - the port that bentobox-sim listens on.
+ * - BENTOBOX_SIM_HOST - the host/ip that bentobox-sim listens on.
+ * - BENTOBOX_SIM_PORT - the port that bentobox-sim listens on.
  */
 int main(int argc, char *argv[]) {
     // setup graphics
@@ -68,8 +68,8 @@ int main(int argc, char *argv[]) {
     systemContext.systems.push_front(a);
 
     // start gRPC server using host and port obtained via env vars
-    string host = getEnv("BENTOBOX_HOST", "localhost");
-    int port = std::stoi(getEnv("BENTOBOX_PORT", "50050"));
+    string host = getEnv("BENTOBOX_SIM_HOST", "localhost");
+    int port = std::stoi(getEnv("BENTOBOX_SIM_PORT", "54242"));
 
     EngineServiceImpl engineService;
     list<Service *> services = {&engineService};

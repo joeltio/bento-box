@@ -13,7 +13,7 @@
 #include "service/engineService.h"
 
 #define TEST_SUITE GRPCServer
-#define TEST_PORT 50010
+#define TEST_PORT 54243
 
 using grpc::ClientContext;
 using grpc::CreateChannel;

@@ -11,7 +11,7 @@
 #include "service/engineService.h"
 
 #define TEST_SUITE EngineServiceImpl
-#define TEST_PORT 50011
+#define TEST_PORT 54243
 
 using bento::protos::EngineService;
 using bento::protos::GetVersionReq;
