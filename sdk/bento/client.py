@@ -30,7 +30,7 @@ class Client:
         # setup grpc service stubs
         self.sim_grpc = EngineServiceStub(self.channel)
 
-    def connect(self, timeout_sec: int = 2) -> bool:
+    def connect(self, timeout_sec: int = 30) -> bool:
         """Attempt to connect the configured gRPC Engine endpoint.
         Args:
             timeout_sec: Max no. of seconds to try connecting to the Engine before timing out.

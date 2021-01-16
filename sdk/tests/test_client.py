@@ -48,7 +48,7 @@ def client(mock_engine_port):
 
 def test_client_connect(client):
     # test constructed client can connect to server
-    assert client.connect()
+    assert client.connect(timeout_sec=5)
 
 
 def test_client_get_version(client):

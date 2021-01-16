@@ -73,6 +73,7 @@ SIM_BUILD_TYPE:=Debug
 DEBUGGER:=lldb
 SIM_DOCKER:=bentobox-sim
 SIM_PORT:=54242
+SIM_HOST:=0.0.0.0
 CMAKE_GENERATOR:=Ninja
 
 .PHONY: dep-sim build-sim build-sim-docker test-sim run-sim clean-sim format-sim debug-sim debug-sim-test
@@ -94,7 +95,9 @@ test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
 
 run-sim: build-sim
-	env BENTOBOX_SIM_PORT=$(SIM_PORT) $(SIM_BUILD_DIR)/$(SIM_TARGET)
+	env BENTOBOX_SIM_PORT=$(SIM_PORT)\
+		BENTOBOX_SIM_HOST=$(SIM_HOST)
+		$(SIM_BUILD_DIR)/$(SIM_TARGET)
 
 debug-sim: build-sim
 	$(DEBUGGER) $(SIM_BUILD_DIR)/$(SIM_TARGET)
