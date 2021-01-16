@@ -4,7 +4,7 @@
 # AST Utils
 #
 
-
+import os
 import gast
 
 from tempfile import NamedTemporaryFile
@@ -29,9 +29,26 @@ from gast import (
     If,
     Constant,
 )
-from inspect import getsource, getsourcefile
+from inspect import getsource, cleandoc
 from textwrap import dedent
-from typing import Any, Dict, Optional, List, Union
+from typing import Any, Dict, Optional, Callable, Union, List
+
+
+class FuncASTTransform(gast.NodeTransformer):
+    """Defines a AST transformation with a given transform function"""
+
+    def __init__(self, transform_fn: Callable[[AST], AST]):
+        super().__init__()
+        self.transform_fn = transform_fn
+
+    def visit(self, node: AST) -> AST:
+        # recursively visit child nodes
+        super().visit(node)
+        # on visit: transform node and fix code locations
+        new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
+        new_node = gast.fix_missing_locations(new_node)
+
+        return new_node
 
 
 def parse_ast(obj: Any) -> AST:
@@ -191,10 +208,13 @@ def load_ast_module(ast: AST) -> Any:
     src = unparse(ast)
     with NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(src)
-        f.flush()
+        f.close()
         # import the source as a module
         mod_spec = spec_from_file_location("compiled", f.name)
         module = module_from_spec(mod_spec)
         mod_spec.loader.exec_module(module)
+    # delete the temporary file manually as NamedTemporaryFile runs into
+    # permission issues trying to remove it on Windows.
+    os.remove(f.name)
 
     return module

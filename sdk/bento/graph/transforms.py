@@ -22,36 +22,14 @@ from gast import (
 from bento.graph.plotter import Plotter
 from bento.graph.ast import (
     parse_ast,
-    call_func_ast,
-    wrap_func_ast,
-    wrap_block_ast,
-    load_ast_module,
     name_ast,
     assign_ast,
+    call_func_ast,
+    load_ast_module,
+    wrap_func_ast,
+    wrap_block_ast,
+    FuncASTTransform,
 )
-
-
-class FuncASTTransform(gast.NodeTransformer):
-    """Defines a AST transformation with a given transform_fn transform function.
-
-    Walks the AST with the given transform_fn, allowing it to modify AST nodes.
-
-    Args:
-        transform_fn: transform function that takes in AST and returns the modified AST.
-    """
-
-    def __init__(self, transform_fn: Callable[[AST], AST]):
-        super().__init__()
-        self.transform_fn = transform_fn
-
-    def visit(self, node: AST) -> AST:
-        # recursively visit child nodes
-        super().visit(node)
-        # on visit: transform node and fix code locations
-        new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
-        new_node = gast.fix_missing_locations(new_node)
-
-        return new_node
 
 
 def transform_build_graph(ast: AST) -> AST:
