@@ -68,7 +68,7 @@ jobs:
       - name: "Build bentobox-sim"
         run: |
           # stop at 'build' build stage as it contains the dev tools required to run tests
-          make SIM_DOCKER_STAGE=build build-sim-docker
+          make SIM_BUILD_TYPE=Release SIM_DOCKER_STAGE=build build-sim-docker
       - name: "Unit Test bentobox-sim"
         run: |
           docker run bentobox-sim make test-sim
@@ -149,7 +149,7 @@ jobs:
             docker-sim-
       - name: "Build bentobox-sim"
         run: |
-          make build-sim-docker
+          make SIM_BUILD_TYPE=Release SIM_DOCKER_STAGE=release build-sim-docker
       - name: "Install bentobox-sdk"
         run: |
           make install-sdk
