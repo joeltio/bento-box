@@ -102,10 +102,30 @@ jobs:
         run: |
           make test-sdk
 
+  # builds docs for the sdk component
+  build-docs-sdk:
+    needs: build-test-sdk
+    runs-on: ubuntu-20.04
+    name: "Build & Push bentobox-sdk Docs"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Pull dependencies"
+        run: |
+          make dep-sdk-dev
+      - name: "Build bentobox-sdk"
+        run: |
+          make build-sdk
+      - name: "Build bentobox-sdk Docs"
+        run: |
+          make build-sdk-docs
+
   # build & run e2e tests
   build-test-e2e:
-    needs: check-protos
     needs: 
+    - check-protos
     - build-test-sdk
     - build-test-sim
     runs-on: ubuntu-20.04
@@ -136,23 +156,3 @@ jobs:
       - name: "Run End to End Tests"
         run: |
           make test-e2e
-
-  # builds docs for the sdk component
-  build-docs-sdk:
-    needs: build-test-sdk
-    runs-on: ubuntu-20.04
-    name: "Build & Push bentobox-sdk Docs"
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: "Pull dependencies"
-        run: |
-          make dep-sdk-dev
-      - name: "Build bentobox-sdk"
-        run: |
-          make build-sdk
-      - name: "Build bentobox-sdk Docs"
-        run: |
-          make build-sdk-docs
