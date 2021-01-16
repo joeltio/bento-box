@@ -23,7 +23,7 @@ format: format-proto format-sim format-sdk
 
 ## Deps: convenience rules for installing dependencies
 ARCH:=$(shell uname -m)
-OS:=$(if $(filter Darwin,$(shell uname -s)),osx,linux)
+OS:=$(if $(filter Darwin,$(shell uname -s)),macos,linux)
 BIN_DIR:=/usr/local/bin
 deps: dep-protoc dev-sdk-dev dep-clang-fmt dep-sim
 
@@ -37,11 +37,18 @@ dep-protoc: /usr/local/bin/protoc
 	$(MV) /tmp/protoc/bin/* ${BIN_DIR}
 	$(RM) protoc-$(PROTOC_VERSION)-linux-$(ARCH).zip && $(RM) /tmp/protoc
 
+ifeq ($(OS),linux)
 dep-clang-fmt:
 	 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
 	 sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main\ndeb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main" >/etc/apt/sources.list.d/llvm.list'
 	 sudo apt-get update
 	 sudo apt-get install -y clang-format-11
+endif
+
+ifeq ($(OS),macos)
+dep-clang-fmt:
+	brew install clang-format@11
+endif
 
 ## Bento protobuf API
 PROTO_SRC := protos
@@ -64,7 +71,8 @@ SIM_BUILD_DIR:=sim/build
 FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 SIM_BUILD_TYPE:=Debug
 DEBUGGER:=lldb
-SIM_DOCKER_TAG:=bentobox-sim
+SIM_DOCKER:=bentobox-sim
+SIM_PORT:=54242
 
 .PHONY: dep-sim build-sim build-sim-docker test-sim run-sim clean-sim format-sim debug-sim debug-sim-test
 
@@ -79,13 +87,13 @@ build-sim: dep-sim
 		--target $(SIM_TARGET) --target $(SIM_TEST)
 
 build-sim-docker:
-	docker build -t $(SIM_DOCKER_TAG) -f infra/docker/sim/Dockerfile .
+	docker build -t $(SIM_DOCKER) -f infra/docker/sim/Dockerfile .
 
 test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
 
 run-sim: build-sim
-	$(SIM_BUILD_DIR)/$(SIM_TARGET)
+	env BENTOBOX_SIM_PORT=$(SIM_PORT) $(SIM_BUILD_DIR)/$(SIM_TARGET)
 
 debug-sim: build-sim
 	$(DEBUGGER) $(SIM_BUILD_DIR)/$(SIM_TARGET)
@@ -110,7 +118,7 @@ PYTEST:=python -m pytest -vv
 PDOC:=python -m pdoc --force
 PIP=python -m pip
 
-.PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk install-sdl
+.PHONY: format-sdk clean-sdk build-sdk dep-sdk-dev test-sdk lint-sdk install-sdk
 
 dep-sdk-dev:
 	$(PIP) install -r $(SDK_SRC)/requirements-dev.txt
@@ -150,15 +158,22 @@ clean-sdk-docs: $(SDK_DOC_DIR)
 ## End to End tests
 E2E_TESTS:=e2e
 
-.PHONY: dep-e2e ftest-e2e
+.PHONY: dep-e2e format-e2e lint-e2e test-e2e
 
 # dep-e2e adds on to the requirements defined in  SDK's requirements-dev.txt
 dep-e2e: dep-sdk-dev
 	$(PIP) install -r $(E2E_TESTS)/requirements-e2e.txt
 
+format-e2e: dep-e2e
+	$(BLACK_FMT) $(E2E_TESTS)
+
+lint-e2e: dep-e2e
+	$(BLACK_FMT) --check $(E2E_TESTS)
+
 test-e2e: dep-e2e install-sdk build-sim-docker
 	$(PYTHON) -m pip install -e $(SDK_SRC)
-	cd $(E2E_TESTS) && env SIM_DOCKER_TAG=$(SIM_DOCKER_TAG) $(PYTEST)
+	cd $(E2E_TESTS) && \
+		env BENTOBOX_SIM_DOCKER=$(SIM_DOCKER) $(PYTEST)
 
 # spellcheck bentobox codebase
 .PHONY: spellcheck autocorrect
