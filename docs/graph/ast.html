@@ -32,7 +32,7 @@
 # AST Utils
 #
 
-
+import os
 import gast
 
 from tempfile import NamedTemporaryFile
@@ -57,9 +57,26 @@ from gast import (
     If,
     Constant,
 )
-from inspect import getsource, getsourcefile
+from inspect import getsource, cleandoc
 from textwrap import dedent
-from typing import Any, Dict, Optional, List, Union
+from typing import Any, Dict, Optional, Callable, Union, List
+
+
+class FuncASTTransform(gast.NodeTransformer):
+    &#34;&#34;&#34;Defines a AST transformation with a given transform function&#34;&#34;&#34;
+
+    def __init__(self, transform_fn: Callable[[AST], AST]):
+        super().__init__()
+        self.transform_fn = transform_fn
+
+    def visit(self, node: AST) -&gt; AST:
+        # recursively visit child nodes
+        super().visit(node)
+        # on visit: transform node and fix code locations
+        new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
+        new_node = gast.fix_missing_locations(new_node)
+
+        return new_node
 
 
 def parse_ast(obj: Any) -&gt; AST:
@@ -219,11 +236,14 @@ def load_ast_module(ast: AST) -&gt; Any:
     src = unparse(ast)
     with NamedTemporaryFile(mode=&#34;w&#34;, suffix=&#34;.py&#34;, delete=False) as f:
         f.write(src)
-        f.flush()
+        f.close()
         # import the source as a module
         mod_spec = spec_from_file_location(&#34;compiled&#34;, f.name)
         module = module_from_spec(mod_spec)
         mod_spec.loader.exec_module(module)
+    # delete the temporary file manually as NamedTemporaryFile runs into
+    # permission issues trying to remove it on Windows.
+    os.remove(f.name)
 
     return module</code></pre>
 </details>
@@ -353,11 +373,14 @@ to reference the given <code>fn</code>. Genrates a call with <code>attr_parent.f
     src = unparse(ast)
     with NamedTemporaryFile(mode=&#34;w&#34;, suffix=&#34;.py&#34;, delete=False) as f:
         f.write(src)
-        f.flush()
+        f.close()
         # import the source as a module
         mod_spec = spec_from_file_location(&#34;compiled&#34;, f.name)
         module = module_from_spec(mod_spec)
         mod_spec.loader.exec_module(module)
+    # delete the temporary file manually as NamedTemporaryFile runs into
+    # permission issues trying to remove it on Windows.
+    os.remove(f.name)
 
     return module</code></pre>
 </details>
@@ -535,6 +558,63 @@ irregardless of whether multiple values are actually returned.</dd>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="bento.graph.ast.FuncASTTransform"><code class="flex name class">
+<span>class <span class="ident">FuncASTTransform</span></span>
+<span>(</span><span>transform_fn: Callable[[_ast.AST], _ast.AST])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines a AST transformation with a given transform function</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FuncASTTransform(gast.NodeTransformer):
+    &#34;&#34;&#34;Defines a AST transformation with a given transform function&#34;&#34;&#34;
+
+    def __init__(self, transform_fn: Callable[[AST], AST]):
+        super().__init__()
+        self.transform_fn = transform_fn
+
+    def visit(self, node: AST) -&gt; AST:
+        # recursively visit child nodes
+        super().visit(node)
+        # on visit: transform node and fix code locations
+        new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
+        new_node = gast.fix_missing_locations(new_node)
+
+        return new_node</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>ast.NodeTransformer</li>
+<li>ast.NodeVisitor</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="bento.graph.ast.FuncASTTransform.visit"><code class="name flex">
+<span>def <span class="ident">visit</span></span>(<span>self, node: _ast.AST) ‑> _ast.AST</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Visit a node.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def visit(self, node: AST) -&gt; AST:
+    # recursively visit child nodes
+    super().visit(node)
+    # on visit: transform node and fix code locations
+    new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
+    new_node = gast.fix_missing_locations(new_node)
+
+    return new_node</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -557,6 +637,16 @@ irregardless of whether multiple values are actually returned.</dd>
 <li><code><a title="bento.graph.ast.parse_ast" href="#bento.graph.ast.parse_ast">parse_ast</a></code></li>
 <li><code><a title="bento.graph.ast.wrap_block_ast" href="#bento.graph.ast.wrap_block_ast">wrap_block_ast</a></code></li>
 <li><code><a title="bento.graph.ast.wrap_func_ast" href="#bento.graph.ast.wrap_func_ast">wrap_func_ast</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="bento.graph.ast.FuncASTTransform" href="#bento.graph.ast.FuncASTTransform">FuncASTTransform</a></code></h4>
+<ul class="">
+<li><code><a title="bento.graph.ast.FuncASTTransform.visit" href="#bento.graph.ast.FuncASTTransform.visit">visit</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

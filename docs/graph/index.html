@@ -37,6 +37,7 @@ from gast import FunctionDef, AST
 from textwrap import dedent
 from typing import Callable, List
 
+from bento.graph.preprocessors import preprocess_augassign
 from bento.graph.analyzers import (
     analyze_func,
     analyze_convert_fn,
@@ -64,6 +65,9 @@ Transform = Callable[[AST], AST]
 
 def compile_graph(
     convert_fn: Callable,
+    preprocessors: List[Transform] = [
+        preprocess_augassign,
+    ],
     analyzers: List[Analyzer] = [
         analyze_parent,
         analyze_func,
@@ -83,10 +87,18 @@ def compile_graph(
 ) -&gt; Graph:
     &#34;&#34;&#34;Compiles the given `convert_fn` into a computation Graph.
 
-    Compiles by converting the given `convert_fn` function to AST,
+    Compiles by converting the given `convert_fn` function to AST
+    applying the given `preprocessors` transforms to perform preprocessing on the AST,
     applying given `analyzers` on the AST to perform static analysis,
     linting the AST with the given `linters` to perform static checks,
-    applying the given `transforms` to transform the AST.
+    applying the given `transforms` to transform the AST to a function that plots the computational graph.
+
+    Note:
+        Even though both `preprocessors` and `transforms` are comprised of  a list of `Transform`s
+        `preprocessors` transforms are applied before any static analysis is done while
+        `transforms` are applied after static analysis. This allows `preprocessors` to focus
+        on transforming the AST to make static analysis easier while `transforms` to focus on
+        transforming the AST to plot a computation graph.
 
     The transformed AST is converted back to source where it can be imported
     to provide a compiled function that builds the graph using the given `Plotter` on call.
@@ -114,13 +126,22 @@ def compile_graph(
             The function should take in one parameter: a `Plotter` instance which
             allows users to access graphing specific operations. Must be a plain Python
             Function, not a Callable class, method, classmethod or staticmethod.
-        analyzers: List of `Analyzer`s that are run sequentially on the AST perform static analysis.
-            Analyzers can add attributes to AST nodes but not modify the AST tree.
+
+        preprocessors: List of `Transform`s that are run sequentially to apply
+            preprocesssing transforms to the AST before any static analysis is done.
+            Typically these AST transforms make static analysis easier by simplifying the AST.
+
+        analyzers: List of `Analyzer`s that are run sequentially on the AST perform
+            static analysis.  Analyzers can add attributes to AST nodes but not
+            modify the AST tree.
+
         linters: List of `Linter`s that are run sequentially on the AST to perform
             static checks on the convertability of the AST. `Linter`s are expected
             to throw exception when failing a check.
-        transforms: List of `Transform`s that are run sequentially to transform the AST to
-            a compiled function (in AST form) that builds the computation graph when called.
+
+        transforms: List of `Transform`s that are run sequentially to transform the
+            AST to a compiled function (in AST form) that builds the computation
+            graph when called.
 
     Returns:
         The converted computational Graph as a `Graph` protobuf message.
@@ -128,6 +149,10 @@ def compile_graph(
 
     # parse ast from function source
     ast = parse_ast(convert_fn)
+
+    # apply preprocessors to apply preprocesssing transforms on the ASt
+    for preprocessor in preprocessors:
+        ast = preprocessor(ast)
 
     # apply analyzers to conduct static analysis
     for analyzer in analyzers:
@@ -170,6 +195,10 @@ def compile_graph(
 <dd>
 <div class="desc"></div>
 </dd>
+<dt><code class="name"><a title="bento.graph.preprocessors" href="preprocessors.html">bento.graph.preprocessors</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt><code class="name"><a title="bento.graph.transforms" href="transforms.html">bento.graph.transforms</a></code></dt>
 <dd>
 <div class="desc"></div>
@@ -186,14 +215,22 @@ def compile_graph(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="bento.graph.compile_graph"><code class="name flex">
-<span>def <span class="ident">compile_graph</span></span>(<span>convert_fn: Callable, analyzers: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function analyze_parent&gt;, &lt;function analyze_func&gt;, &lt;function analyze_convert_fn&gt;, &lt;function analyze_symbol&gt;, &lt;function analyze_assign&gt;, &lt;function resolve_symbol&gt;, &lt;function analyze_block&gt;, &lt;function analyze_activity&gt;], linters: List[Callable[[_ast.AST], NoneType]] = [], transforms: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function transform_build_graph&gt;, &lt;function transform_ternary&gt;, &lt;function transform_ifelse&gt;]) ‑> <a title="bento.protos.graph_pb2.Graph" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Graph">Graph</a></span>
+<span>def <span class="ident">compile_graph</span></span>(<span>convert_fn: Callable, preprocessors: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function preprocess_augassign&gt;], analyzers: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function analyze_parent&gt;, &lt;function analyze_func&gt;, &lt;function analyze_convert_fn&gt;, &lt;function analyze_symbol&gt;, &lt;function analyze_assign&gt;, &lt;function resolve_symbol&gt;, &lt;function analyze_block&gt;, &lt;function analyze_activity&gt;], linters: List[Callable[[_ast.AST], NoneType]] = [], transforms: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function transform_build_graph&gt;, &lt;function transform_ternary&gt;, &lt;function transform_ifelse&gt;]) ‑> <a title="bento.protos.graph_pb2.Graph" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Graph">Graph</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Compiles the given <code>convert_fn</code> into a computation Graph.</p>
-<p>Compiles by converting the given <code>convert_fn</code> function to AST,
+<p>Compiles by converting the given <code>convert_fn</code> function to AST
+applying the given <code><a title="bento.graph.preprocessors" href="preprocessors.html">bento.graph.preprocessors</a></code> transforms to perform preprocessing on the AST,
 applying given <code><a title="bento.graph.analyzers" href="analyzers.html">bento.graph.analyzers</a></code> on the AST to perform static analysis,
 linting the AST with the given <code><a title="bento.graph.linters" href="linters.html">bento.graph.linters</a></code> to perform static checks,
-applying the given <code><a title="bento.graph.transforms" href="transforms.html">bento.graph.transforms</a></code> to transform the AST.</p>
+applying the given <code><a title="bento.graph.transforms" href="transforms.html">bento.graph.transforms</a></code> to transform the AST to a function that plots the computational graph.</p>
+<h2 id="note">Note</h2>
+<p>Even though both <code><a title="bento.graph.preprocessors" href="preprocessors.html">bento.graph.preprocessors</a></code> and <code><a title="bento.graph.transforms" href="transforms.html">bento.graph.transforms</a></code> are comprised of
+a list of <code>Transform</code>s
+<code><a title="bento.graph.preprocessors" href="preprocessors.html">bento.graph.preprocessors</a></code> transforms are applied before any static analysis is done while
+<code><a title="bento.graph.transforms" href="transforms.html">bento.graph.transforms</a></code> are applied after static analysis. This allows <code><a title="bento.graph.preprocessors" href="preprocessors.html">bento.graph.preprocessors</a></code> to focus
+on transforming the AST to make static analysis easier while <code><a title="bento.graph.transforms" href="transforms.html">bento.graph.transforms</a></code> to focus on
+transforming the AST to plot a computation graph.</p>
 <p>The transformed AST is converted back to source where it can be imported
 to provide a compiled function that builds the graph using the given <code>Plotter</code> on call.
 The graph obtained from the <code>Plotter</code> is finally returned.</p>
@@ -220,16 +257,23 @@ def car_pos_graph(g: Plotter):
 The function should take in one parameter: a <code>Plotter</code> instance which
 allows users to access graphing specific operations. Must be a plain Python
 Function, not a Callable class, method, classmethod or staticmethod.</dd>
+<dt><strong><code>preprocessors</code></strong></dt>
+<dd>List of <code>Transform</code>s that are run sequentially to apply
+preprocesssing transforms to the AST before any static analysis is done.
+Typically these AST transforms make static analysis easier by simplifying the AST.</dd>
 <dt><strong><code>analyzers</code></strong></dt>
-<dd>List of <code>Analyzer</code>s that are run sequentially on the AST perform static analysis.
-Analyzers can add attributes to AST nodes but not modify the AST tree.</dd>
+<dd>List of <code>Analyzer</code>s that are run sequentially on the AST perform
+static analysis.
+Analyzers can add attributes to AST nodes but not
+modify the AST tree.</dd>
 <dt><strong><code>linters</code></strong></dt>
 <dd>List of <code>Linter</code>s that are run sequentially on the AST to perform
 static checks on the convertability of the AST. <code>Linter</code>s are expected
 to throw exception when failing a check.</dd>
 <dt><strong><code>transforms</code></strong></dt>
-<dd>List of <code>Transform</code>s that are run sequentially to transform the AST to
-a compiled function (in AST form) that builds the computation graph when called.</dd>
+<dd>List of <code>Transform</code>s that are run sequentially to transform the
+AST to a compiled function (in AST form) that builds the computation
+graph when called.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>The converted computational Graph as a <code>Graph</code> protobuf message.</p></div>
@@ -239,6 +283,9 @@ a compiled function (in AST form) that builds the computation graph when called.
 </summary>
 <pre><code class="python">def compile_graph(
     convert_fn: Callable,
+    preprocessors: List[Transform] = [
+        preprocess_augassign,
+    ],
     analyzers: List[Analyzer] = [
         analyze_parent,
         analyze_func,
@@ -258,10 +305,18 @@ a compiled function (in AST form) that builds the computation graph when called.
 ) -&gt; Graph:
     &#34;&#34;&#34;Compiles the given `convert_fn` into a computation Graph.
 
-    Compiles by converting the given `convert_fn` function to AST,
+    Compiles by converting the given `convert_fn` function to AST
+    applying the given `preprocessors` transforms to perform preprocessing on the AST,
     applying given `analyzers` on the AST to perform static analysis,
     linting the AST with the given `linters` to perform static checks,
-    applying the given `transforms` to transform the AST.
+    applying the given `transforms` to transform the AST to a function that plots the computational graph.
+
+    Note:
+        Even though both `preprocessors` and `transforms` are comprised of  a list of `Transform`s
+        `preprocessors` transforms are applied before any static analysis is done while
+        `transforms` are applied after static analysis. This allows `preprocessors` to focus
+        on transforming the AST to make static analysis easier while `transforms` to focus on
+        transforming the AST to plot a computation graph.
 
     The transformed AST is converted back to source where it can be imported
     to provide a compiled function that builds the graph using the given `Plotter` on call.
@@ -289,13 +344,22 @@ a compiled function (in AST form) that builds the computation graph when called.
             The function should take in one parameter: a `Plotter` instance which
             allows users to access graphing specific operations. Must be a plain Python
             Function, not a Callable class, method, classmethod or staticmethod.
-        analyzers: List of `Analyzer`s that are run sequentially on the AST perform static analysis.
-            Analyzers can add attributes to AST nodes but not modify the AST tree.
+
+        preprocessors: List of `Transform`s that are run sequentially to apply
+            preprocesssing transforms to the AST before any static analysis is done.
+            Typically these AST transforms make static analysis easier by simplifying the AST.
+
+        analyzers: List of `Analyzer`s that are run sequentially on the AST perform
+            static analysis.  Analyzers can add attributes to AST nodes but not
+            modify the AST tree.
+
         linters: List of `Linter`s that are run sequentially on the AST to perform
             static checks on the convertability of the AST. `Linter`s are expected
             to throw exception when failing a check.
-        transforms: List of `Transform`s that are run sequentially to transform the AST to
-            a compiled function (in AST form) that builds the computation graph when called.
+
+        transforms: List of `Transform`s that are run sequentially to transform the
+            AST to a compiled function (in AST form) that builds the computation
+            graph when called.
 
     Returns:
         The converted computational Graph as a `Graph` protobuf message.
@@ -303,6 +367,10 @@ a compiled function (in AST form) that builds the computation graph when called.
 
     # parse ast from function source
     ast = parse_ast(convert_fn)
+
+    # apply preprocessors to apply preprocesssing transforms on the ASt
+    for preprocessor in preprocessors:
+        ast = preprocessor(ast)
 
     # apply analyzers to conduct static analysis
     for analyzer in analyzers:
@@ -345,6 +413,7 @@ a compiled function (in AST form) that builds the computation graph when called.
 <li><code><a title="bento.graph.ecs" href="ecs.html">bento.graph.ecs</a></code></li>
 <li><code><a title="bento.graph.linters" href="linters.html">bento.graph.linters</a></code></li>
 <li><code><a title="bento.graph.plotter" href="plotter.html">bento.graph.plotter</a></code></li>
+<li><code><a title="bento.graph.preprocessors" href="preprocessors.html">bento.graph.preprocessors</a></code></li>
 <li><code><a title="bento.graph.transforms" href="transforms.html">bento.graph.transforms</a></code></li>
 <li><code><a title="bento.graph.value" href="value.html">bento.graph.value</a></code></li>
 </ul>

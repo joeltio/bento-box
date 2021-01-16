@@ -50,36 +50,14 @@ from gast import (
 from bento.graph.plotter import Plotter
 from bento.graph.ast import (
     parse_ast,
-    call_func_ast,
-    wrap_func_ast,
-    wrap_block_ast,
-    load_ast_module,
     name_ast,
     assign_ast,
+    call_func_ast,
+    load_ast_module,
+    wrap_func_ast,
+    wrap_block_ast,
+    FuncASTTransform,
 )
-
-
-class FuncASTTransform(gast.NodeTransformer):
-    &#34;&#34;&#34;Defines a AST transformation with a given transform_fn transform function.
-
-    Walks the AST with the given transform_fn, allowing it to modify AST nodes.
-
-    Args:
-        transform_fn: transform function that takes in AST and returns the modified AST.
-    &#34;&#34;&#34;
-
-    def __init__(self, transform_fn: Callable[[AST], AST]):
-        super().__init__()
-        self.transform_fn = transform_fn
-
-    def visit(self, node: AST) -&gt; AST:
-        # recursively visit child nodes
-        super().visit(node)
-        # on visit: transform node and fix code locations
-        new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
-        new_node = gast.fix_missing_locations(new_node)
-
-        return new_node
 
 
 def transform_build_graph(ast: AST) -&gt; AST:
@@ -596,75 +574,6 @@ Graph Plotter to plot a Switch Node <code>g.switch(b, a, c)</code> on the comput
 </dl>
 </section>
 <section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="bento.graph.transforms.FuncASTTransform"><code class="flex name class">
-<span>class <span class="ident">FuncASTTransform</span></span>
-<span>(</span><span>transform_fn: Callable[[_ast.AST], _ast.AST])</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Defines a AST transformation with a given transform_fn transform function.</p>
-<p>Walks the AST with the given transform_fn, allowing it to modify AST nodes.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>transform_fn</code></strong></dt>
-<dd>transform function that takes in AST and returns the modified AST.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class FuncASTTransform(gast.NodeTransformer):
-    &#34;&#34;&#34;Defines a AST transformation with a given transform_fn transform function.
-
-    Walks the AST with the given transform_fn, allowing it to modify AST nodes.
-
-    Args:
-        transform_fn: transform function that takes in AST and returns the modified AST.
-    &#34;&#34;&#34;
-
-    def __init__(self, transform_fn: Callable[[AST], AST]):
-        super().__init__()
-        self.transform_fn = transform_fn
-
-    def visit(self, node: AST) -&gt; AST:
-        # recursively visit child nodes
-        super().visit(node)
-        # on visit: transform node and fix code locations
-        new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
-        new_node = gast.fix_missing_locations(new_node)
-
-        return new_node</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>ast.NodeTransformer</li>
-<li>ast.NodeVisitor</li>
-</ul>
-<h3>Methods</h3>
-<dl>
-<dt id="bento.graph.transforms.FuncASTTransform.visit"><code class="name flex">
-<span>def <span class="ident">visit</span></span>(<span>self, node: _ast.AST) ‑> _ast.AST</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Visit a node.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def visit(self, node: AST) -&gt; AST:
-    # recursively visit child nodes
-    super().visit(node)
-    # on visit: transform node and fix code locations
-    new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
-    new_node = gast.fix_missing_locations(new_node)
-
-    return new_node</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -683,16 +592,6 @@ Graph Plotter to plot a Switch Node <code>g.switch(b, a, c)</code> on the comput
 <li><code><a title="bento.graph.transforms.transform_build_graph" href="#bento.graph.transforms.transform_build_graph">transform_build_graph</a></code></li>
 <li><code><a title="bento.graph.transforms.transform_ifelse" href="#bento.graph.transforms.transform_ifelse">transform_ifelse</a></code></li>
 <li><code><a title="bento.graph.transforms.transform_ternary" href="#bento.graph.transforms.transform_ternary">transform_ternary</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="bento.graph.transforms.FuncASTTransform" href="#bento.graph.transforms.FuncASTTransform">FuncASTTransform</a></code></h4>
-<ul class="">
-<li><code><a title="bento.graph.transforms.FuncASTTransform.visit" href="#bento.graph.transforms.FuncASTTransform.visit">visit</a></code></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
