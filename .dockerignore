@@ -1,2 +1,8 @@
-# build folders
+# dependencies folders
 sim/build/
+sdk/venv/
+
+# caches
+.ccls-cache/
+sim/.ccls-cache/
+.pytest_cache/
