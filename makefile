@@ -11,6 +11,8 @@ MKDIR:=mkdir -p
 MV:=mv -f
 FIND:=find
 CLANG_FMT:=clang-format-11
+DEBUGGER:=lldb
+DOCKER:=docker
 
 .PHONY: deps build test clean test
 build: build-sim build-sdk
@@ -69,9 +71,9 @@ SIM_SRC:=sim
 SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib/core/src $(SIM_SRC)/lib/core/include $(SIM_SRC)/include
 SIM_BUILD_DIR:=sim/build
 FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
-SIM_BUILD_TYPE:=Debug
-DEBUGGER:=lldb
+SIM_BUILD_TYPE:=Release
 SIM_DOCKER:=bentobox-sim
+SIM_DOCKER_STAGE:=release
 SIM_PORT:=54242
 SIM_HOST:=0.0.0.0
 CMAKE_GENERATOR:=Ninja
@@ -89,7 +91,7 @@ build-sim: dep-sim
 		--target $(SIM_TARGET) --target $(SIM_TEST)
 
 build-sim-docker:
-	docker build -t $(SIM_DOCKER) -f infra/docker/sim/Dockerfile .
+	$(DOCKER) build --target $(SIM_DOCKER_STAGE) -t $(SIM_DOCKER) -f infra/docker/sim/Dockerfile .
 
 test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
