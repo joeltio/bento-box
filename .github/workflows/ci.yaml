@@ -102,6 +102,41 @@ jobs:
         run: |
           make test-sdk
 
+  # build & run e2e tests
+  build-test-e2e:
+    needs: check-protos
+    needs: 
+    - build-test-sdk
+    - build-test-sim
+    runs-on: ubuntu-20.04
+    name: "Build & Test bentobox End to End"
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Pull dependencies"
+        run: |
+          make dep-e2e
+      # cache docker layers to speed up docker build
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of noncritical cache step
+        continue-on-error: true
+        with:
+          # {hash} replace with hash of the built sim container
+          key: docker-{hash}
+          restore-keys: |
+            docker-
+      - name: "Build bentobox-sim"
+        run: |
+          make build-sim-docker
+      - name: "Install bentobox-sdk"
+        run: |
+          make install-sdk
+      - name: "Lint End to End Tests"
+        run: |
+          make lint-e2e
+      - name: "Run End to End Tests"
+        run: |
+          make test-e2e
+
   # builds docs for the sdk component
   build-docs-sdk:
     needs: build-test-sdk
