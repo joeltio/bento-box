@@ -57,10 +57,11 @@ jobs:
         # Ignore the failure of noncritical cache step
         continue-on-error: true
         with:
-          # {hash} replace with hash of the built sim container
-          key: docker-{hash}
+          # {hash} replaced with hash of the built sim container
+          key: docker-sim-${{ hashFiles('makefile', 'infra/docker/sim/Dockerfile','sim/**/CMakeLists.txt') }}-{hash}
           restore-keys: |
-            docker-
+            docker-sim-${{ hashFiles('makefile', 'infra/docker/sim/Dockerfile','sim/**/CMakeLists.txt') }}-
+            docker-sim-
       - name: "Lint bentobox-sim"
         run: |
           make lint-sim
@@ -141,10 +142,11 @@ jobs:
         # Ignore the failure of noncritical cache step
         continue-on-error: true
         with:
-          # {hash} replace with hash of the built sim container
-          key: docker-{hash}
+          # {hash} replaced with hash of the built sim container
+          key: docker-sim-${{ hashFiles('makefile', 'infra/docker/sim/Dockerfile','sim/**/CMakeLists.txt') }}-{hash}
           restore-keys: |
-            docker-
+            docker-sim-${{ hashFiles('makefile', 'infra/docker/sim/Dockerfile','sim/**/CMakeLists.txt') }}-
+            docker-sim-
       - name: "Build bentobox-sim"
         run: |
           make build-sim-docker

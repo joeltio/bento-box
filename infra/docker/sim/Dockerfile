@@ -34,7 +34,10 @@ COPY sim/cmake /repo/sim/cmake
 COPY sim/lib /repo/sim/lib
 COPY sim/include /repo/sim/include
 COPY sim/src /repo/sim/src
+# do the bulk of the building the simulator
+RUN make build-sim
 # copy git repository required by sim to obtain version info
+# then incremental rebuild to include version info the the build
 COPY .git /repo/.git
 RUN make build-sim
 
