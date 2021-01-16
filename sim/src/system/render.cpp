@@ -18,7 +18,7 @@ void render(GraphicsContext &graphicsContext,
         auto component = ics::getComponent<ics::component::Texture2DComponent>(
             componentStore, componentId);
         // TODO(joeltio): Use the graphics context to render the texture
-        //std::cout << "texture: " << component.texture << std::endl;
+        // std::cout << "texture: " << component.texture << std::endl;
     }
 }
 }  // namespace ics::system
