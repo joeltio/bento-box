@@ -58,11 +58,9 @@ jobs:
         continue-on-error: true
         with:
           # {hash} replace with hash of the built sim container
-          key: docker-sim-${{ hashFiles('infra/docker/sim/Dockerfile') }}-${{ hashFiles('sim/CMakeLists.txt') }}-{hash}
+          key: docker-{hash}
           restore-keys: |
-            docker-sim-${{ hashFiles('infra/docker/sim/Dockerfile') }}-${{ hashFiles('sim/CMakeLists.txt') }}-
-            docker-sim-${{ hashFiles('infra/docker/sim/Dockerfile') }}-
-            docker-sim-
+            docker-
       - name: "Lint bentobox-sim"
         run: |
           make lint-sim
@@ -144,11 +142,9 @@ jobs:
         continue-on-error: true
         with:
           # {hash} replace with hash of the built sim container
-          key: docker-sim-${{ hashFiles('infra/docker/sim/Dockerfile') }}-${{ hashFiles('sim/CMakeLists.txt') }}-{hash}
+          key: docker-{hash}
           restore-keys: |
-            docker-sim-${{ hashFiles('infra/docker/sim/Dockerfile') }}-${{ hashFiles('sim/CMakeLists.txt') }}-
-            docker-sim-${{ hashFiles('infra/docker/sim/Dockerfile') }}-
-            docker-sim-
+            docker-
       - name: "Build bentobox-sim"
         run: |
           make build-sim-docker

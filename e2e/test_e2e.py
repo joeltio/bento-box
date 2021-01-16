@@ -40,6 +40,7 @@ def client(sim_docker):
     client.connect(timeout_sec=30)
     return client
 
+
 def test_e2e_engine_get_version(client):
     # e2e test that we can obtain sim/engine's version via SDK
     repo = Repo(search_parent_directories=True)
