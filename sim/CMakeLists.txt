@@ -13,6 +13,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 # Set sources for target
 set(TARGET_SIM_SOURCES
+    src/component/textureComponent.cpp
+    src/component/userComponent.cpp
+    src/index/componentType.cpp
     src/interpreter/userValue.cpp
     src/system/render.cpp
 )
@@ -27,10 +30,11 @@ target_include_directories(${TARGET_SIM}
 
 add_executable(${TARGET_TEST}
     ${TARGET_SIM_SOURCES}
-    src/main.test.cpp
-    src/index/entity.test.cpp
+    src/component/userComponent.test.cpp
     src/index/componentType.test.cpp
+    src/index/entity.test.cpp
     src/interpreter/userValue.test.cpp
+    src/main.test.cpp
 )
 target_include_directories(${TARGET_TEST}
     PUBLIC include

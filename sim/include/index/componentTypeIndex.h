@@ -4,62 +4,42 @@
 #include <core/ics/component.h>
 #include <core/ics/componentSet.h>
 
+#include <string>
 #include <functional>
 #include <unordered_map>
 
 namespace ics::index {
 class ComponentTypeIndex {
    private:
-    std::unordered_map<std::type_index, CompGroup> typeGroupMap;
+    std::unordered_map<std::string, CompGroup> typeNameGroupMap;
     CompGroup compGroup = 0;
 
    public:
-    template <Component C>
+    // The definition needs to be in the header file as the return type is auto
     // The return type is left as auto so that the capturing lambda is properly
     // represented. Type errors can occur at build-time when using function
     // pointer return types or std::function.
-    auto filterCompType() {
-        auto compIndex = typeGroupMap.at(std::type_index(typeid(C)));
+    auto filterCompType(const std::string& name) {
+        auto compIndex = typeNameGroupMap.at(name);
 
         return [compIndex](const ics::ComponentSet& compSet) {
-            // TODO(joeltio): find a way to make this more memory efficient
-            ics::ComponentSet newSet;
-            for (const CompStoreId& comp : compSet) {
-                if (comp.first == compIndex) {
-                    newSet.insert(comp);
-                }
-            }
+          // TODO(joeltio): find a way to make this more memory efficient
+          ics::ComponentSet newSet;
+          for (const CompStoreId& comp : compSet) {
+              if (comp.first == compIndex) {
+                  newSet.insert(comp);
+              }
+          }
 
-            return newSet;
+          return newSet;
         };
     }
 
-    template <Component C>
-    bool hasComponentType() {
-        auto compType = std::type_index(typeid(C));
-        return typeGroupMap.contains(compType);
-    }
+    bool hasComponentType(const std::string& name);
 
-    template <Component C>
-    CompGroup addComponentType() {
-        auto compType = std::type_index(typeid(C));
-        if (!typeGroupMap.contains(compType)) {
-            typeGroupMap.insert(std::make_pair(compType, compGroup));
+    CompGroup addComponentType(const std::string& name);
 
-            // Equivalent to return compGroup++;
-            auto insertedCompGroup = compGroup;
-            ++compGroup;
-            return insertedCompGroup;
-        }
-
-        return typeGroupMap.at(compType);
-    }
-
-    template <Component C>
-    CompGroup getComponentType() {
-        auto compType = std::type_index(typeid(C));
-        return typeGroupMap.at(compType);
-    }
+    CompGroup getComponentType(const std::string& name);
 };
 }  // namespace ics::index
 
