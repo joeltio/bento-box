@@ -13,9 +13,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 # Set sources for target
 set(TARGET_SIM_SOURCES
-    src/component/pos1DComponent.cpp
-    src/component/pos2DComponent.cpp
-    src/component/textureComponent.cpp
     src/component/userComponent.cpp
     src/index/componentType.cpp
     src/interpreter/userValue.cpp

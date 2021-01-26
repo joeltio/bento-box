@@ -18,10 +18,10 @@ class UserComponent : public ics::BaseComponent {
    public:
     // Since we can't programmatically make new types, the component types are
     // differentiated by this type name.
-    const std::string typeName;
+    std::string typeName;
 
     // Stores the component definition
-    const bento::protos::ComponentDef compDef;
+    bento::protos::ComponentDef compDef;
 
     UserComponent(std::string typeName, bento::protos::ComponentDef compDef)
         : typeName(std::move(typeName)), compDef(std::move(compDef)) {}
