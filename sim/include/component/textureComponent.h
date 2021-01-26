@@ -1,13 +1,23 @@
 #ifndef BENTOBOX_TEXTURECOMPONENT_H
 #define BENTOBOX_TEXTURECOMPONENT_H
 
-#include <core/ics/component.h>
+#include <string>
+#include "userComponent.h"
 
 namespace ics::component {
-struct Texture2DComponent : public ics::BaseComponent {
-    unsigned int texture;
+const char TEXTURE2D_COMPONENT_NAME[] = "Texture2DComponent";
+}
 
-    explicit Texture2DComponent(unsigned int texture) : texture(texture) {}
+namespace {
+
+bento::protos::ComponentDef createCompDef();
+
+}  // namespace
+
+namespace ics::component {
+struct Texture2DComponent : public UserComponent {
+    Texture2DComponent()
+        : UserComponent(TEXTURE2D_COMPONENT_NAME, createCompDef()) {}
 };
 }  // namespace ics::component
 

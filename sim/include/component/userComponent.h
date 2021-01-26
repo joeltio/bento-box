@@ -1,11 +1,9 @@
 #ifndef BENTOBOX_USERCOMPONENT_H
 #define BENTOBOX_USERCOMPONENT_H
 
-#include <cstddef>
 #include <string>
-#include <variant>
-#include <climits>
 #include <unordered_map>
+#include <core/ics/component.h>
 #include "bento/protos/types.pb.h"
 #include "bento/protos/values.pb.h"
 #include "bento/protos/ecs.pb.h"
@@ -26,7 +24,11 @@ class UserComponent : public ics::BaseComponent {
     const bento::protos::ComponentDef compDef;
 
     UserComponent(std::string typeName, bento::protos::ComponentDef compDef)
-        : typeName(typeName), compDef(compDef) {}
+        : typeName(std::move(typeName)), compDef(std::move(compDef)) {}
+
+    const bento::protos::Value& getValue(const std::string& attrName);
+
+    void setValue(const std::string& attrName, const bento::protos::Value& value);
 };
 }  // namespace ics::component
 
