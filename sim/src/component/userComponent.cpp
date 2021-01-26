@@ -4,6 +4,11 @@ namespace ics::component {
 
 const bento::protos::Value& UserComponent::getValue(
     const std::string& attrName) {
+    return getMutableValue(attrName);
+}
+
+bento::protos::Value& UserComponent::getMutableValue(
+    const std::string& attrName) {
     return values[attrName];
 }
 
