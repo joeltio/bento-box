@@ -1,12 +1,23 @@
 #ifndef BENTOBOX_POS2DCOMPONENT_H
 #define BENTOBOX_POS2DCOMPONENT_H
 
-namespace ics::component {
-struct Pos2DComponent : public ics::BaseComponent {
-    unsigned int x;
-    unsigned int y;
+#include <bento/protos/ecs.pb.h>
+#include <component/userComponent.h>
 
-    Pos2DComponent(unsigned int x, unsigned int y) : x(x), y(y) {}
+namespace ics::component {
+const char POS2D_COMPONENT_NAME[] = "Pos2DComponent";
+}
+
+namespace {
+
+bento::protos::ComponentDef createCompDef();
+
+}  // namespace
+
+namespace ics::component {
+struct Pos2DComponent : public UserComponent {
+    Pos2DComponent()
+        : UserComponent(POS2D_COMPONENT_NAME, createCompDef()) {}
 };
 }  // namespace ics::component
 
