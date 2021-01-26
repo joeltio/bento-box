@@ -23,15 +23,15 @@ class ComponentTypeIndex {
         auto compIndex = typeNameGroupMap.at(name);
 
         return [compIndex](const ics::ComponentSet& compSet) {
-          // TODO(joeltio): find a way to make this more memory efficient
-          ics::ComponentSet newSet;
-          for (const CompStoreId& comp : compSet) {
-              if (comp.first == compIndex) {
-                  newSet.insert(comp);
-              }
-          }
+            // TODO(joeltio): find a way to make this more memory efficient
+            ics::ComponentSet newSet;
+            for (const CompStoreId& comp : compSet) {
+                if (comp.first == compIndex) {
+                    newSet.insert(comp);
+                }
+            }
 
-          return newSet;
+            return newSet;
         };
     }
 

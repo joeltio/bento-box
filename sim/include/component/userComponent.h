@@ -29,7 +29,8 @@ class UserComponent : public ics::BaseComponent {
     const bento::protos::Value& getValue(const std::string& attrName);
     bento::protos::Value& getMutableValue(const std::string& attrName);
 
-    void setValue(const std::string& attrName, const bento::protos::Value& value);
+    void setValue(const std::string& attrName,
+                  const bento::protos::Value& value);
 };
 }  // namespace ics::component
 

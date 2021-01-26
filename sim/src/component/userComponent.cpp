@@ -12,7 +12,8 @@ bento::protos::Value& UserComponent::getMutableValue(
     return values[attrName];
 }
 
-void UserComponent::setValue(const std::string& attrName, const bento::protos::Value& value) {
+void UserComponent::setValue(const std::string& attrName,
+                             const bento::protos::Value& value) {
     if (!compDef.schema().contains(attrName)) {
         throw std::out_of_range("No such attribute name: " + attrName);
     }

@@ -27,8 +27,7 @@ bento::protos::ComponentDef createCompDef() {
 
 namespace ics::component {
 struct Pos1DComponent : public UserComponent {
-    Pos1DComponent()
-        : UserComponent(POS1D_COMPONENT_NAME, createCompDef()) {}
+    Pos1DComponent() : UserComponent(POS1D_COMPONENT_NAME, createCompDef()) {}
 };
 }  // namespace ics::component
 
