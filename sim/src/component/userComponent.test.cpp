@@ -6,6 +6,7 @@
 
 using namespace ics::component;
 
+namespace {
 // Define a component
 const char TEST_COMPONENT_NAME[] = "TestComponent";
 bento::protos::ComponentDef createCompDef() {
@@ -24,6 +25,7 @@ bento::protos::ComponentDef createCompDef() {
 struct TestComponent : public UserComponent {
     TestComponent() : UserComponent(TEST_COMPONENT_NAME, createCompDef()) {}
 };
+}  // namespace
 
 TEST(TEST_SUITE, SetAndGetValues) {
     TestComponent comp;

@@ -15,8 +15,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(TARGET_SIM_SOURCES
     src/component/userComponent.cpp
     src/index/componentType.cpp
-    src/interpreter/userValue.cpp
     src/system/render.cpp
+    src/graphInterpreter.cpp
+    src/ics.cpp
 )
 
 add_executable(${TARGET_SIM}
@@ -32,7 +33,7 @@ add_executable(${TARGET_TEST}
     src/component/userComponent.test.cpp
     src/index/componentType.test.cpp
     src/index/entity.test.cpp
-    src/interpreter/userValue.test.cpp
+    src/graphInterpreter.test.cpp
     src/main.test.cpp
 )
 target_include_directories(${TARGET_TEST}

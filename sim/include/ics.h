@@ -6,12 +6,13 @@
 #include <core/ics/componentStore.h>
 #include <index/componentTypeIndex.h>
 #include <index/indexStore.h>
+#include <core/ics/util/composable.h>
 
 namespace ics {
 template <class C>
-requires std::is_base_of_v<component::UserComponent, C>
-CompStoreId addComponent(index::IndexStore& indexStore,
-                         ComponentStore& compStore, const C& c) {
+requires std::is_base_of_v<component::UserComponent, C> CompStoreId
+addComponent(index::IndexStore& indexStore, ComponentStore& compStore,
+             const C& c) {
     auto& compTypeIndex = indexStore.componentType;
 
     // Update the ComponentType index
@@ -21,6 +22,11 @@ CompStoreId addComponent(index::IndexStore& indexStore,
 
     return compId;
 }
+
+component::UserComponent& getComponent(index::IndexStore& indexStore,
+                                       ComponentStore& compStore,
+                                       const std::string& typeName,
+                                       index::EntityIndex::EntityId entityId);
 }  // namespace ics
 
 #endif  // BENTOBOX_COMPONENTSTOREEXT_H
