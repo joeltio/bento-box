@@ -39,4 +39,6 @@ TEST(TEST_SUITE, SetAndGetValues) {
               comp.getValue("height").primitive().int_64());
     ASSERT_EQ(width.primitive().int_64(),
               comp.getValue("width").primitive().int_64());
+    // Sanity check
+    ASSERT_EQ(height.primitive().int_64(), 30);
 }
