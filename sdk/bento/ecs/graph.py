@@ -1,7 +1,7 @@
 #
 # Bentobox
 # SDK - Graph
-# Graph ECS
+# Graph based ECS
 #
 
 from binascii import crc32

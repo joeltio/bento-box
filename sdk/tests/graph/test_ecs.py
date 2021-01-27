@@ -4,7 +4,7 @@
 # Graph ECS
 #
 
-from bento.graph.ecs import *
+from bento.ecs.graph import *
 
 
 def test_graph_ecs_entity():
