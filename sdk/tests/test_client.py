@@ -27,6 +27,7 @@ from bento.protos.services_pb2_grpc import (
     EngineServiceServicer,
     add_EngineServiceServicer_to_server,
 )
+from tests.utils import assert_proto
 
 
 @pytest.fixture
@@ -45,7 +46,7 @@ def mock_engine_port(sim_def):
 
         def ApplySimulation(self, request, context):
             sim = request.simulation
-            return ApplySimulationResp()
+            return ApplySimulationResp(simulation=sim)
 
         def GetSimulation(self, request, context):
             # mock not found error
@@ -94,7 +95,8 @@ def test_client_get_version(client):
 
 def test_client_apply_sim(client):
     sim = SimulationDef(name="test_sim")
-    client.apply_sim(sim)
+    got_sim = client.apply_sim(sim)
+    assert_proto(got_sim, sim)
 
 
 def test_client_get_sim(client, sim_def):

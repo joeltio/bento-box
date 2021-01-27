@@ -90,18 +90,24 @@ class Client:
             raise_native(e)
         return response.commit_hash
 
-    def apply_sim(self, simulation: SimulationDef):
+    def apply_sim(self, simulation: SimulationDef) -> SimulationDef:
         """Apply the given simulation to the Engine.
         Creates the simulation if no simulation with the same name exists,
         otherwise updates the existing simulation with the same name.
 
         Args:
             simulation: Specification of the simulation to apply to the Engine.
+        Returns
+            Specification of the applied simulation with the ids set.
         """
         try:
-            self.sim_grpc.ApplySimulation(ApplySimulationReq(simulation=simulation))
+            response = self.sim_grpc.ApplySimulation(
+                ApplySimulationReq(simulation=simulation)
+            )
         except RpcError as e:
             raise_native(e)
+
+        return response.simulation
 
     def get_sim(self, name: str) -> SimulationDef:
         """Get the simulation with the given name
