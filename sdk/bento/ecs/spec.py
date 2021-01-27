@@ -7,7 +7,7 @@
 from bento.types import Type
 from bento.protos import ecs_pb2
 from bento.protos.graph_pb2 import Graph
-from typing import Dict, Iterabl
+from typing import Dict, Iterable, List
 
 
 class ComponentDef:
