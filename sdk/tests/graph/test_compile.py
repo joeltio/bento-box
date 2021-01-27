@@ -14,6 +14,7 @@ from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.references_pb2 import AttributeRef
 from bento.graph.value import wrap_const
 from bento.graph.plotter import Plotter
+from tests.utils import assert_proto
 
 ## test tools
 # path to graph test cases in test resources
@@ -38,9 +39,7 @@ def assert_graph(actual: Graph, expected_path: str):
     # sort graph inputs and outputs to ensure position invariance when comparing
     actual, expected = sort_input_outputs(actual), sort_input_outputs(expected)
     # pytest -vv gives us a nice diff when comparing as JSON
-    assert MessageToJson(actual, sort_keys=True) == MessageToJson(
-        expected, sort_keys=True
-    )
+    assert_proto(actual, expected)
 
 
 ## tests
