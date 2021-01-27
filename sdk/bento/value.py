@@ -6,6 +6,7 @@
 import numpy as np
 from typing import Any
 from inspect import isgenerator
+from bento import types
 from bento.protos.values_pb2 import Value
 from bento.protos.types_pb2 import Type
 
@@ -25,28 +26,28 @@ def wrap_primitive(val: Any) -> Value:
     is_int32 = lambda x: -(2 ** 31) <= x < 2 ** 31
     if type(val) in [int, np.int32] and is_int32(val):
         return Value(
-            data_type=Type(primitive=Type.Primitive.INT32),
+            data_type=types.int32,
             primitive=Value.Primitive(int_32=int(val)),
         )
     elif type(val) in [int, np.int64]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.INT64),
+            data_type=types.int64,
             primitive=Value.Primitive(int_64=int(val)),
         )
     # TODO(mrzzy): figure out how to check if value fits within 32 bits
     elif type(val) in [float, np.float64]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.FLOAT64),
+            data_type=types.float64,
             primitive=Value.Primitive(float_64=float(val)),
         )
     elif type(val) in [str, np.str_]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.STRING),
+            data_type=types.string,
             primitive=Value.Primitive(str_val=str(val)),
         )
     elif type(val) in [bool, np.bool_]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.BOOL),
+            data_type=types.boolean,
             primitive=Value.Primitive(boolean=bool(val)),
         )
     else:

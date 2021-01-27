@@ -6,7 +6,7 @@
 
 from typing import Any, Iterable, List, Set
 from bento.graph.value import wrap_const
-from bento.graph.ecs import GraphEntity, GraphComponent, GraphNode
+from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode
 from bento.ecs.base import Component, Entity
 from bento.protos.graph_pb2 import Graph, Node
 
