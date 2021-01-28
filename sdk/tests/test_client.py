@@ -10,7 +10,10 @@ from grpc import StatusCode, RpcError
 from concurrent.futures.thread import ThreadPoolExecutor
 
 from bento.client import Client
+from bento.value import wrap
+from bento.protos.values_pb2 import Value
 from bento.protos.sim_pb2 import SimulationDef
+from bento.protos.references_pb2 import AttributeRef
 from bento.protos.services_pb2 import (
     GetVersionReq,
     GetVersionResp,
@@ -22,6 +25,10 @@ from bento.protos.services_pb2 import (
     ListSimulationResp,
     DropSimulationReq,
     DropSimulationResp,
+    GetAttributeReq,
+    GetAttributeResp,
+    SetAttributeReq,
+    SetAttributeResp,
 )
 from bento.protos.services_pb2_grpc import (
     EngineServiceServicer,
@@ -37,7 +44,17 @@ def sim_def():
 
 
 @pytest.fixture
-def mock_engine_port(sim_def):
+def attr_ref():
+    return AttributeRef(entity_id=1, component="position", attribute="x")
+
+
+@pytest.fixture
+def attr_val():
+    return wrap(0.314)
+
+
+@pytest.fixture
+def mock_engine_port(sim_def, attr_ref, attr_val):
     """Mock Engine gRPC server fixture that handles test requests"""
     # define servicer that handles requests
     class TestEngine(EngineServiceServicer):
@@ -59,10 +76,25 @@ def mock_engine_port(sim_def):
             return ListSimulationResp(sim_names=[sim_def.name])
 
         def DropSimulation(self, request, context):
+            # mock not found error
             if request.name != sim_def.name:
                 context.set_code(StatusCode.NOT_FOUND)
                 context.set_details("No simulation with the given name is found.")
             return DropSimulationResp()
+
+        def GetAttribute(self, request, context):
+            # mock not found error
+            if request.attribute != attr_ref:
+                context.set_code(StatusCode.NOT_FOUND)
+                context.set_details("No attribute found for the given AttributeRef")
+            return GetAttributeResp(value=attr_val)
+
+        def SetAttribute(self, request, context):
+            # mock not found error
+            if request.attribute != attr_ref:
+                context.set_code(StatusCode.NOT_FOUND)
+                context.set_details("No attribute found for the given AttributeRef")
+            return SetAttributeResp()
 
     # contruct server from servicer
     server = grpc.server(ThreadPoolExecutor())
@@ -127,3 +159,39 @@ def test_client_remove_sim(client, sim_def):
     except LookupError:
         has_error = True
     assert has_error
+
+
+def test_client_set_attr(client, attr_ref, attr_val):
+    client.set_attr(attr_ref, attr_val)
+
+    # test not found error handling
+    has_not_found_error = False
+    try:
+        client.set_attr(
+            attr_ref=AttributeRef(
+                entity_id=1,
+                component="not",
+                attribute="found",
+            ),
+            value=attr_val,
+        )
+    except LookupError:
+        has_not_found_error = True
+    assert has_not_found_error
+
+    # test invalid value error handling
+    has_invalid_error = True
+    invalid_val = Value()
+    try:
+        response = client.set_attr(
+            attr_ref=attr_ref,
+            value=invalid_val,
+        )
+    except ValueError:
+        has_invalid_error = True
+    assert has_invalid_error
+
+
+def test_client_get_attr(client, attr_ref, attr_val):
+    value = client.get_attr(attr_ref)
+    assert value == attr_val

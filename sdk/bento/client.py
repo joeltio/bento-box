@@ -21,7 +21,13 @@ from bento.protos.services_pb2 import (
     ListSimulationResp,
     DropSimulationReq,
     DropSimulationResp,
+    GetAttributeReq,
+    GetAttributeResp,
+    SetAttributeReq,
+    SetAttributeResp,
 )
+from bento.protos.references_pb2 import AttributeRef
+from bento.protos.values_pb2 import Value
 
 
 def raise_native(err: RpcError):
@@ -146,5 +152,37 @@ class Client:
         """
         try:
             response = self.sim_grpc.DropSimulation(DropSimulationReq(name=name))
+        except RpcError as e:
+            raise_native(e)
+
+    def get_attr(self, attr_ref: AttributeRef) -> Value:
+        """Get the value of the attribute referenced by the given attr_ref
+        Args:
+            attr_ref: AttributeRef that specifies the target attribute to get.
+        Raises:
+            LookupError: If no such attribute exists for the given attr_ref
+        """
+        try:
+            response = self.sim_grpc.GetAttribute(GetAttributeReq(attribute=attr_ref))
+        except RpcError as e:
+            raise_native(e)
+        return response.value
+
+    def set_attr(self, attr_ref: AttributeRef, value: Value):
+        """Set the attribute referenced by the given attr_ref to the given value
+        Args:
+            attr_ref: AttributeRef that specifies the target attribute to set.
+            value: The value to set the target attribute to.
+        Raises:
+            LookupError: If no such attribute exists for the given attr_ref
+            ValueError: If an invalid value is given.
+        """
+        try:
+            response = self.sim_grpc.SetAttribute(
+                SetAttributeReq(
+                    attribute=attr_ref,
+                    value=value,
+                )
+            )
         except RpcError as e:
             raise_native(e)
