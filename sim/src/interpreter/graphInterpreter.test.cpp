@@ -365,13 +365,14 @@ TEST_F(StoresFixture, SinNode) {
     auto sinOpNode = node.mutable_sin_op();
 
     auto xVal = sinOpNode->mutable_x()
-        ->mutable_const_op()
-        ->mutable_held_value()
-        ->mutable_primitive();
+                    ->mutable_const_op()
+                    ->mutable_held_value()
+                    ->mutable_primitive();
 
     xVal->set_float_64(1.0f);
     ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(), sin(1.0f));
+        evaluateNode(compStore, indexStore, node).primitive().float_64(),
+        sin(1.0f));
 }
 
 TEST_F(StoresFixture, ArcSinNode) {
@@ -379,13 +380,14 @@ TEST_F(StoresFixture, ArcSinNode) {
     auto arcSinOpNode = node.mutable_arcsin_op();
 
     auto xVal = arcSinOpNode->mutable_x()
-        ->mutable_const_op()
-        ->mutable_held_value()
-        ->mutable_primitive();
+                    ->mutable_const_op()
+                    ->mutable_held_value()
+                    ->mutable_primitive();
 
     xVal->set_float_64(1.0f);
     ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(), asin(1.0f));
+        evaluateNode(compStore, indexStore, node).primitive().float_64(),
+        asin(1.0f));
 
     // The valid domain of arcsin is [-1, 1]
     xVal->set_float_64(2.0f);
