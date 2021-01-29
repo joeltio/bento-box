@@ -30,11 +30,17 @@ bento::protos::Value evaluateNode(ics::ComponentStore& compStore,
         case OpCase::kMaxOp:
             return maxOp(compStore, indexStore, node.max_op());
         case OpCase::kMinOp:
+            return minOp(compStore, indexStore, node.min_op());
         case OpCase::kAbsOp:
+            return absOp(compStore, indexStore, node.abs_op());
         case OpCase::kFloorOp:
+            return floorOp(compStore, indexStore, node.floor_op());
         case OpCase::kCeilOp:
+            return ceilOp(compStore, indexStore, node.ceil_op());
         case OpCase::kPowOp:
+            return powOp(compStore, indexStore, node.pow_op());
         case OpCase::kModOp:
+            return modOp(compStore, indexStore, node.mod_op());
         case OpCase::kSinOp:
         case OpCase::kArcsinOp:
         case OpCase::kCosOp:

@@ -19,7 +19,7 @@ void validateNumerics(const bento::protos::Value& x,
     }
 }
 
-}
+}  // namespace
 
 namespace interpreter {
 
@@ -40,8 +40,8 @@ bento::protos::Value& retrieveOp(ics::ComponentStore& compStore,
 }
 
 void mutateOp(ics::ComponentStore& compStore,
-                               ics::index::IndexStore& indexStore,
-                               const bento::protos::Node_Mutate& node) {
+              ics::index::IndexStore& indexStore,
+              const bento::protos::Node_Mutate& node) {
     // Get the new value to set
     auto val = evaluateNode(compStore, indexStore, node.to_node());
 
@@ -80,21 +80,16 @@ bento::protos::Value addOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Add& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y){
-        return x + y;
-    };
+    auto op = []<class C>(C x, C y) { return x + y; };
     return runMathFn(op, xVal, yVal);
 }
-
 
 bento::protos::Value subOp(ics::ComponentStore& compStore,
                            ics::index::IndexStore& indexStore,
                            const bento::protos::Node_Sub& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y){
-      return x - y;
-    };
+    auto op = []<class C>(C x, C y) { return x - y; };
     return runMathFn(op, xVal, yVal);
 }
 
@@ -103,9 +98,7 @@ bento::protos::Value mulOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Mul& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y){
-      return x * y;
-    };
+    auto op = []<class C>(C x, C y) { return x * y; };
     return runMathFn(op, xVal, yVal);
 }
 
@@ -114,9 +107,7 @@ bento::protos::Value divOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Div& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y){
-      return x / y;
-    };
+    auto op = []<class C>(C x, C y) { return x / y; };
     return runMathFn(op, xVal, yVal);
 }
 
@@ -125,7 +116,7 @@ bento::protos::Value maxOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Max& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y){
+    auto op = []<class C>(C x, C y) {
         if (x > y) {
             return x;
         } else {
@@ -133,6 +124,84 @@ bento::protos::Value maxOp(ics::ComponentStore& compStore,
         }
     };
     return runMathFn(op, xVal, yVal);
+}
+
+bento::protos::Value minOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Min& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+    auto op = []<class C>(C x, C y) {
+        if (x < y) {
+            return x;
+        } else {
+            return y;
+        }
+    };
+    return runMathFn(op, xVal, yVal);
+}
+
+bento::protos::Value absOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Abs& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) { return abs(x); };
+    return runMathFn(op, xVal);
+}
+
+bento::protos::Value floorOp(ics::ComponentStore& compStore,
+                             ics::index::IndexStore& indexStore,
+                             const bento::protos::Node_Floor& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) { return floor(x); };
+    return runMathFn(op, xVal);
+}
+
+bento::protos::Value ceilOp(ics::ComponentStore& compStore,
+                            ics::index::IndexStore& indexStore,
+                            const bento::protos::Node_Ceil& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) { return ceil(x); };
+    return runMathFn(op, xVal);
+}
+
+bento::protos::Value powOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Pow& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+    auto op = []<class C>(C x, C y) { return pow(x, y); };
+    return runMathFn(op, xVal, yVal);
+}
+
+bento::protos::Value modOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Mod& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+
+    // Only integers can use modulo, so write the switch case here manually
+    // This code is taken from runMathFn
+    validateNumerics(xVal, yVal);
+
+    typedef bento::protos::Value_Primitive Primitive;
+    switch (xVal.primitive().value_case()) {
+        case Primitive::kInt32: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_int_32(xVal.primitive().int_32() %
+                                                yVal.primitive().int_32());
+            return val;
+        }
+        case Primitive::kInt64: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_int_64(xVal.primitive().int_64() %
+                                                yVal.primitive().int_64());
+            return val;
+        }
+        default:
+            throw std::runtime_error(
+                "Cannot perform modulo operation on non-integral values.");
+    }
 }
 
 }  // namespace interpreter
