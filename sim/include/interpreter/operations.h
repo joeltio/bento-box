@@ -97,8 +97,8 @@ bento::protos::Value& retrieveOp(ics::ComponentStore& compStore,
                                  ics::index::IndexStore& indexStore,
                                  const bento::protos::Node_Retrieve& node);
 void mutateOp(ics::ComponentStore& compStore,
-                               ics::index::IndexStore& indexStore,
-                               const bento::protos::Node_Mutate& node);
+              ics::index::IndexStore& indexStore,
+              const bento::protos::Node_Mutate& node);
 bento::protos::Value switchOp(ics::ComponentStore& compStore,
                               ics::index::IndexStore& indexStore,
                               const bento::protos::Node_Switch& node);
@@ -107,6 +107,85 @@ bento::protos::Value switchOp(ics::ComponentStore& compStore,
 bento::protos::Value addOp(ics::ComponentStore& compStore,
                            ics::index::IndexStore& indexStore,
                            const bento::protos::Node_Add& node);
+bento::protos::Value subOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Sub& node);
+bento::protos::Value mulOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Mul& node);
+bento::protos::Value divOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Div& node);
+bento::protos::Value maxOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Max& node);
+bento::protos::Value minOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Min& node);
+bento::protos::Value absOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Abs& node);
+bento::protos::Value floorOp(ics::ComponentStore& compStore,
+                             ics::index::IndexStore& indexStore,
+                             const bento::protos::Node_Floor& node);
+bento::protos::Value ceilOp(ics::ComponentStore& compStore,
+                            ics::index::IndexStore& indexStore,
+                            const bento::protos::Node_Ceil& node);
+bento::protos::Value powOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Pow& node);
+bento::protos::Value modOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Mod& node);
+bento::protos::Value sinOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Sin& node);
+bento::protos::Value arcsinOp(ics::ComponentStore& compStore,
+                              ics::index::IndexStore& indexStore,
+                              const bento::protos::Node_ArcSin& node);
+bento::protos::Value cosOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Cos& node);
+bento::protos::Value arccosOp(ics::ComponentStore& compStore,
+                              ics::index::IndexStore& indexStore,
+                              const bento::protos::Node_ArcCos& node);
+bento::protos::Value tanOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Tan& node);
+bento::protos::Value arctanOp(ics::ComponentStore& compStore,
+                              ics::index::IndexStore& indexStore,
+                              const bento::protos::Node_ArcTan& node);
+
+// Random number generation
+bento::protos::Value randomOp(ics::ComponentStore& compStore,
+                              ics::index::IndexStore& indexStore,
+                              const bento::protos::Node_Random& node);
+
+// Boolean operations
+bento::protos::Value andOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_And& node);
+bento::protos::Value orOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Or& node);
+bento::protos::Value notOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Not& node);
+bento::protos::Value eqOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Eq& node);
+bento::protos::Value gtOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Gt& node);
+bento::protos::Value ltOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Lt& node);
+bento::protos::Value geOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Ge& node);
+bento::protos::Value leOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Le& node);
 
 }  // namespace interpreter
 
