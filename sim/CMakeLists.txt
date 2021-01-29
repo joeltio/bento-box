@@ -16,7 +16,8 @@ set(TARGET_SIM_SOURCES
     src/component/userComponent.cpp
     src/index/componentType.cpp
     src/system/render.cpp
-    src/graphInterpreter.cpp
+    src/interpreter/graphInterpreter.cpp
+    src/interpreter/operations.cpp
     src/ics.cpp
 )
 
@@ -33,7 +34,7 @@ add_executable(${TARGET_TEST}
     src/component/userComponent.test.cpp
     src/index/componentType.test.cpp
     src/index/entity.test.cpp
-    src/graphInterpreter.test.cpp
+    src/interpreter/graphInterpreter.test.cpp
     src/main.test.cpp
 )
 target_include_directories(${TARGET_TEST}

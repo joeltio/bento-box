@@ -81,19 +81,6 @@ class StoresFixture : public ::testing::Test {
     }
 };
 
-TEST_F(StoresFixture, GetAndSetAttributeRef) {
-    auto attrRef = createAttrRef(entity1Id, "height");
-    auto& cppAttrRef = getAttributeRef(compStore, indexStore, attrRef);
-
-    ASSERT_EQ(cppAttrRef.primitive().int_64(),
-              comp1.getValue("height").primitive().int_64());
-
-    // Modify through cppAttrRef
-    cppAttrRef.mutable_primitive()->set_int_64(10);
-    cppAttrRef = getAttributeRef(compStore, indexStore, attrRef);
-    ASSERT_EQ(cppAttrRef.primitive().int_64(), 10);
-}
-
 TEST_F(StoresFixture, RetrieveNode) {
     // Create the attribute ref
     auto attrRef = createAttrRef(entity1Id, "width");
