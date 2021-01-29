@@ -54,6 +54,7 @@ bento::protos::Value evaluateNode(ics::ComponentStore& compStore,
         case OpCase::kArctanOp:
             return arcTanOp(compStore, indexStore, node.arctan_op());
         case OpCase::kRandomOp:
+            return randomOp(compStore, indexStore, node.random_op());
         case OpCase::kAndOp:
         case OpCase::kOrOp:
         case OpCase::kNotOp:

@@ -393,3 +393,26 @@ TEST_F(StoresFixture, ArcSinNode) {
     xVal->set_float_64(2.0f);
     EXPECT_ANY_THROW(evaluateNode(compStore, indexStore, node));
 }
+
+TEST_F(StoresFixture, RandomNode) {
+    auto node = bento::protos::Node();
+    auto randomOpNode = node.mutable_random_op();
+
+    auto lowVal = randomOpNode->mutable_low()
+                      ->mutable_const_op()
+                      ->mutable_held_value()
+                      ->mutable_primitive();
+
+    auto highVal = randomOpNode->mutable_high()
+                       ->mutable_const_op()
+                       ->mutable_held_value()
+                       ->mutable_primitive();
+
+    lowVal->set_float_64(12.0f);
+    highVal->set_float_64(13.0f);
+
+    auto rawVal =
+        evaluateNode(compStore, indexStore, node).primitive().float_64();
+    ASSERT_GE(rawVal, lowVal->float_64());
+    ASSERT_LE(rawVal, highVal->float_64());
+}

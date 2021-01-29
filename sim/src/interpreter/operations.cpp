@@ -2,6 +2,7 @@
 #include <interpreter/graphInterpreter.h>
 #include <ics.h>
 #include <cmath>
+#include <random>
 
 namespace {
 
@@ -260,6 +261,52 @@ bento::protos::Value arcTanOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return atan(x); };
     return runMathFn(op, xVal);
+}
+
+// Generate random number
+bento::protos::Value randomOp(ics::ComponentStore& compStore,
+                              ics::index::IndexStore& indexStore,
+                              const bento::protos::Node_Random& node) {
+    // Create random device and generator
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    auto lowVal = evaluateNode(compStore, indexStore, node.low());
+    auto highVal = evaluateNode(compStore, indexStore, node.high());
+
+    // Lambdas cannot capture static variables, so the code from runMathFn is
+    // put here.
+    validateNumerics(lowVal, highVal);
+
+    auto& lowPrimitive = lowVal.primitive();
+    auto& highPrimitive = highVal.primitive();
+
+    auto val = bento::protos::Value();
+
+    typedef bento::protos::Value_Primitive Primitive;
+    switch (lowPrimitive.value_case()) {
+        case Primitive::kFloat33: {
+            auto dist = std::uniform_real_distribution(
+                lowPrimitive.float_33(), highPrimitive.float_33());
+            val.mutable_primitive()->set_float_33(dist(gen));
+            return val;
+        }
+        case Primitive::kFloat64: {
+            auto dist = std::uniform_real_distribution(
+                lowPrimitive.float_64(), highPrimitive.float_64());
+            val.mutable_primitive()->set_float_64(dist(gen));
+            return val;
+        }
+        case Primitive::VALUE_NOT_SET: {
+            throw std::runtime_error(
+                "No value in node when attempting to execute arithmetic "
+                "operation.");
+        }
+        default: {
+            throw std::runtime_error(
+                "Random op requires floating point bounds.");
+        }
+    }
 }
 
 }  // namespace interpreter
