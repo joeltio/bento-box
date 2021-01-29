@@ -140,19 +140,19 @@ bento::protos::Value modOp(ics::ComponentStore& compStore,
 bento::protos::Value sinOp(ics::ComponentStore& compStore,
                            ics::index::IndexStore& indexStore,
                            const bento::protos::Node_Sin& node);
-bento::protos::Value arcsinOp(ics::ComponentStore& compStore,
+bento::protos::Value arcSinOp(ics::ComponentStore& compStore,
                               ics::index::IndexStore& indexStore,
                               const bento::protos::Node_ArcSin& node);
 bento::protos::Value cosOp(ics::ComponentStore& compStore,
                            ics::index::IndexStore& indexStore,
                            const bento::protos::Node_Cos& node);
-bento::protos::Value arccosOp(ics::ComponentStore& compStore,
+bento::protos::Value arcCosOp(ics::ComponentStore& compStore,
                               ics::index::IndexStore& indexStore,
                               const bento::protos::Node_ArcCos& node);
 bento::protos::Value tanOp(ics::ComponentStore& compStore,
                            ics::index::IndexStore& indexStore,
                            const bento::protos::Node_Tan& node);
-bento::protos::Value arctanOp(ics::ComponentStore& compStore,
+bento::protos::Value arcTanOp(ics::ComponentStore& compStore,
                               ics::index::IndexStore& indexStore,
                               const bento::protos::Node_ArcTan& node);
 

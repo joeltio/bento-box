@@ -204,4 +204,62 @@ bento::protos::Value modOp(ics::ComponentStore& compStore,
     }
 }
 
+bento::protos::Value sinOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Sin& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) { return sin(x); };
+    return runMathFn(op, xVal);
+}
+
+bento::protos::Value arcSinOp(ics::ComponentStore& compStore,
+                              ics::index::IndexStore& indexStore,
+                              const bento::protos::Node_ArcSin& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) {
+        if (x < -1 || x > 1) {
+            throw std::domain_error("arcSin's valid domain is [-1, 1].");
+        }
+        return asin(x);
+    };
+    return runMathFn(op, xVal);
+}
+
+bento::protos::Value cosOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Cos& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) { return cos(x); };
+    return runMathFn(op, xVal);
+}
+
+bento::protos::Value arcCosOp(ics::ComponentStore& compStore,
+                              ics::index::IndexStore& indexStore,
+                              const bento::protos::Node_ArcCos& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) {
+        if (x < -1 || x > 1) {
+            throw std::domain_error("arcCos's valid domain is [-1, 1].");
+        }
+        return acos(x);
+    };
+    return runMathFn(op, xVal);
+}
+
+bento::protos::Value tanOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Tan& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) { return tan(x); };
+    return runMathFn(op, xVal);
+}
+
+bento::protos::Value arcTanOp(ics::ComponentStore& compStore,
+                              ics::index::IndexStore& indexStore,
+                              const bento::protos::Node_ArcTan& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto op = []<class C>(C x) { return atan(x); };
+    return runMathFn(op, xVal);
+}
+
 }  // namespace interpreter

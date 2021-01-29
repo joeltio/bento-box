@@ -42,11 +42,17 @@ bento::protos::Value evaluateNode(ics::ComponentStore& compStore,
         case OpCase::kModOp:
             return modOp(compStore, indexStore, node.mod_op());
         case OpCase::kSinOp:
+            return sinOp(compStore, indexStore, node.sin_op());
         case OpCase::kArcsinOp:
+            return arcSinOp(compStore, indexStore, node.arcsin_op());
         case OpCase::kCosOp:
+            return cosOp(compStore, indexStore, node.cos_op());
         case OpCase::kArccosOp:
+            return arcCosOp(compStore, indexStore, node.arccos_op());
         case OpCase::kTanOp:
+            return tanOp(compStore, indexStore, node.tan_op());
         case OpCase::kArctanOp:
+            return arcTanOp(compStore, indexStore, node.arctan_op());
         case OpCase::kRandomOp:
         case OpCase::kAndOp:
         case OpCase::kOrOp:
