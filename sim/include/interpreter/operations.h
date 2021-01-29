@@ -96,6 +96,9 @@ const bento::protos::Value& constOp(const bento::protos::Node_Const& node);
 bento::protos::Value& retrieveOp(ics::ComponentStore& compStore,
                                  ics::index::IndexStore& indexStore,
                                  const bento::protos::Node_Retrieve& node);
+void mutateOp(ics::ComponentStore& compStore,
+                               ics::index::IndexStore& indexStore,
+                               const bento::protos::Node_Mutate& node);
 bento::protos::Value switchOp(ics::ComponentStore& compStore,
                               ics::index::IndexStore& indexStore,
                               const bento::protos::Node_Switch& node);

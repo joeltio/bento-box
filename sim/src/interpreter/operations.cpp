@@ -34,8 +34,24 @@ bento::protos::Value& retrieveOp(ics::ComponentStore& compStore,
     // Retrieve the component
     auto& component = ics::getComponent(indexStore, compStore, ref.component(),
                                         ref.entity_id());
-    // Get the attribute name of the component
+    // Get the attribute of the component
     return component.getMutableValue(ref.attribute());
+}
+
+void mutateOp(ics::ComponentStore& compStore,
+                               ics::index::IndexStore& indexStore,
+                               const bento::protos::Node_Mutate& node) {
+    // Get the new value to set
+    auto val = evaluateNode(compStore, indexStore, node.to_node());
+
+    // Get a reference to the value to modify
+    auto& ref = node.mutate_attr();
+    auto& component = ics::getComponent(indexStore, compStore, ref.component(),
+                                        ref.entity_id());
+    auto& mutableVal = component.getMutableValue(ref.attribute());
+
+    // Set the value
+    component.setValue(ref.attribute(), val);
 }
 
 bento::protos::Value switchOp(ics::ComponentStore& compStore,

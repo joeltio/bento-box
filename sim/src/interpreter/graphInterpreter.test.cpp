@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <interpreter/graphInterpreter.h>
+#include <interpreter/operations.h>
 
 #include <bento/protos/ecs.pb.h>
 #include <component/userComponent.h>
@@ -85,16 +86,38 @@ TEST_F(StoresFixture, RetrieveNode) {
     // Create the attribute ref
     auto attrRef = createAttrRef(entity1Id, "width");
 
-    auto retrieveNode = bento::protos::Node();
+    auto node = bento::protos::Node();
     auto retrieveAttr =
-        retrieveNode.mutable_retrieve_op()->mutable_retrieve_attr();
+        node.mutable_retrieve_op()->mutable_retrieve_attr();
     retrieveAttr->set_component(TEST_COMPONENT_NAME);
     retrieveAttr->set_entity_id(entity1Id);
     retrieveAttr->set_attribute("width");
 
-    auto value = evaluateNode(compStore, indexStore, retrieveNode);
+    auto value = evaluateNode(compStore, indexStore, node);
     ASSERT_EQ(value.primitive().int_64(),
               comp1.getValue("width").primitive().int_64());
+}
+
+TEST_F(StoresFixture, MutateNode) {
+    auto node = bento::protos::Node_Mutate();
+    // Set attribute to mutate
+    auto mutateAttr = node.mutable_mutate_attr();
+    mutateAttr->set_component(TEST_COMPONENT_NAME);
+    mutateAttr->set_entity_id(entity1Id);
+    mutateAttr->set_attribute("width");
+    // Set value to change to
+    int newVal = 1000;
+    node.mutable_to_node()->mutable_const_op()->mutable_held_value()->mutable_primitive()->set_int_64(newVal);
+
+    // Make sure that this test is valid by ensuring that the value to change to
+    // is not the default value
+    ASSERT_NE(newVal, comp1.getValue("width").primitive().int_64());
+
+    // Mutate the value
+    mutateOp(compStore, indexStore, node);
+
+    auto& comp = ics::getComponent(indexStore, compStore, TEST_COMPONENT_NAME, entity1Id);
+    ASSERT_EQ(comp.getValue("width").primitive().int_64(), newVal);
 }
 
 TEST_F(StoresFixture, SwitchNode) {

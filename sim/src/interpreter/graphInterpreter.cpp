@@ -60,9 +60,7 @@ void runGraph(const bento::protos::Graph& graph, ics::ComponentStore& compStore,
               ics::index::IndexStore& indexStore) {
     // Evaluate inputs
     for (const auto& output : graph.outputs()) {
-//        auto& ref =
-//            getAttributeRef(compStore, indexStore, output.mutate_attr());
-        //        output.target_node() ref = evalNode(output.to_node());
+        mutateOp(compStore, indexStore, output);
     }
 }
 
