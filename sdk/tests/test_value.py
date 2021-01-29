@@ -94,3 +94,27 @@ def test_wrap():
     # do nothing if given an already wrapped value protobuf message
     wrapped_bool = wrap_primitive(True)
     assert wrap(wrapped_bool) == wrapped_bool
+
+
+def test_unwrap_primitive():
+    # :-2 skip the last to invalid entries
+    # (Value proto, native value)
+    unwrap_primitive_values = [(wrap(v), v) for v, _ in wrap_primitive_types[:-2]] + [
+        # test error handling with invalid data types
+        (Value(data_type=Type(primitive=Type.Primitive.INVALID)), None),
+        (wrap([1, 2, 3]), None),
+    ]
+
+    for value, expected_val in unwrap_primitive_values:
+        try:
+            actual_val = unwrap_primitive(value)
+        except TypeError:
+            # check for TypeError on non primitive data type
+            assert value.data_type.WhichOneof("kind") != "primitive"
+            continue
+        except ValueError:
+            # check for TypeError on invald data type
+            assert value.data_type.primitive == Type.Primitive.INVALID
+            continue
+
+        assert actual_val == expected_val

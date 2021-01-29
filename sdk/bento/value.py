@@ -107,3 +107,34 @@ def wrap(val: Any) -> Value:
         ),
         array=Value.Array(values=[p.primitive for p in primitives]),
     )
+
+
+def unwrap_primitive(value: Value) -> Any:
+    """Unwrap the given Value proto into its native primitive value equivalent.
+    Args:
+        value: The Value proto to unwrap into native value.
+    Returns:
+        The unwrap native value drived from the Value proto.
+    Raises:
+        TypeError: When given a Value does not contain a primitive.
+        ValueError: When given a invalid Value proto to unwrap.
+    """
+    dtype = value.data_type
+    if not dtype.WhichOneof("kind") == "primitive":
+        raise TypeError("Only supports unwraping Value containing primitives")
+    if dtype.primitive == Type.Primitive.BYTE:
+        return value.primitive.int_8
+    elif dtype.primitive == Type.Primitive.INT32:
+        return value.primitive.int_32
+    elif dtype.primitive == Type.Primitive.INT64:
+        return value.primitive.int_64
+    elif dtype.primitive == Type.Primitive.FLOAT32:
+        return value.primitive.float_32
+    elif dtype.primitive == Type.Primitive.FLOAT64:
+        return value.primitive.float_64
+    elif dtype.primitive == Type.Primitive.BOOL:
+        return value.primitive.boolean
+    elif dtype.primitive == Type.Primitive.STRING:
+        return value.primitive.str_val
+    elif dtype.primitive == Type.Primitive.INVALID:
+        raise ValueError("Unable to unwrap Value with INVALID Type")
