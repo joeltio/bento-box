@@ -10,26 +10,25 @@ bento::protos::Value evaluateNode(ics::ComponentStore& compStore,
     typedef bento::protos::Node::OpCase OpCase;
     typedef bento::protos::Value Value;
     switch (node.op_case()) {
-        case OpCase::kConstOp: {
+        case OpCase::kConstOp:
             return constOp(node.const_op());
-        }
-        case OpCase::kRetrieveOp: {
+        case OpCase::kRetrieveOp:
             return retrieveOp(compStore, indexStore, node.retrieve_op());
-        }
-        case OpCase::kMutateOp: {
+        case OpCase::kMutateOp:
             throw std::logic_error(
                 "Node to evaluate should not modify any attribute.");
-        }
-        case OpCase::kSwitchOp: {
+        case OpCase::kSwitchOp:
             return switchOp(compStore, indexStore, node.switch_op());
-        }
-        case OpCase::kAddOp: {
+        case OpCase::kAddOp:
             return addOp(compStore, indexStore, node.add_op());
-        }
         case OpCase::kSubOp:
+            return subOp(compStore, indexStore, node.sub_op());
         case OpCase::kMulOp:
+            return mulOp(compStore, indexStore, node.mul_op());
         case OpCase::kDivOp:
+            return divOp(compStore, indexStore, node.div_op());
         case OpCase::kMaxOp:
+            return maxOp(compStore, indexStore, node.max_op());
         case OpCase::kMinOp:
         case OpCase::kAbsOp:
         case OpCase::kFloorOp:

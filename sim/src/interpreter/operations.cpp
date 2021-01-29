@@ -1,6 +1,7 @@
 #include <interpreter/operations.h>
-#include <ics.h>
 #include <interpreter/graphInterpreter.h>
+#include <ics.h>
+#include <cmath>
 
 namespace {
 
@@ -81,6 +82,55 @@ bento::protos::Value addOp(ics::ComponentStore& compStore,
     auto yVal = evaluateNode(compStore, indexStore, node.y());
     auto op = []<class C>(C x, C y){
         return x + y;
+    };
+    return runMathFn(op, xVal, yVal);
+}
+
+
+bento::protos::Value subOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Sub& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+    auto op = []<class C>(C x, C y){
+      return x - y;
+    };
+    return runMathFn(op, xVal, yVal);
+}
+
+bento::protos::Value mulOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Mul& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+    auto op = []<class C>(C x, C y){
+      return x * y;
+    };
+    return runMathFn(op, xVal, yVal);
+}
+
+bento::protos::Value divOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Div& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+    auto op = []<class C>(C x, C y){
+      return x / y;
+    };
+    return runMathFn(op, xVal, yVal);
+}
+
+bento::protos::Value maxOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Max& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+    auto op = []<class C>(C x, C y){
+        if (x > y) {
+            return x;
+        } else {
+            return y;
+        }
     };
     return runMathFn(op, xVal, yVal);
 }

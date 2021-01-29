@@ -154,7 +154,7 @@ TEST_F(StoresFixture, SwitchNode) {
 TEST_F(StoresFixture, AddNode) {
     auto node = bento::protos::Node();
     auto addOpNode = node.mutable_add_op();
-    // Set the true and false nodes
+    // Set values to add
     int x = 10;
     int y = 30;
 
@@ -170,4 +170,64 @@ TEST_F(StoresFixture, AddNode) {
         ->set_int_64(y);
 
     ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(), x + y);
+}
+
+TEST_F(StoresFixture, DivNodeFloorDividesInts) {
+    auto node = bento::protos::Node();
+    auto divOpNode = node.mutable_div_op();
+
+    auto xVal = divOpNode->mutable_x()
+        ->mutable_const_op()
+        ->mutable_held_value()
+        ->mutable_primitive();
+    auto yVal = divOpNode->mutable_y()
+        ->mutable_const_op()
+        ->mutable_held_value()
+        ->mutable_primitive();
+
+    // Division of integers should be floored
+    xVal->set_int_64(10);
+    yVal->set_int_64(30);
+    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(), 0);
+
+    xVal->set_int_64(4);
+    yVal->set_int_64(3);
+    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(), 1);
+}
+
+TEST_F(StoresFixture, DivNodeFloatDivide) {
+    auto node = bento::protos::Node();
+    auto divOpNode = node.mutable_div_op();
+
+    auto xVal = divOpNode->mutable_x()
+        ->mutable_const_op()
+        ->mutable_held_value()
+        ->mutable_primitive();
+    auto yVal = divOpNode->mutable_y()
+        ->mutable_const_op()
+        ->mutable_held_value()
+        ->mutable_primitive();
+
+    xVal->set_float_64(1.0f);
+    yVal->set_float_64(3.0f);
+    ASSERT_FLOAT_EQ(evaluateNode(compStore, indexStore, node).primitive().float_64(), 1.0f/3.0f);
+}
+
+TEST_F(StoresFixture, MaxNode) {
+    auto node = bento::protos::Node();
+    auto maxOpNode = node.mutable_max_op();
+
+    auto xVal = maxOpNode->mutable_x()
+        ->mutable_const_op()
+        ->mutable_held_value()
+        ->mutable_primitive();
+    auto yVal = maxOpNode->mutable_y()
+        ->mutable_const_op()
+        ->mutable_held_value()
+        ->mutable_primitive();
+
+    // Division of integers should be floored
+    xVal->set_int_64(10);
+    yVal->set_int_64(30);
+    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(), 30);
 }
