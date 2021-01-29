@@ -140,3 +140,24 @@ TEST_F(StoresFixture, SwitchNode) {
     condVal->mutable_primitive()->set_boolean(false);
     ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(), falseVal);
 }
+
+TEST_F(StoresFixture, AddNode) {
+    auto node = bento::protos::Node();
+    auto addOpNode = node.mutable_add_op();
+    // Set the true and false nodes
+    int x = 10;
+    int y = 30;
+
+    addOpNode->mutable_x()
+        ->mutable_const_op()
+        ->mutable_held_value()
+        ->mutable_primitive()
+        ->set_int_64(x);
+    addOpNode->mutable_y()
+        ->mutable_const_op()
+        ->mutable_held_value()
+        ->mutable_primitive()
+        ->set_int_64(y);
+
+    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(), x + y);
+}
