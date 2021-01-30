@@ -416,3 +416,107 @@ TEST_F(StoresFixture, RandomNode) {
     ASSERT_GE(rawVal, lowVal->float_64());
     ASSERT_LE(rawVal, highVal->float_64());
 }
+
+TEST_F(StoresFixture, AndNode) {
+    auto node = bento::protos::Node();
+    auto andOpNode = node.mutable_and_op();
+
+    auto xVal = andOpNode->mutable_x()
+                    ->mutable_const_op()
+                    ->mutable_held_value()
+                    ->mutable_primitive();
+
+    auto yVal = andOpNode->mutable_y()
+                    ->mutable_const_op()
+                    ->mutable_held_value()
+                    ->mutable_primitive();
+
+    xVal->set_boolean(true);
+    yVal->set_boolean(false);
+    ASSERT_FALSE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+
+    xVal->set_boolean(true);
+    yVal->set_boolean(true);
+    ASSERT_TRUE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+}
+
+TEST_F(StoresFixture, EqNode) {
+    auto node = bento::protos::Node();
+    auto eqOpNode = node.mutable_eq_op();
+
+    auto xVal = eqOpNode->mutable_x()
+                    ->mutable_const_op()
+                    ->mutable_held_value()
+                    ->mutable_primitive();
+
+    auto yVal = eqOpNode->mutable_y()
+                    ->mutable_const_op()
+                    ->mutable_held_value()
+                    ->mutable_primitive();
+
+    // Boolean values
+    xVal->set_boolean(false);
+    yVal->set_boolean(false);
+    ASSERT_TRUE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+
+    // String values
+    xVal->set_str_val("hello");
+    yVal->set_str_val("mello");
+    ASSERT_FALSE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+
+    xVal->set_str_val("hello");
+    yVal->set_str_val("hello");
+    ASSERT_TRUE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+
+    // Integral values
+    xVal->set_int_64(12388);
+    yVal->set_int_64(20);
+    ASSERT_FALSE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+
+    xVal->set_int_64(12388);
+    yVal->set_int_64(12388);
+    ASSERT_TRUE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+
+    // Floating point
+    xVal->set_float_64(1.34f);
+    yVal->set_float_64(1.84f);
+    ASSERT_FALSE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+
+    xVal->set_float_64(1.34f);
+    yVal->set_float_64(1.34f);
+    ASSERT_TRUE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+}
+
+TEST_F(StoresFixture, GtNode) {
+    auto node = bento::protos::Node();
+    auto gtOpNode = node.mutable_gt_op();
+
+    auto xVal = gtOpNode->mutable_x()
+                    ->mutable_const_op()
+                    ->mutable_held_value()
+                    ->mutable_primitive();
+
+    auto yVal = gtOpNode->mutable_y()
+                    ->mutable_const_op()
+                    ->mutable_held_value()
+                    ->mutable_primitive();
+
+    xVal->set_int_64(30);
+    yVal->set_int_64(30);
+    ASSERT_FALSE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+
+    xVal->set_int_64(30);
+    yVal->set_int_64(10);
+    ASSERT_TRUE(
+        evaluateNode(compStore, indexStore, node).primitive().boolean());
+}

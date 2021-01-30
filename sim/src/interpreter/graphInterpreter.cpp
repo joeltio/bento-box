@@ -56,13 +56,21 @@ bento::protos::Value evaluateNode(ics::ComponentStore& compStore,
         case OpCase::kRandomOp:
             return randomOp(compStore, indexStore, node.random_op());
         case OpCase::kAndOp:
+            return andOp(compStore, indexStore, node.and_op());
         case OpCase::kOrOp:
+            return orOp(compStore, indexStore, node.or_op());
         case OpCase::kNotOp:
+            return notOp(compStore, indexStore, node.not_op());
         case OpCase::kEqOp:
+            return eqOp(compStore, indexStore, node.eq_op());
         case OpCase::kGtOp:
+            return gtOp(compStore, indexStore, node.gt_op());
         case OpCase::kLtOp:
+            return ltOp(compStore, indexStore, node.lt_op());
         case OpCase::kGeOp:
+            return geOp(compStore, indexStore, node.ge_op());
         case OpCase::kLeOp:
+            return leOp(compStore, indexStore, node.le_op());
         default:
             throw std::domain_error("Unknown case when parsing OpCase.");
     }

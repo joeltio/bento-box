@@ -100,6 +100,99 @@ bento::protos::Value runMathFn(Fn fn, const bento::protos::Value& x,
     }
 }
 
+template <class Fn>
+bento::protos::Value runBoolFn(Fn fn, const bento::protos::Value& x) {
+    typedef bento::protos::Value_Primitive Primitive;
+    switch (x.primitive().value_case()) {
+        case Primitive::kInt32: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(fn(x.primitive().int_32()));
+            return val;
+        }
+        case Primitive::kInt64: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(fn(x.primitive().int_64()));
+            return val;
+        }
+        case Primitive::kFloat33: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(fn(x.primitive().float_33()));
+            return val;
+        }
+        case Primitive::kFloat64: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(fn(x.primitive().float_64()));
+            return val;
+        }
+        case Primitive::kBoolean: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(fn(x.primitive().boolean()));
+            return val;
+        }
+        case Primitive::kStrVal: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(fn(x.primitive().str_val()));
+            return val;
+        }
+        case Primitive::VALUE_NOT_SET: {
+            throw std::runtime_error(
+                "No value in node when attempting to execute boolean "
+                "operation.");
+        }
+    }
+}
+
+template <class Fn>
+bento::protos::Value runBoolFn(Fn fn, const bento::protos::Value& x,
+                               const bento::protos::Value& y) {
+    validateSame(x, y);
+
+    typedef bento::protos::Value_Primitive Primitive;
+    switch (x.primitive().value_case()) {
+        case Primitive::kInt32: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(
+                fn(x.primitive().int_32(), y.primitive().int_32()));
+            return val;
+        }
+        case Primitive::kInt64: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(
+                fn(x.primitive().int_64(), y.primitive().int_64()));
+            return val;
+        }
+        case Primitive::kFloat33: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(
+                fn(x.primitive().float_33(), y.primitive().float_33()));
+            return val;
+        }
+        case Primitive::kFloat64: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(
+                fn(x.primitive().float_64(), y.primitive().float_64()));
+            return val;
+        }
+        case Primitive::kBoolean: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(
+                fn(x.primitive().boolean(), y.primitive().boolean()));
+            return val;
+        }
+        case Primitive::kStrVal: {
+            auto val = bento::protos::Value();
+            val.mutable_primitive()->set_boolean(
+                fn(x.primitive().str_val(), y.primitive().str_val()));
+            return val;
+        }
+        case Primitive::VALUE_NOT_SET: {
+            throw std::runtime_error(
+                "No value in node when attempting to execute boolean "
+                "operation.");
+        }
+    }
+}
+
 const bento::protos::Value& constOp(const bento::protos::Node_Const& node);
 bento::protos::Value& retrieveOp(ics::ComponentStore& compStore,
                                  ics::index::IndexStore& indexStore,
@@ -179,6 +272,9 @@ bento::protos::Value orOp(ics::ComponentStore& compStore,
 bento::protos::Value notOp(ics::ComponentStore& compStore,
                            ics::index::IndexStore& indexStore,
                            const bento::protos::Node_Not& node);
+
+// Checks for equivalence of values (floating point rounding errors will not be
+// corrected)
 bento::protos::Value eqOp(ics::ComponentStore& compStore,
                           ics::index::IndexStore& indexStore,
                           const bento::protos::Node_Eq& node);

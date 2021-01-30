@@ -364,4 +364,121 @@ bento::protos::Value randomOp(ics::ComponentStore& compStore,
     }
 }
 
+bento::protos::Value andOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_And& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+
+    validateSame(xVal, yVal);
+    validateBoolean(xVal.primitive());
+
+    auto val = bento::protos::Value();
+    val.mutable_primitive()->set_boolean(xVal.primitive().boolean() and
+                                         yVal.primitive().boolean());
+    val.mutable_data_type()->set_primitive(bento::protos::Type_Primitive_BOOL);
+
+    return val;
+}
+
+bento::protos::Value orOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Or& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+
+    validateSame(xVal, yVal);
+    validateBoolean(xVal.primitive());
+
+    auto val = bento::protos::Value();
+    val.mutable_primitive()->set_boolean(xVal.primitive().boolean() or
+                                         yVal.primitive().boolean());
+    val.mutable_data_type()->set_primitive(bento::protos::Type_Primitive_BOOL);
+
+    return val;
+}
+
+bento::protos::Value notOp(ics::ComponentStore& compStore,
+                           ics::index::IndexStore& indexStore,
+                           const bento::protos::Node_Not& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+
+    validateBoolean(xVal.primitive());
+
+    auto val = bento::protos::Value();
+    val.mutable_primitive()->set_boolean(!xVal.primitive().boolean());
+    val.mutable_data_type()->set_primitive(bento::protos::Type_Primitive_BOOL);
+
+    return val;
+}
+
+bento::protos::Value eqOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Eq& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+
+    validateSame(xVal, yVal);
+
+    auto op = []<class C>(C x, C y) { return x == y; };
+
+    return runBoolFn(op, xVal, yVal);
+}
+
+bento::protos::Value gtOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Gt& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+
+    validateSame(xVal, yVal);
+    validateNumeric(xVal.primitive());
+
+    auto op = []<class C>(C x, C y) { return x > y; };
+
+    return runBoolFn(op, xVal, yVal);
+}
+
+bento::protos::Value ltOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Lt& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+
+    validateSame(xVal, yVal);
+    validateNumeric(xVal.primitive());
+
+    auto op = []<class C>(C x, C y) { return x < y; };
+
+    return runBoolFn(op, xVal, yVal);
+}
+
+bento::protos::Value geOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Ge& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+
+    validateSame(xVal, yVal);
+    validateNumeric(xVal.primitive());
+
+    auto op = []<class C>(C x, C y) { return x >= y; };
+
+    return runBoolFn(op, xVal, yVal);
+}
+
+bento::protos::Value leOp(ics::ComponentStore& compStore,
+                          ics::index::IndexStore& indexStore,
+                          const bento::protos::Node_Le& node) {
+    auto xVal = evaluateNode(compStore, indexStore, node.x());
+    auto yVal = evaluateNode(compStore, indexStore, node.y());
+
+    validateSame(xVal, yVal);
+    validateNumeric(xVal.primitive());
+
+    auto op = []<class C>(C x, C y) { return x <= y; };
+
+    return runBoolFn(op, xVal, yVal);
+}
+
 }  // namespace interpreter
