@@ -39,9 +39,6 @@ class ComponentDef:
     def __repr__(self):
         return self.proto.name
 
-    def __hash__(self):
-        return hash(self.proto)
-
 
 class EntityDef:
     """Specifies a ECS entity by defining its components.

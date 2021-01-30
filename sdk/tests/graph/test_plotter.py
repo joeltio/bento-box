@@ -21,9 +21,9 @@ def test_graph_plotter_empty():
 # test that graph plotter can record a retrieve, mutate operation
 def test_graph_plotter_retrieve_mutate_op():
     g = Plotter(entities=[GraphEntity(components=["position"], entity_id=1)])
-    person = g.entity(components=["position"])
-    pos_x = person["position"].x
-    person["position"].y = pos_x
+    person = g.entity(components=[Position])
+    pos_x = person[Position].x
+    person[Position].y = pos_x
 
     # check retrieve and mutate nodes correctly are set as graph inputs and outputs
     assert g.graph() == Graph(
@@ -58,10 +58,10 @@ def test_graph_plotter_conditional_boolean():
             GraphEntity(components=["keyboard"], entity_id=2),
         ]
     )
-    env = g.entity(components=["keyboard"])
-    car = g.entity(components=["position"])
+    env = g.entity(components=[Keyboard])
+    car = g.entity(components=[Position])
 
-    key_pressed = env["keyboard"].pressed
+    key_pressed = env[Keyboard].pressed
     car_pos_x = g.switch(
         condition=key_pressed == "left",
         true=-1.0,
@@ -71,7 +71,7 @@ def test_graph_plotter_conditional_boolean():
             false=0.0,
         ),
     )
-    car["position"].x = car_pos_x
+    car[Position].x = car_pos_x
 
     assert g.graph() == Graph(
         inputs=[

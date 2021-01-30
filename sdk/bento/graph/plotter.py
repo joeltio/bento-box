@@ -4,7 +4,7 @@
 # Graph Plotter
 #
 
-from typing import Any, Iterable
+from typing import Any, Iterable, Union
 
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Graph, Node
@@ -26,22 +26,22 @@ class Plotter:
             for entity in entities
         }
 
-    def entity(self, components: Iterable[str]) -> GraphEntity:
+    def entity(self, components: Iterable[Union[str, ComponentDef]]) -> GraphEntity:
         """
         Get the entity with the components with the game attached.
 
         Provides access to component state when building the computation graph.
 
         Args:
-            components: Set of the names of the component that should be attached
-                to the retrieved component.
+            components: Set of the names or ComponentDefs of the components that
+                should be attached to the retrieved entity.
         Raises:
-            ValueError: If component names given contains duplicates
+            ValueError: If component given contains duplicates
             KeyError: If no Entity found with the given set of components attached.
         Returns:
             The ECS entity with the given list of components.
         """
-        comp_set = frozenset(components)
+        comp_set = frozenset(str(c) for c in components)
         # check for duplicates in given components
         if len(comp_set) != len(components):
             raise ValueError("Given component names should not contain duplicates")
