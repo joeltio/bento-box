@@ -9,7 +9,7 @@ from os import path
 from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
 from typing import Callable, Any
 
-from bento import graph
+from bento.graph.compile import compile_graph
 from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.references_pb2 import AttributeRef
 from bento.graph.value import wrap_const
@@ -45,7 +45,7 @@ def assert_graph(actual: Graph, expected_path: str):
 ## tests
 # test that empty no op functions are compilable
 def test_graph_compile_empty():
-    @graph.compile_graph
+    @compile_graph
     def actual_graph(g: Plotter):
         pass
 
@@ -54,7 +54,7 @@ def test_graph_compile_empty():
 
 # test compile basic arithmetic example with one entity
 def test_graph_compile_arithmetic():
-    @graph.compile_graph
+    @compile_graph
     def actual_graph(g: Plotter):
         car = g.entity(
             components=[
@@ -69,7 +69,7 @@ def test_graph_compile_arithmetic():
 
 # test compile basic arithmetic example with multiple entities
 def test_graph_compile_arithmetic_multiple():
-    @graph.compile_graph
+    @compile_graph
     def actual_graph(g: Plotter):
         ms_in_sec = int(1e3)
         env = g.entity(components=["clock"])
@@ -89,7 +89,7 @@ def test_graph_compile_arithmetic_multiple():
 
 # test compile ternary conditional
 def test_graph_compile_ternary():
-    @graph.compile_graph
+    @compile_graph
     def actual_graph(g: Plotter):
         car = g.entity(
             components=[
@@ -105,7 +105,7 @@ def test_graph_compile_ternary():
 
 # test compil if else conditional conditional
 def test_graph_compile_ifelse():
-    @graph.compile_graph
+    @compile_graph
     def actual_graph(g: Plotter):
         car = g.entity(
             components=[

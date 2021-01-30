@@ -4,7 +4,9 @@
 # Graph ECS
 #
 
-from bento.ecs.graph import *
+from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode, wrap_const
+from bento.protos.graph_pb2 import Node
+from bento.protos.references_pb2 import AttributeRef
 
 
 def test_graph_ecs_entity():
