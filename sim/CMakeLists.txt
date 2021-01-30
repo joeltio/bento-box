@@ -21,35 +21,45 @@ file(MAKE_DIRECTORY ${GENERATED_INCLUDES})
 get_git_head_revision(GIT_REF GIT_HASH ALLOW_LOOKING_ABOVE_CMAKE_SOURCE_DIR)
 configure_file("include/git.h.in" "${GENERATED_INCLUDES}/git.h" @ONLY)
 
-# define source files/tests as any .cpp or .test.cpp under src/ respectively
-# (excluding main.cpp/main.test.cpp for each target)
-file(GLOB_RECURSE SOURCES  "src/*.cpp") 
-list(FILTER SOURCES EXCLUDE REGEX "(\.test\.cpp$|.*main\..*)")
-file(GLOB_RECURSE TEST_SOURCES "src/*.test.cpp")
-list(FILTER TEST_SOURCES EXCLUDE REGEX ".*main\..*")
-
 # define build targets
 set(TARGET_SIM ${PROJECT_NAME})
 set(TARGET_TEST "${PROJECT_NAME}-test")
 set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 
+# Set sources for target
+set(TARGET_SIM_SOURCES
+    src/component/userComponent.cpp
+    src/index/componentTypeIndex.cpp
+    src/system/render.cpp
+    src/interpreter/graphInterpreter.cpp
+    src/interpreter/operations.cpp
+    src/network/grpcServer.cpp
+    src/service/engineService.cpp
+    src/ics.cpp
+)
+
 add_executable(${TARGET_SIM}
-    ${SOURCES}
     src/main.cpp
+    ${TARGET_SIM_SOURCES}
 )
 target_include_directories(${TARGET_SIM}
     PUBLIC include
-    ${GENERATED_INCLUDES}
+    PUBLIC ${GENERATED_INCLUDES}
 )
 
 add_executable(${TARGET_TEST}
-    ${SOURCES}
-    ${TEST_SOURCES}
+    ${TARGET_SIM_SOURCES}
+    src/component/userComponent.test.cpp
+    src/index/componentTypeIndex.test.cpp
+    src/index/entity.test.cpp
+    src/interpreter/graphInterpreter.test.cpp
+    src/network/grpcServer.test.cpp
+    src/service/engineService.test.cpp
     src/main.test.cpp
 )
 target_include_directories(${TARGET_TEST}
     PUBLIC include
-    ${GENERATED_INCLUDES}
+    PUBLIC ${GENERATED_INCLUDES}
 )
 
 add_subdirectory("lib/core")

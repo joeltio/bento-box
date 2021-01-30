@@ -12,13 +12,12 @@ void render(GraphicsContext &graphicsContext,
     auto &componentType = indexStore.componentType;
     auto components =
         util::Composable<ComponentStore &>(componentStore) | ics::asCompSet |
-        componentType.filterCompType<ics::component::Texture2DComponent>();
+        componentType.filterCompType(ics::component::TEXTURE2D_COMPONENT_NAME);
 
     for (auto componentId : components.data) {
         auto component = ics::getComponent<ics::component::Texture2DComponent>(
             componentStore, componentId);
         // TODO(joeltio): Use the graphics context to render the texture
-        // std::cout << "texture: " << component.texture << std::endl;
     }
 }
 }  // namespace ics::system
