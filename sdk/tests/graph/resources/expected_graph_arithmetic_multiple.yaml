@@ -3,20 +3,20 @@ inputs:
 - retrieveAttr:
     attribute: x
     component: position
-    entityId: 240149828
+    entityId: 1
 - retrieveAttr:
     attribute: x_neg
     component: speed
-    entityId: 240149828
+    entityId: 1
 - retrieveAttr:
     attribute: tick_ms
     component: clock
-    entityId: 3195780754
+    entityId: 2
 outputs:
 - mutateAttr:
     attribute: x
     component: position
-    entityId: 240149828
+    entityId: 1
   toNode:
     addOp:
       x:
@@ -35,7 +35,7 @@ outputs:
                   retrieveAttr:
                     attribute: x_neg
                     component: speed
-                    entityId: 240149828
+                    entityId: 1
           y:
             mulOp:
               x:
@@ -43,7 +43,7 @@ outputs:
                   retrieveAttr:
                     attribute: tick_ms
                     component: clock
-                    entityId: 3195780754
+                    entityId: 2
               y:
                 constOp:
                   heldValue:
@@ -56,4 +56,4 @@ outputs:
           retrieveAttr:
             attribute: x
             component: position
-            entityId: 240149828
+            entityId: 1

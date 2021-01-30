@@ -1,20 +1,27 @@
 #
 # Bentobox
 # SDK - Graph Tests
-# Test graph compilation @graph.compile
+# Test graph compilation
 #
 
 import yaml
+import pytest
 from os import path
-from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
+from unittest.mock import Mock
 from typing import Callable, Any
+from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
 
+from bento import types
+from bento.client import Client
+from bento.sim import Simulation
+from tests.utils import assert_proto
+from bento.graph.plotter import Plotter
+from bento.graph.value import wrap_const
 from bento.graph.compile import compile_graph
 from bento.protos.graph_pb2 import Graph, Node
+from bento.protos.sim_pb2 import SimulationDef
 from bento.protos.references_pb2 import AttributeRef
-from bento.graph.value import wrap_const
-from bento.graph.plotter import Plotter
-from tests.utils import assert_proto
+from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
 
 ## test tools
 # path to graph test cases in test resources
@@ -42,10 +49,61 @@ def assert_graph(actual: Graph, expected_path: str):
     assert_proto(actual, expected)
 
 
+def build_sim(component_defs, entity_defs):
+    mock_client = Mock(spec=Client)
+    mock_client.apply_sim.return_value = SimulationDef(
+        name="test_sim",
+        entities=[e.proto for e in entity_defs],
+        components=[c.proto for c in component_defs],
+    )
+    sim = Simulation(
+        name="test_sim",
+        entities=entity_defs,
+        components=component_defs,
+        client=mock_client,
+    )
+    sim.start()
+    return sim
+
+
 ## tests
+# test components
+@pytest.fixture
+def Position():
+    return ComponentDef(
+        name="position",
+        schema={
+            "x": types.int32,
+            "y": types.int32,
+        },
+    )
+
+
+@pytest.fixture
+def Speed():
+    return ComponentDef(
+        name="speed",
+        schema={
+            "x_neg": types.int32,
+        },
+    )
+
+
+@pytest.fixture
+def Clock():
+    return ComponentDef(
+        name="clock",
+        schema={
+            "tick_ms": types.int64,
+        },
+    )
+
+
 # test that empty no op functions are compilable
 def test_graph_compile_empty():
-    @compile_graph
+    sim = build_sim(component_defs=[], entity_defs=[])
+
+    @compile_graph(sim)
     def actual_graph(g: Plotter):
         pass
 
@@ -53,14 +111,16 @@ def test_graph_compile_empty():
 
 
 # test compile basic arithmetic example with one entity
-def test_graph_compile_arithmetic():
-    @compile_graph
+def test_graph_compile_arithmetic(Position):
+    sim = build_sim(
+        component_defs=[Position],
+        entity_defs=[EntityDef(components=[Position], entity_id=1)],
+    )
+    print(sim.entity_map)
+
+    @compile_graph(sim)
     def actual_graph(g: Plotter):
-        car = g.entity(
-            components=[
-                "position",
-            ]
-        )
+        car = g.entity(components=["position"])
         x_delta = 20
         car["position"].x += x_delta
 
@@ -68,8 +128,16 @@ def test_graph_compile_arithmetic():
 
 
 # test compile basic arithmetic example with multiple entities
-def test_graph_compile_arithmetic_multiple():
-    @compile_graph
+def test_graph_compile_arithmetic_multiple(Position, Speed, Clock):
+    sim = build_sim(
+        component_defs=[Position, Speed, Clock],
+        entity_defs=[
+            EntityDef(components=[Position, Speed], entity_id=1),
+            EntityDef(components=[Clock], entity_id=2),
+        ],
+    )
+
+    @compile_graph(sim)
     def actual_graph(g: Plotter):
         ms_in_sec = int(1e3)
         env = g.entity(components=["clock"])
@@ -88,8 +156,16 @@ def test_graph_compile_arithmetic_multiple():
 
 
 # test compile ternary conditional
-def test_graph_compile_ternary():
-    @compile_graph
+def test_graph_compile_ternary(Position, Clock):
+    sim = build_sim(
+        component_defs=[Position, Clock],
+        entity_defs=[
+            EntityDef(components=[Position], entity_id=1),
+            EntityDef(components=[Clock], entity_id=2),
+        ],
+    )
+
+    @compile_graph(sim)
     def actual_graph(g: Plotter):
         car = g.entity(
             components=[
@@ -104,8 +180,16 @@ def test_graph_compile_ternary():
 
 
 # test compil if else conditional conditional
-def test_graph_compile_ifelse():
-    @compile_graph
+def test_graph_compile_ifelse(Position, Clock):
+    sim = build_sim(
+        component_defs=[Position, Clock],
+        entity_defs=[
+            EntityDef(components=[Position], entity_id=1),
+            EntityDef(components=[Clock], entity_id=2),
+        ],
+    )
+
+    @compile_graph(sim)
     def actual_graph(g: Plotter):
         car = g.entity(
             components=[

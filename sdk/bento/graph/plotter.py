@@ -4,10 +4,9 @@
 # Graph Plotter
 #
 
-from typing import Any, Iterable, List, Set
+from typing import Any, Iterable
 from bento.graph.value import wrap_const
 from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode
-from bento.ecs.base import Component, Entity
 from bento.protos.graph_pb2 import Graph, Node
 
 
@@ -18,20 +17,25 @@ class Plotter:
     which can be obtained from `graph()` as a `Graph` protobuf message.
     """
 
-    def __init__(self):
-        self.entity_map = {}
+    def __init__(self, entities: Iterable[GraphEntity] = []):
+        # map components set to entity id
+        self.entity_map = {
+            frozenset([c.component_name for c in entity.components]): entity
+            for entity in entities
+        }
 
-    def entity(self, components: Iterable[str]) -> Entity:
+    def entity(self, components: Iterable[str]) -> GraphEntity:
         """
-        Get the entity with the given components attached.
+        Get the entity with the components with the game attached.
 
         Provides access to component state when building the computation graph.
 
         Args:
-            components:
-                Set of the names of the unique components to retrieve entity by.
+            components: Set of the names of the component that should be attached
+                to the retrieved component.
         Raises:
-            ValueError: if component names given contains duplicates
+            ValueError: If component names given contains duplicates
+            KeyError: If no Entity found with the given set of components attached.
         Returns:
             The ECS entity with the given list of components.
         """
@@ -41,7 +45,7 @@ class Plotter:
             raise ValueError("Given component names should not contain duplicates")
         # retrieve entity for components, create if not does not yet exist
         if comp_set not in self.entity_map:
-            self.entity_map[comp_set] = GraphEntity(comp_set)
+            raise KeyError("No entity found with the given components attached")
         return self.entity_map[comp_set]
 
     def graph(self) -> Graph:

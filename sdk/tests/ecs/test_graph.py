@@ -12,7 +12,7 @@ from bento.protos.references_pb2 import AttributeRef
 
 def test_graph_ecs_entity():
     components = ["position"]
-    entity = GraphEntity(components=components)
+    entity = GraphEntity(components=components, entity_id=1)
     # check Entity's components accessible via `.components`
     assert len(set(c._name for c in entity.components) - set(components)) == 0
     # check component accessible by name using [] notation

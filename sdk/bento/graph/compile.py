@@ -9,6 +9,8 @@ from gast import FunctionDef, AST
 from textwrap import dedent
 from typing import Callable, List
 
+from bento.sim import Simulation
+from bento.ecs.graph import GraphEntity
 from bento.graph.preprocessors import preprocess_augassign
 from bento.graph.analyzers import (
     analyze_func,
@@ -36,7 +38,7 @@ Transform = Callable[[AST], AST]
 
 
 def compile_graph(
-    convert_fn: Callable,
+    platform: Simulation,
     preprocessors: List[Transform] = [
         preprocess_augassign,
     ],
@@ -57,7 +59,17 @@ def compile_graph(
         transform_ifelse,
     ],
 ) -> Graph:
-    """Compiles the given `convert_fn` into a computation Graph.
+    """Compiles the given `convert_fn` into a computation Graph running the given sim.
+
+    Use by annotating the target `convert_fn` should be with `@compile_graph(sim)` to compile.
+
+    The target `convert_fn` should take in one parameter: a `Plotter` instance which
+    allows users to access graphing specific operations. Must be a plain Python
+    Function, not a Callable class, method, classmethod or staticmethod.
+
+    When compiling the computational graph, the ECS entities & components on the
+    given `Simulation` platform are available for use in `convert_fn` in the form
+    of `GraphEntity` and `GraphComponent` respectively.
 
     Compiles by converting the given `convert_fn` function to AST
     applying the given `preprocessors` transforms to perform preprocessing on the AST,
@@ -76,11 +88,8 @@ def compile_graph(
     to provide a compiled function that builds the graph using the given `Plotter` on call.
     The graph obtained from the `Plotter` is finally returned.
 
-    The analyzers and transforms that should be used should be preconfigured.
-    Users should simply annotate the function they want converted with `@compile_graph`
-
         Example:
-        @compile_graph
+        @compile_graph(sim)
         def car_pos_graph(g: Plotter):
             car = g.entity(
                 components=[
@@ -94,10 +103,8 @@ def compile_graph(
         # use compiled graph 'car_pos_graph' in code ...
 
     Args:
-        convert_fn: Target function containing the source to convert to the computation graph.
-            The function should take in one parameter: a `Plotter` instance which
-            allows users to access graphing specific operations. Must be a plain Python
-            Function, not a Callable class, method, classmethod or staticmethod.
+        platform: Target simulation as the target platform for the compiled computation graph
+            to run on. Provides the ECS entity and components available for use in `convert_fn`.
 
         preprocessors: List of `Transform`s that are run sequentially to apply
             preprocesssing transforms to the AST before any static analysis is done.
@@ -119,26 +126,36 @@ def compile_graph(
         The converted computational Graph as a `Graph` protobuf message.
     """
 
-    # parse ast from function source
-    ast = parse_ast(convert_fn)
+    def _compile_graph(convert_fn: Callable):
+        # parse ast from function source
+        ast = parse_ast(convert_fn)
 
-    # apply preprocessors to apply preprocesssing transforms on the ASt
-    for preprocessor in preprocessors:
-        ast = preprocessor(ast)
+        # apply preprocessors to apply preprocesssing transforms on the AST
+        for preprocessor in preprocessors:
+            ast = preprocessor(ast)
 
-    # apply analyzers to conduct static analysis
-    for analyzer in analyzers:
-        ast = analyzer(ast)
-    # check that AST can be coverted by applying linters to check convertability
-    for linter in linters:
-        linter(ast)
-    # convert AST to computation graph by applying transforms
-    for transform in transforms:
-        ast = transform(ast)
+        # apply analyzers to conduct static analysis
+        for analyzer in analyzers:
+            ast = analyzer(ast)
+        # check that AST can be coverted by applying linters to check convertability
+        for linter in linters:
+            linter(ast)
+        # convert AST to computation graph by applying transforms
+        for transform in transforms:
+            ast = transform(ast)
 
-    # load AST back as a module
-    compiled = load_ast_module(ast)
-    # run build graph function with plotter to build final computation graph
-    g = Plotter()
-    compiled.build_graph(g)
-    return g.graph()
+        # load AST back as a module
+        compiled = load_ast_module(ast)
+        # unpack available Entities and components from target platform available for
+        # use during
+        graph_entities = [
+            GraphEntity([c.component_name for c in e.components], e.id)
+            for e in platform.entities
+        ]
+
+        # run build graph function with plotter to build final computation graph
+        g = Plotter(entities=graph_entities)
+        compiled.build_graph(g)
+        return g.graph()
+
+    return _compile_graph

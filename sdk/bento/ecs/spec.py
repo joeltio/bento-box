@@ -37,7 +37,7 @@ class ComponentDef:
         return self.proto.schema
 
     def __repr__(self):
-        return f"{self.proto.name}"
+        return self.proto.name
 
     def __hash__(self):
         return hash(self.proto)
@@ -49,14 +49,22 @@ class EntityDef:
     can be accessed via the `.proto` attribute.
     """
 
-    def __init__(self, components: Iterable[ComponentDef]):
+    def __init__(self, components: Iterable[ComponentDef], entity_id: int = 0):
         """Create a EntityDef with the given components to attach.
 
         Args:
             components: List of components to attach with to the ECS entity
                 defined by this EntityDef.
         """
-        self.proto = ecs_pb2.EntityDef(components=[c.name for c in components])
+        self.proto = ecs_pb2.EntityDef(
+            components=[c.name for c in components],
+            id=entity_id,
+        )
+
+    @property
+    def id(self) -> int:
+        """Get the id of this entity"""
+        return self.proto.id
 
     @property
     def components(self) -> List[ComponentDef]:

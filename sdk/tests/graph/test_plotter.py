@@ -6,6 +6,7 @@
 
 
 from bento.value import wrap
+from bento.ecs.graph import GraphEntity
 from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.references_pb2 import AttributeRef
 from bento.graph.plotter import Plotter
@@ -18,7 +19,7 @@ def test_graph_plotter_empty():
 
 # test that graph plotter can record a retrieve, mutate operation
 def test_graph_plotter_retrieve_mutate_op():
-    g = Plotter()
+    g = Plotter(entities=[GraphEntity(components=["position"], entity_id=1)])
     person = g.entity(components=["position"])
     pos_x = person["position"].x
     person["position"].y = pos_x
@@ -50,7 +51,12 @@ def test_graph_plotter_retrieve_mutate_op():
 
 # test that graph plotter can record switch condition and boolean ops
 def test_graph_plotter_conditional_boolean():
-    g = Plotter()
+    g = Plotter(
+        entities=[
+            GraphEntity(components=["position"], entity_id=1),
+            GraphEntity(components=["keyboard"], entity_id=2),
+        ]
+    )
     env = g.entity(components=["keyboard"])
     car = g.entity(components=["position"])
 

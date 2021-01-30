@@ -3,20 +3,20 @@ inputs:
 - retrieveAttr:
     attribute: x
     component: position
-    entityId: 1177347317
+    entityId: 1
 - retrieveAttr:
     attribute: y
     component: position
-    entityId: 1177347317
+    entityId: 1
 - retrieveAttr:
     attribute: tick_ms
     component: clock
-    entityId: 3195780754
+    entityId: 2
 outputs:
 - mutateAttr:
     attribute: x
     component: position
-    entityId: 1177347317
+    entityId: 1
   toNode:
     addOp:
       x:
@@ -24,7 +24,7 @@ outputs:
           retrieveAttr:
             attribute: x
             component: position
-            entityId: 1177347317
+            entityId: 1
       y:
         switchOp:
           conditionNode:
@@ -41,7 +41,7 @@ outputs:
                   retrieveAttr:
                     attribute: tick_ms
                     component: clock
-                    entityId: 3195780754
+                    entityId: 2
           falseNode:
             switchOp:
               conditionNode:
@@ -58,7 +58,7 @@ outputs:
                       retrieveAttr:
                         attribute: tick_ms
                         component: clock
-                        entityId: 3195780754
+                        entityId: 2
               falseNode:
                 constOp:
                   heldValue:
@@ -83,7 +83,7 @@ outputs:
 - mutateAttr:
     attribute: y
     component: position
-    entityId: 1177347317
+    entityId: 1
   toNode:
     addOp:
       x:
@@ -91,7 +91,7 @@ outputs:
           retrieveAttr:
             attribute: y
             component: position
-            entityId: 1177347317
+            entityId: 1
       y:
         switchOp:
           conditionNode:
@@ -108,7 +108,7 @@ outputs:
                   retrieveAttr:
                     attribute: tick_ms
                     component: clock
-                    entityId: 3195780754
+                    entityId: 2
           falseNode:
             switchOp:
               conditionNode:
@@ -125,7 +125,7 @@ outputs:
                       retrieveAttr:
                         attribute: tick_ms
                         component: clock
-                        entityId: 3195780754
+                        entityId: 2
               falseNode:
                 constOp:
                   heldValue:
