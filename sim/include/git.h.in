@@ -1,0 +1,12 @@
+#ifndef BENTOBOX_GIT_H
+#define BENTOBOX_GIT_H
+/*
+ * bentobox-sim
+ * Git Commit metadata templated by CMake
+ * see CMakeLists.txt
+*/
+
+
+#define GIT_HASH "@GIT_HASH@"
+
+#endif // end of include guard: BENTOBOX_GIT_H
