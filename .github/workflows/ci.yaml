@@ -25,7 +25,7 @@ jobs:
       - name: "Lint Protos"
         run: |
           make lint-proto
-      
+
   # check spelling typos in source code
   spellcheck-code:
     runs-on: ubuntu-20.04
@@ -57,16 +57,18 @@ jobs:
         # Ignore the failure of noncritical cache step
         continue-on-error: true
         with:
-          # {hash} replace with hash of the built sim container
-          key: docker-{hash}
+          # {hash} replaced with hash of the built sim container
+          key: docker-sim-${{ hashFiles('makefile', 'infra/docker/sim/Dockerfile','sim/**/CMakeLists.txt') }}-{hash}
           restore-keys: |
-            docker-
+            docker-sim-${{ hashFiles('makefile', 'infra/docker/sim/Dockerfile','sim/**/CMakeLists.txt') }}-
+            docker-sim-
       - name: "Lint bentobox-sim"
         run: |
           make lint-sim
       - name: "Build bentobox-sim"
         run: |
-          docker build -t bentobox-sim -f infra/docker/sim/Dockerfile .
+          # stop at 'build' build stage as it contains the dev tools required to run tests
+          make SIM_BUILD_TYPE=Release SIM_DOCKER_STAGE=build build-sim-docker
       - name: "Unit Test bentobox-sim"
         run: |
           docker run bentobox-sim make test-sim
@@ -121,3 +123,39 @@ jobs:
       - name: "Build bentobox-sdk Docs"
         run: |
           make build-sdk-docs
+
+  # build & run e2e tests
+  build-test-e2e:
+    needs:
+    - check-protos
+    - build-test-sdk
+    - build-test-sim
+    runs-on: ubuntu-20.04
+    name: "Build & Test bentobox End to End"
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Pull dependencies"
+        run: |
+          make dep-e2e
+      # cache docker layers to speed up docker build
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of noncritical cache step
+        continue-on-error: true
+        with:
+          # {hash} replaced with hash of the built sim container
+          key: docker-sim-${{ hashFiles('makefile', 'infra/docker/sim/Dockerfile','sim/**/CMakeLists.txt') }}-{hash}
+          restore-keys: |
+            docker-sim-${{ hashFiles('makefile', 'infra/docker/sim/Dockerfile','sim/**/CMakeLists.txt') }}-
+            docker-sim-
+      - name: "Build bentobox-sim"
+        run: |
+          make SIM_BUILD_TYPE=Release SIM_DOCKER_STAGE=release build-sim-docker
+      - name: "Install bentobox-sdk"
+        run: |
+          make install-sdk
+      - name: "Lint End to End Tests"
+        run: |
+          make lint-e2e
+      - name: "Run End to End Tests"
+        run: |
+          make test-e2e

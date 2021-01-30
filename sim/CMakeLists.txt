@@ -4,12 +4,27 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(bentobox)
 
+# allow cmake modules under cmake/ to be imported
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 ## Executable
+# release: use optimzations
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+# debug: include debugging info, show colors and enable warnings
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+# target bento simulator's executables to c++ 20
+set(CMAKE_CXX_STANDARD 20)
+# pull git commit hash from git and make it available via a templated file
+include(GetGitRevisionDescription)
+set(GENERATED_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}/include")
+file(MAKE_DIRECTORY ${GENERATED_INCLUDES})
+get_git_head_revision(GIT_REF GIT_HASH ALLOW_LOOKING_ABOVE_CMAKE_SOURCE_DIR)
+configure_file("include/git.h.in" "${GENERATED_INCLUDES}/git.h" @ONLY)
+
+# define build targets
 set(TARGET_SIM ${PROJECT_NAME})
 set(TARGET_TEST "${PROJECT_NAME}-test")
 set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
-# target bento simulator's executables to c++ 20
-set(CMAKE_CXX_STANDARD 20)
 
 # Set sources for target
 set(TARGET_SIM_SOURCES
@@ -18,6 +33,8 @@ set(TARGET_SIM_SOURCES
     src/system/render.cpp
     src/interpreter/graphInterpreter.cpp
     src/interpreter/operations.cpp
+    src/network/grpcServer.cpp
+    src/service/engineService.cpp
     src/ics.cpp
 )
 
@@ -27,6 +44,7 @@ add_executable(${TARGET_SIM}
 )
 target_include_directories(${TARGET_SIM}
     PUBLIC include
+    PUBLIC ${GENERATED_INCLUDES}
 )
 
 add_executable(${TARGET_TEST}
@@ -35,10 +53,13 @@ add_executable(${TARGET_TEST}
     src/index/componentTypeIndex.test.cpp
     src/index/entity.test.cpp
     src/interpreter/graphInterpreter.test.cpp
+    src/network/grpcServer.test.cpp
+    src/service/engineService.test.cpp
     src/main.test.cpp
 )
 target_include_directories(${TARGET_TEST}
     PUBLIC include
+    PUBLIC ${GENERATED_INCLUDES}
 )
 
 add_subdirectory("lib/core")
@@ -55,7 +76,7 @@ target_link_libraries(${TARGET_TEST}
 
 ## Library Dependencies
 # fetch dependencies
-include("dependencies.cmake")
+include(dependencies)
 
 # GRPC/Protobuf
 # link protobuf/grpc libraries
@@ -70,7 +91,10 @@ get_filename_component(PROTOS_DIR "../protos" ABSOLUTE)
 set(PROTO_BINDS_DIR "${CMAKE_CURRENT_BINARY_DIR}/protos")
 file(MAKE_DIRECTORY ${PROTO_BINDS_DIR})
 # list protobuf definitions in protos/
-file(GLOB PROTO_DEFS "${PROTOS_DIR}/bento/protos/*.proto")
+file(GLOB BENTO_PROTO_DEFS "${PROTOS_DIR}/bento/protos/*.proto")
+file(GLOB GRPC_HEALTH_PROTO_DEFS "${PROTOS_DIR}/grpc/health/v1/*.proto")
+set(PROTO_DEFS ${BENTO_PROTO_DEFS} ${GRPC_HEALTH_PROTO_DEFS})
+
 # replace .proto with .pb.cc and .pb.h
 string(REPLACE "${PROTOS_DIR}" "${PROTO_BINDS_DIR}" PROTO_BINDS "${PROTO_DEFS}")
 string(REPLACE ".proto" ".pb.cc" PROTO_BIND_SOURCES "${PROTO_BINDS}")
