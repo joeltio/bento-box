@@ -114,7 +114,7 @@ def unwrap_primitive(value: Value) -> Any:
     Args:
         value: The Value proto to unwrap into native value.
     Returns:
-        The unwrap native value drived from the Value proto.
+        The unwrapped native value drived from the Value proto.
     Raises:
         TypeError: When given a Value does not contain a primitive.
         ValueError: When given a invalid Value proto to unwrap.
@@ -138,3 +138,32 @@ def unwrap_primitive(value: Value) -> Any:
         return value.primitive.str_val
     elif dtype.primitive == Type.Primitive.INVALID:
         raise ValueError("Unable to unwrap Value with INVALID Type")
+
+
+def unwrap(value: Value) -> Any:
+    """Unwrap the given Value proto into its native value equivalent.
+    Args:
+        value: The Value proto to unwrap into native value.
+    Returns:
+        The unwrapped native value drived from the Value proto.
+    Raises:
+        TypeError: When given a Value does not contain supported data type kind.
+        ValueError: When given a invalid Value proto to unwrap.
+    """
+    dtype = value.data_type
+    dtype_kind = dtype.WhichOneof("kind")
+    if dtype_kind == "primitive":
+        return unwrap_primitive(value)
+    elif dtype_kind != "array":
+        raise TypeError(f"Unable to unwrap unsupported data type kind: {dtype_kind}")
+    # extract primitive Values form Value protos
+    primitive_values = [
+        Value(
+            primitive=v,
+            data_type=Type(primitive=dtype.array.element_type),
+        )
+        for v in value.array.values
+    ]
+    # construct np array with native values and shape
+    native_vals = [unwrap_primitive(v) for v in primitive_values]
+    return np.asarray(native_vals).reshape(dtype.array.dimensions)
