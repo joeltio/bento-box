@@ -11,8 +11,8 @@ bento::protos::Value evaluateNode(ics::ComponentStore& compStore,
                                   ics::index::IndexStore& indexStore,
                                   const bento::protos::Node& node);
 
-void runGraph(const ics::ComponentStore& compStore,
-              const ics::index::IndexStore& indexStore,
+void runGraph(ics::ComponentStore& compStore,
+              ics::index::IndexStore& indexStore,
               const bento::protos::Graph& graph);
 
 }  // namespace interpreter

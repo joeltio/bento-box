@@ -76,8 +76,9 @@ bento::protos::Value evaluateNode(ics::ComponentStore& compStore,
     }
 }
 
-void runGraph(const bento::protos::Graph& graph, ics::ComponentStore& compStore,
-              ics::index::IndexStore& indexStore) {
+void runGraph(ics::ComponentStore& compStore,
+              ics::index::IndexStore& indexStore,
+              const bento::protos::Graph& graph) {
     // Evaluate inputs
     for (const auto& output : graph.outputs()) {
         mutateOp(compStore, indexStore, output);
