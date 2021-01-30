@@ -22,36 +22,14 @@ from gast import (
 from bento.graph.plotter import Plotter
 from bento.graph.ast import (
     parse_ast,
-    call_func_ast,
-    wrap_func_ast,
-    wrap_block_ast,
-    load_ast_module,
     name_ast,
     assign_ast,
+    call_func_ast,
+    load_ast_module,
+    wrap_func_ast,
+    wrap_block_ast,
+    FuncASTTransform,
 )
-
-
-class FuncASTTransform(gast.NodeTransformer):
-    """Defines a AST transformation with a given transform_fn transform function.
-
-    Walks the AST with the given transform_fn, allowing it to modify AST nodes.
-
-    Args:
-        transform_fn: transform function that takes in AST and returns the modified AST.
-    """
-
-    def __init__(self, transform_fn: Callable[[AST], AST]):
-        super().__init__()
-        self.transform_fn = transform_fn
-
-    def visit(self, node: AST) -> AST:
-        # recursively visit child nodes
-        super().visit(node)
-        # on visit: transform node and fix code locations
-        new_node = gast.copy_location(new_node=self.transform_fn(node), old_node=node)
-        new_node = gast.fix_missing_locations(new_node)
-
-        return new_node
 
 
 def transform_build_graph(ast: AST) -> AST:
@@ -115,57 +93,57 @@ def transform_ifelse(ast: AST) -> AST:
     Transforms if/elif/else statements to a function that evaluates to calls to
     the Graph Plotter to plot a Switch Node on the computational graph.
 
+        Example:
+        if a:
+            x = y
+            z = 1
+        elif b:
+            x = m
+            z = 2
+        else:
+            x = n
+            z = 3
+
+        # should be transformed into:
+        def __if_block(y, m, n):
+            x = y
+            z = 1
+            return x, z
+
+        def __else_block(b, m, n):
+            def __if_block(m, n):
+                x = m
+                z = 2
+                return x, z
+
+            def __else_block(m, n):
+                x = n
+                z = 2
+                return x, z
+
+            __if_outputs = if_block(m)
+            __else_outputs = else_block(m, n)
+
+            x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+            return x, z
+
+        __if_outputs = __if_block(y)
+        __else_outputs = __else_block(b, m, n)
+
+        x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+
+        # which will evaluate to:
+        x = g.switch(a, y, g.switch(b, m, n))
+        z = g.switch(a, 1, g.switch(b, 2, 3))
+
     Note:
         Defining a symbol inside the if statement requires that means that
         that symbol has be defined in all conditional branches.
 
-    Example:
-         if a:
-             x = y
-             z = 1
-         elif b:
-             x = m
-             z = 2
-         else:
-             x = n
-             z = 3
-
-         # should be transformed into:
-         def __if_block(y, m, n):
-             x = y
-             z = 1
-             return x, z
-
-         def __else_block(b, m, n):
-             def __if_block(m, n):
-                 x = m
-                 z = 2
-                 return x, z
-
-             def __else_block(m, n):
-                 x = n
-                 z = 2
-                 return x, z
-
-             __if_outputs = if_block(m)
-             __else_outputs = else_block(m, n)
-
-             x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
-             return x, z
-
-         __if_outputs = __if_block(y)
-         __else_outputs = __else_block(b, m, n)
-
-         x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
-
-         # which will evaluate to:
-         x = g.switch(a, y, g.switch(b, m, n))
-         z = g.switch(a, 1, g.switch(b, 2, 3))
-
-     Args:
-         ast: AST to transform if else statements into the plotting of a Switch Node.
-     Returns:
-         The given ast with if else statements to be transformed into a the plotting of a Switch Node.
+    Args:
+        ast: AST to transform if else statements into the plotting of a Switch Node.
+    Returns:
+        The given ast with if else statements to be transformed into a the plotting of a Switch Node.
     """
 
     def do_transform(ifelse_ast: AST) -> AST:
