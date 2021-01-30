@@ -34,7 +34,7 @@ import grpc
 from bento.protos import services_pb2 as bento_dot_protos_dot_services__pb2
 
 
-class SimulationServiceStub(object):
+class EngineServiceStub(object):
     &#34;&#34;&#34;Missing associated documentation comment in .proto file.&#34;&#34;&#34;
 
     def __init__(self, channel):
@@ -43,45 +43,57 @@ class SimulationServiceStub(object):
         Args:
             channel: A grpc.Channel.
         &#34;&#34;&#34;
+        self.GetVersion = channel.unary_unary(
+                &#39;/bento.protos.EngineService/GetVersion&#39;,
+                request_serializer=bento_dot_protos_dot_services__pb2.GetVersionReq.SerializeToString,
+                response_deserializer=bento_dot_protos_dot_services__pb2.GetVersionResp.FromString,
+                )
         self.ApplySimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/ApplySimulation&#39;,
+                &#39;/bento.protos.EngineService/ApplySimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.ApplySimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.ApplySimulationResp.FromString,
                 )
         self.GetSimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/GetSimulation&#39;,
+                &#39;/bento.protos.EngineService/GetSimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.GetSimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.GetSimulationResp.FromString,
                 )
         self.ListSimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/ListSimulation&#39;,
+                &#39;/bento.protos.EngineService/ListSimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.ListSimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.ListSimulationResp.FromString,
                 )
         self.DropSimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/DropSimulation&#39;,
+                &#39;/bento.protos.EngineService/DropSimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.DropSimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.DropSimulationResp.FromString,
                 )
         self.StepSimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/StepSimulation&#39;,
+                &#39;/bento.protos.EngineService/StepSimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.StepSimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.StepSimulationResp.FromString,
                 )
         self.GetAttribute = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/GetAttribute&#39;,
+                &#39;/bento.protos.EngineService/GetAttribute&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.GetAttributeReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.GetAttributeResp.FromString,
                 )
         self.SetAttribute = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/SetAttribute&#39;,
+                &#39;/bento.protos.EngineService/SetAttribute&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.SetAttributeReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.SetAttributeResp.FromString,
                 )
 
 
-class SimulationServiceServicer(object):
+class EngineServiceServicer(object):
     &#34;&#34;&#34;Missing associated documentation comment in .proto file.&#34;&#34;&#34;
+
+    def GetVersion(self, request, context):
+        &#34;&#34;&#34;Get version information
+        &#34;&#34;&#34;
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details(&#39;Method not implemented!&#39;)
+        raise NotImplementedError(&#39;Method not implemented!&#39;)
 
     def ApplySimulation(self, request, context):
         &#34;&#34;&#34;Create, Update, Get, List and Delete Simulations
@@ -129,8 +141,13 @@ class SimulationServiceServicer(object):
         raise NotImplementedError(&#39;Method not implemented!&#39;)
 
 
-def add_SimulationServiceServicer_to_server(servicer, server):
+def add_EngineServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            &#39;GetVersion&#39;: grpc.unary_unary_rpc_method_handler(
+                    servicer.GetVersion,
+                    request_deserializer=bento_dot_protos_dot_services__pb2.GetVersionReq.FromString,
+                    response_serializer=bento_dot_protos_dot_services__pb2.GetVersionResp.SerializeToString,
+            ),
             &#39;ApplySimulation&#39;: grpc.unary_unary_rpc_method_handler(
                     servicer.ApplySimulation,
                     request_deserializer=bento_dot_protos_dot_services__pb2.ApplySimulationReq.FromString,
@@ -168,13 +185,30 @@ def add_SimulationServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            &#39;bento.protos.SimulationService&#39;, rpc_method_handlers)
+            &#39;bento.protos.EngineService&#39;, rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class SimulationService(object):
+class EngineService(object):
     &#34;&#34;&#34;Missing associated documentation comment in .proto file.&#34;&#34;&#34;
+
+    @staticmethod
+    def GetVersion(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetVersion&#39;,
+            bento_dot_protos_dot_services__pb2.GetVersionReq.SerializeToString,
+            bento_dot_protos_dot_services__pb2.GetVersionResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def ApplySimulation(request,
@@ -187,7 +221,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/ApplySimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/ApplySimulation&#39;,
             bento_dot_protos_dot_services__pb2.ApplySimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.ApplySimulationResp.FromString,
             options, channel_credentials,
@@ -204,7 +238,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/GetSimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetSimulation&#39;,
             bento_dot_protos_dot_services__pb2.GetSimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.GetSimulationResp.FromString,
             options, channel_credentials,
@@ -221,7 +255,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/ListSimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/ListSimulation&#39;,
             bento_dot_protos_dot_services__pb2.ListSimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.ListSimulationResp.FromString,
             options, channel_credentials,
@@ -238,7 +272,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/DropSimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/DropSimulation&#39;,
             bento_dot_protos_dot_services__pb2.DropSimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.DropSimulationResp.FromString,
             options, channel_credentials,
@@ -255,7 +289,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/StepSimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/StepSimulation&#39;,
             bento_dot_protos_dot_services__pb2.StepSimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.StepSimulationResp.FromString,
             options, channel_credentials,
@@ -272,7 +306,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/GetAttribute&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetAttribute&#39;,
             bento_dot_protos_dot_services__pb2.GetAttributeReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.GetAttributeResp.FromString,
             options, channel_credentials,
@@ -289,7 +323,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/SetAttribute&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/SetAttribute&#39;,
             bento_dot_protos_dot_services__pb2.SetAttributeReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.SetAttributeResp.FromString,
             options, channel_credentials,
@@ -303,8 +337,8 @@ class SimulationService(object):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="bento.protos.services_pb2_grpc.add_SimulationServiceServicer_to_server"><code class="name flex">
-<span>def <span class="ident">add_SimulationServiceServicer_to_server</span></span>(<span>servicer, server)</span>
+<dt id="bento.protos.services_pb2_grpc.add_EngineServiceServicer_to_server"><code class="name flex">
+<span>def <span class="ident">add_EngineServiceServicer_to_server</span></span>(<span>servicer, server)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -312,8 +346,13 @@ class SimulationService(object):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_SimulationServiceServicer_to_server(servicer, server):
+<pre><code class="python">def add_EngineServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            &#39;GetVersion&#39;: grpc.unary_unary_rpc_method_handler(
+                    servicer.GetVersion,
+                    request_deserializer=bento_dot_protos_dot_services__pb2.GetVersionReq.FromString,
+                    response_serializer=bento_dot_protos_dot_services__pb2.GetVersionResp.SerializeToString,
+            ),
             &#39;ApplySimulation&#39;: grpc.unary_unary_rpc_method_handler(
                     servicer.ApplySimulation,
                     request_deserializer=bento_dot_protos_dot_services__pb2.ApplySimulationReq.FromString,
@@ -351,7 +390,7 @@ class SimulationService(object):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            &#39;bento.protos.SimulationService&#39;, rpc_method_handlers)
+            &#39;bento.protos.EngineService&#39;, rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))</code></pre>
 </details>
 </dd>
@@ -360,8 +399,8 @@ class SimulationService(object):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="bento.protos.services_pb2_grpc.SimulationService"><code class="flex name class">
-<span>class <span class="ident">SimulationService</span></span>
+<dt id="bento.protos.services_pb2_grpc.EngineService"><code class="flex name class">
+<span>class <span class="ident">EngineService</span></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Missing associated documentation comment in .proto file.</p></div>
@@ -369,8 +408,25 @@ class SimulationService(object):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class SimulationService(object):
+<pre><code class="python">class EngineService(object):
     &#34;&#34;&#34;Missing associated documentation comment in .proto file.&#34;&#34;&#34;
+
+    @staticmethod
+    def GetVersion(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetVersion&#39;,
+            bento_dot_protos_dot_services__pb2.GetVersionReq.SerializeToString,
+            bento_dot_protos_dot_services__pb2.GetVersionResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def ApplySimulation(request,
@@ -383,7 +439,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/ApplySimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/ApplySimulation&#39;,
             bento_dot_protos_dot_services__pb2.ApplySimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.ApplySimulationResp.FromString,
             options, channel_credentials,
@@ -400,7 +456,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/GetSimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetSimulation&#39;,
             bento_dot_protos_dot_services__pb2.GetSimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.GetSimulationResp.FromString,
             options, channel_credentials,
@@ -417,7 +473,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/ListSimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/ListSimulation&#39;,
             bento_dot_protos_dot_services__pb2.ListSimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.ListSimulationResp.FromString,
             options, channel_credentials,
@@ -434,7 +490,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/DropSimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/DropSimulation&#39;,
             bento_dot_protos_dot_services__pb2.DropSimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.DropSimulationResp.FromString,
             options, channel_credentials,
@@ -451,7 +507,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/StepSimulation&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/StepSimulation&#39;,
             bento_dot_protos_dot_services__pb2.StepSimulationReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.StepSimulationResp.FromString,
             options, channel_credentials,
@@ -468,7 +524,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/GetAttribute&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetAttribute&#39;,
             bento_dot_protos_dot_services__pb2.GetAttributeReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.GetAttributeResp.FromString,
             options, channel_credentials,
@@ -485,7 +541,7 @@ class SimulationService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/SetAttribute&#39;,
+        return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/SetAttribute&#39;,
             bento_dot_protos_dot_services__pb2.SetAttributeReq.SerializeToString,
             bento_dot_protos_dot_services__pb2.SetAttributeResp.FromString,
             options, channel_credentials,
@@ -493,7 +549,7 @@ class SimulationService(object):
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="bento.protos.services_pb2_grpc.SimulationService.ApplySimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineService.ApplySimulation"><code class="name flex">
 <span>def <span class="ident">ApplySimulation</span></span>(<span>request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None, timeout=None, metadata=None)</span>
 </code></dt>
 <dd>
@@ -513,14 +569,14 @@ def ApplySimulation(request,
         wait_for_ready=None,
         timeout=None,
         metadata=None):
-    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/ApplySimulation&#39;,
+    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/ApplySimulation&#39;,
         bento_dot_protos_dot_services__pb2.ApplySimulationReq.SerializeToString,
         bento_dot_protos_dot_services__pb2.ApplySimulationResp.FromString,
         options, channel_credentials,
         insecure, call_credentials, compression, wait_for_ready, timeout, metadata)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationService.DropSimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineService.DropSimulation"><code class="name flex">
 <span>def <span class="ident">DropSimulation</span></span>(<span>request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None, timeout=None, metadata=None)</span>
 </code></dt>
 <dd>
@@ -540,14 +596,14 @@ def DropSimulation(request,
         wait_for_ready=None,
         timeout=None,
         metadata=None):
-    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/DropSimulation&#39;,
+    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/DropSimulation&#39;,
         bento_dot_protos_dot_services__pb2.DropSimulationReq.SerializeToString,
         bento_dot_protos_dot_services__pb2.DropSimulationResp.FromString,
         options, channel_credentials,
         insecure, call_credentials, compression, wait_for_ready, timeout, metadata)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationService.GetAttribute"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineService.GetAttribute"><code class="name flex">
 <span>def <span class="ident">GetAttribute</span></span>(<span>request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None, timeout=None, metadata=None)</span>
 </code></dt>
 <dd>
@@ -567,14 +623,14 @@ def GetAttribute(request,
         wait_for_ready=None,
         timeout=None,
         metadata=None):
-    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/GetAttribute&#39;,
+    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetAttribute&#39;,
         bento_dot_protos_dot_services__pb2.GetAttributeReq.SerializeToString,
         bento_dot_protos_dot_services__pb2.GetAttributeResp.FromString,
         options, channel_credentials,
         insecure, call_credentials, compression, wait_for_ready, timeout, metadata)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationService.GetSimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineService.GetSimulation"><code class="name flex">
 <span>def <span class="ident">GetSimulation</span></span>(<span>request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None, timeout=None, metadata=None)</span>
 </code></dt>
 <dd>
@@ -594,14 +650,41 @@ def GetSimulation(request,
         wait_for_ready=None,
         timeout=None,
         metadata=None):
-    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/GetSimulation&#39;,
+    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetSimulation&#39;,
         bento_dot_protos_dot_services__pb2.GetSimulationReq.SerializeToString,
         bento_dot_protos_dot_services__pb2.GetSimulationResp.FromString,
         options, channel_credentials,
         insecure, call_credentials, compression, wait_for_ready, timeout, metadata)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationService.ListSimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineService.GetVersion"><code class="name flex">
+<span>def <span class="ident">GetVersion</span></span>(<span>request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None, timeout=None, metadata=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def GetVersion(request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None):
+    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/GetVersion&#39;,
+        bento_dot_protos_dot_services__pb2.GetVersionReq.SerializeToString,
+        bento_dot_protos_dot_services__pb2.GetVersionResp.FromString,
+        options, channel_credentials,
+        insecure, call_credentials, compression, wait_for_ready, timeout, metadata)</code></pre>
+</details>
+</dd>
+<dt id="bento.protos.services_pb2_grpc.EngineService.ListSimulation"><code class="name flex">
 <span>def <span class="ident">ListSimulation</span></span>(<span>request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None, timeout=None, metadata=None)</span>
 </code></dt>
 <dd>
@@ -621,14 +704,14 @@ def ListSimulation(request,
         wait_for_ready=None,
         timeout=None,
         metadata=None):
-    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/ListSimulation&#39;,
+    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/ListSimulation&#39;,
         bento_dot_protos_dot_services__pb2.ListSimulationReq.SerializeToString,
         bento_dot_protos_dot_services__pb2.ListSimulationResp.FromString,
         options, channel_credentials,
         insecure, call_credentials, compression, wait_for_ready, timeout, metadata)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationService.SetAttribute"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineService.SetAttribute"><code class="name flex">
 <span>def <span class="ident">SetAttribute</span></span>(<span>request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None, timeout=None, metadata=None)</span>
 </code></dt>
 <dd>
@@ -648,14 +731,14 @@ def SetAttribute(request,
         wait_for_ready=None,
         timeout=None,
         metadata=None):
-    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/SetAttribute&#39;,
+    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/SetAttribute&#39;,
         bento_dot_protos_dot_services__pb2.SetAttributeReq.SerializeToString,
         bento_dot_protos_dot_services__pb2.SetAttributeResp.FromString,
         options, channel_credentials,
         insecure, call_credentials, compression, wait_for_ready, timeout, metadata)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationService.StepSimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineService.StepSimulation"><code class="name flex">
 <span>def <span class="ident">StepSimulation</span></span>(<span>request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None, timeout=None, metadata=None)</span>
 </code></dt>
 <dd>
@@ -675,7 +758,7 @@ def StepSimulation(request,
         wait_for_ready=None,
         timeout=None,
         metadata=None):
-    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.SimulationService/StepSimulation&#39;,
+    return grpc.experimental.unary_unary(request, target, &#39;/bento.protos.EngineService/StepSimulation&#39;,
         bento_dot_protos_dot_services__pb2.StepSimulationReq.SerializeToString,
         bento_dot_protos_dot_services__pb2.StepSimulationResp.FromString,
         options, channel_credentials,
@@ -684,8 +767,8 @@ def StepSimulation(request,
 </dd>
 </dl>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceServicer"><code class="flex name class">
-<span>class <span class="ident">SimulationServiceServicer</span></span>
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer"><code class="flex name class">
+<span>class <span class="ident">EngineServiceServicer</span></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Missing associated documentation comment in .proto file.</p></div>
@@ -693,8 +776,15 @@ def StepSimulation(request,
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class SimulationServiceServicer(object):
+<pre><code class="python">class EngineServiceServicer(object):
     &#34;&#34;&#34;Missing associated documentation comment in .proto file.&#34;&#34;&#34;
+
+    def GetVersion(self, request, context):
+        &#34;&#34;&#34;Get version information
+        &#34;&#34;&#34;
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details(&#39;Method not implemented!&#39;)
+        raise NotImplementedError(&#39;Method not implemented!&#39;)
 
     def ApplySimulation(self, request, context):
         &#34;&#34;&#34;Create, Update, Get, List and Delete Simulations
@@ -743,7 +833,7 @@ def StepSimulation(request,
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceServicer.ApplySimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer.ApplySimulation"><code class="name flex">
 <span>def <span class="ident">ApplySimulation</span></span>(<span>self, request, context)</span>
 </code></dt>
 <dd>
@@ -760,7 +850,7 @@ def StepSimulation(request,
     raise NotImplementedError(&#39;Method not implemented!&#39;)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceServicer.DropSimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer.DropSimulation"><code class="name flex">
 <span>def <span class="ident">DropSimulation</span></span>(<span>self, request, context)</span>
 </code></dt>
 <dd>
@@ -776,7 +866,7 @@ def StepSimulation(request,
     raise NotImplementedError(&#39;Method not implemented!&#39;)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceServicer.GetAttribute"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer.GetAttribute"><code class="name flex">
 <span>def <span class="ident">GetAttribute</span></span>(<span>self, request, context)</span>
 </code></dt>
 <dd>
@@ -793,7 +883,7 @@ def StepSimulation(request,
     raise NotImplementedError(&#39;Method not implemented!&#39;)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceServicer.GetSimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer.GetSimulation"><code class="name flex">
 <span>def <span class="ident">GetSimulation</span></span>(<span>self, request, context)</span>
 </code></dt>
 <dd>
@@ -809,7 +899,24 @@ def StepSimulation(request,
     raise NotImplementedError(&#39;Method not implemented!&#39;)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceServicer.ListSimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer.GetVersion"><code class="name flex">
+<span>def <span class="ident">GetVersion</span></span>(<span>self, request, context)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get version information</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def GetVersion(self, request, context):
+    &#34;&#34;&#34;Get version information
+    &#34;&#34;&#34;
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details(&#39;Method not implemented!&#39;)
+    raise NotImplementedError(&#39;Method not implemented!&#39;)</code></pre>
+</details>
+</dd>
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer.ListSimulation"><code class="name flex">
 <span>def <span class="ident">ListSimulation</span></span>(<span>self, request, context)</span>
 </code></dt>
 <dd>
@@ -825,7 +932,7 @@ def StepSimulation(request,
     raise NotImplementedError(&#39;Method not implemented!&#39;)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceServicer.SetAttribute"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer.SetAttribute"><code class="name flex">
 <span>def <span class="ident">SetAttribute</span></span>(<span>self, request, context)</span>
 </code></dt>
 <dd>
@@ -841,7 +948,7 @@ def StepSimulation(request,
     raise NotImplementedError(&#39;Method not implemented!&#39;)</code></pre>
 </details>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceServicer.StepSimulation"><code class="name flex">
+<dt id="bento.protos.services_pb2_grpc.EngineServiceServicer.StepSimulation"><code class="name flex">
 <span>def <span class="ident">StepSimulation</span></span>(<span>self, request, context)</span>
 </code></dt>
 <dd>
@@ -860,8 +967,8 @@ def StepSimulation(request,
 </dd>
 </dl>
 </dd>
-<dt id="bento.protos.services_pb2_grpc.SimulationServiceStub"><code class="flex name class">
-<span>class <span class="ident">SimulationServiceStub</span></span>
+<dt id="bento.protos.services_pb2_grpc.EngineServiceStub"><code class="flex name class">
+<span>class <span class="ident">EngineServiceStub</span></span>
 <span>(</span><span>channel)</span>
 </code></dt>
 <dd>
@@ -876,7 +983,7 @@ def StepSimulation(request,
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class SimulationServiceStub(object):
+<pre><code class="python">class EngineServiceStub(object):
     &#34;&#34;&#34;Missing associated documentation comment in .proto file.&#34;&#34;&#34;
 
     def __init__(self, channel):
@@ -885,38 +992,43 @@ def StepSimulation(request,
         Args:
             channel: A grpc.Channel.
         &#34;&#34;&#34;
+        self.GetVersion = channel.unary_unary(
+                &#39;/bento.protos.EngineService/GetVersion&#39;,
+                request_serializer=bento_dot_protos_dot_services__pb2.GetVersionReq.SerializeToString,
+                response_deserializer=bento_dot_protos_dot_services__pb2.GetVersionResp.FromString,
+                )
         self.ApplySimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/ApplySimulation&#39;,
+                &#39;/bento.protos.EngineService/ApplySimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.ApplySimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.ApplySimulationResp.FromString,
                 )
         self.GetSimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/GetSimulation&#39;,
+                &#39;/bento.protos.EngineService/GetSimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.GetSimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.GetSimulationResp.FromString,
                 )
         self.ListSimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/ListSimulation&#39;,
+                &#39;/bento.protos.EngineService/ListSimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.ListSimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.ListSimulationResp.FromString,
                 )
         self.DropSimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/DropSimulation&#39;,
+                &#39;/bento.protos.EngineService/DropSimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.DropSimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.DropSimulationResp.FromString,
                 )
         self.StepSimulation = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/StepSimulation&#39;,
+                &#39;/bento.protos.EngineService/StepSimulation&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.StepSimulationReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.StepSimulationResp.FromString,
                 )
         self.GetAttribute = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/GetAttribute&#39;,
+                &#39;/bento.protos.EngineService/GetAttribute&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.GetAttributeReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.GetAttributeResp.FromString,
                 )
         self.SetAttribute = channel.unary_unary(
-                &#39;/bento.protos.SimulationService/SetAttribute&#39;,
+                &#39;/bento.protos.EngineService/SetAttribute&#39;,
                 request_serializer=bento_dot_protos_dot_services__pb2.SetAttributeReq.SerializeToString,
                 response_deserializer=bento_dot_protos_dot_services__pb2.SetAttributeResp.FromString,
                 )</code></pre>
@@ -938,37 +1050,39 @@ def StepSimulation(request,
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="bento.protos.services_pb2_grpc.add_SimulationServiceServicer_to_server" href="#bento.protos.services_pb2_grpc.add_SimulationServiceServicer_to_server">add_SimulationServiceServicer_to_server</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.add_EngineServiceServicer_to_server" href="#bento.protos.services_pb2_grpc.add_EngineServiceServicer_to_server">add_EngineServiceServicer_to_server</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="bento.protos.services_pb2_grpc.SimulationService" href="#bento.protos.services_pb2_grpc.SimulationService">SimulationService</a></code></h4>
+<h4><code><a title="bento.protos.services_pb2_grpc.EngineService" href="#bento.protos.services_pb2_grpc.EngineService">EngineService</a></code></h4>
 <ul class="two-column">
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationService.ApplySimulation" href="#bento.protos.services_pb2_grpc.SimulationService.ApplySimulation">ApplySimulation</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationService.DropSimulation" href="#bento.protos.services_pb2_grpc.SimulationService.DropSimulation">DropSimulation</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationService.GetAttribute" href="#bento.protos.services_pb2_grpc.SimulationService.GetAttribute">GetAttribute</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationService.GetSimulation" href="#bento.protos.services_pb2_grpc.SimulationService.GetSimulation">GetSimulation</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationService.ListSimulation" href="#bento.protos.services_pb2_grpc.SimulationService.ListSimulation">ListSimulation</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationService.SetAttribute" href="#bento.protos.services_pb2_grpc.SimulationService.SetAttribute">SetAttribute</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationService.StepSimulation" href="#bento.protos.services_pb2_grpc.SimulationService.StepSimulation">StepSimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineService.ApplySimulation" href="#bento.protos.services_pb2_grpc.EngineService.ApplySimulation">ApplySimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineService.DropSimulation" href="#bento.protos.services_pb2_grpc.EngineService.DropSimulation">DropSimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineService.GetAttribute" href="#bento.protos.services_pb2_grpc.EngineService.GetAttribute">GetAttribute</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineService.GetSimulation" href="#bento.protos.services_pb2_grpc.EngineService.GetSimulation">GetSimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineService.GetVersion" href="#bento.protos.services_pb2_grpc.EngineService.GetVersion">GetVersion</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineService.ListSimulation" href="#bento.protos.services_pb2_grpc.EngineService.ListSimulation">ListSimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineService.SetAttribute" href="#bento.protos.services_pb2_grpc.EngineService.SetAttribute">SetAttribute</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineService.StepSimulation" href="#bento.protos.services_pb2_grpc.EngineService.StepSimulation">StepSimulation</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="bento.protos.services_pb2_grpc.SimulationServiceServicer" href="#bento.protos.services_pb2_grpc.SimulationServiceServicer">SimulationServiceServicer</a></code></h4>
+<h4><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer" href="#bento.protos.services_pb2_grpc.EngineServiceServicer">EngineServiceServicer</a></code></h4>
 <ul class="two-column">
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationServiceServicer.ApplySimulation" href="#bento.protos.services_pb2_grpc.SimulationServiceServicer.ApplySimulation">ApplySimulation</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationServiceServicer.DropSimulation" href="#bento.protos.services_pb2_grpc.SimulationServiceServicer.DropSimulation">DropSimulation</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationServiceServicer.GetAttribute" href="#bento.protos.services_pb2_grpc.SimulationServiceServicer.GetAttribute">GetAttribute</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationServiceServicer.GetSimulation" href="#bento.protos.services_pb2_grpc.SimulationServiceServicer.GetSimulation">GetSimulation</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationServiceServicer.ListSimulation" href="#bento.protos.services_pb2_grpc.SimulationServiceServicer.ListSimulation">ListSimulation</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationServiceServicer.SetAttribute" href="#bento.protos.services_pb2_grpc.SimulationServiceServicer.SetAttribute">SetAttribute</a></code></li>
-<li><code><a title="bento.protos.services_pb2_grpc.SimulationServiceServicer.StepSimulation" href="#bento.protos.services_pb2_grpc.SimulationServiceServicer.StepSimulation">StepSimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer.ApplySimulation" href="#bento.protos.services_pb2_grpc.EngineServiceServicer.ApplySimulation">ApplySimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer.DropSimulation" href="#bento.protos.services_pb2_grpc.EngineServiceServicer.DropSimulation">DropSimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer.GetAttribute" href="#bento.protos.services_pb2_grpc.EngineServiceServicer.GetAttribute">GetAttribute</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer.GetSimulation" href="#bento.protos.services_pb2_grpc.EngineServiceServicer.GetSimulation">GetSimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer.GetVersion" href="#bento.protos.services_pb2_grpc.EngineServiceServicer.GetVersion">GetVersion</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer.ListSimulation" href="#bento.protos.services_pb2_grpc.EngineServiceServicer.ListSimulation">ListSimulation</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer.SetAttribute" href="#bento.protos.services_pb2_grpc.EngineServiceServicer.SetAttribute">SetAttribute</a></code></li>
+<li><code><a title="bento.protos.services_pb2_grpc.EngineServiceServicer.StepSimulation" href="#bento.protos.services_pb2_grpc.EngineServiceServicer.StepSimulation">StepSimulation</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="bento.protos.services_pb2_grpc.SimulationServiceStub" href="#bento.protos.services_pb2_grpc.SimulationServiceStub">SimulationServiceStub</a></code></h4>
+<h4><code><a title="bento.protos.services_pb2_grpc.EngineServiceStub" href="#bento.protos.services_pb2_grpc.EngineServiceStub">EngineServiceStub</a></code></h4>
 </li>
 </ul>
 </li>
