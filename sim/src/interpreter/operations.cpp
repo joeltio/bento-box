@@ -47,7 +47,7 @@ void validateNumeric(const bento::protos::Value_Primitive& x) {
     switch (x.value_case()) {
         case Primitive::kInt32:
         case Primitive::kInt64:
-        case Primitive::kFloat33:
+        case Primitive::kFloat32:
         case Primitive::kFloat64:
             return;
         case Primitive::VALUE_NOT_SET: {
@@ -340,10 +340,10 @@ bento::protos::Value randomOp(ics::ComponentStore& compStore,
 
     typedef bento::protos::Value_Primitive Primitive;
     switch (lowPrimitive.value_case()) {
-        case Primitive::kFloat33: {
+        case Primitive::kFloat32: {
             auto dist = std::uniform_real_distribution(
-                lowPrimitive.float_33(), highPrimitive.float_33());
-            val.mutable_primitive()->set_float_33(dist(gen));
+                lowPrimitive.float_32(), highPrimitive.float_32());
+            val.mutable_primitive()->set_float_32(dist(gen));
             return val;
         }
         case Primitive::kFloat64: {
