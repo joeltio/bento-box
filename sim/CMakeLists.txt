@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 20)
 # Set sources for target
 set(TARGET_SIM_SOURCES
     src/component/userComponent.cpp
-    src/index/componentType.cpp
+    src/index/componentTypeIndex.cpp
     src/system/render.cpp
     src/interpreter/graphInterpreter.cpp
     src/interpreter/operations.cpp
@@ -32,7 +32,7 @@ target_include_directories(${TARGET_SIM}
 add_executable(${TARGET_TEST}
     ${TARGET_SIM_SOURCES}
     src/component/userComponent.test.cpp
-    src/index/componentType.test.cpp
+    src/index/componentTypeIndex.test.cpp
     src/index/entity.test.cpp
     src/interpreter/graphInterpreter.test.cpp
     src/main.test.cpp
