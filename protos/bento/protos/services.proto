@@ -63,7 +63,10 @@ message DropSimulationReq {
 }
 message DropSimulationResp {}
 
-message StepSimulationReq {}
+message StepSimulationReq {
+  // Name of the simulation to step
+  string name = 1;
+}
 message StepSimulationResp {}
 
 message GetAttributeReq {
