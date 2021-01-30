@@ -10,6 +10,7 @@ from bento.ecs.graph import GraphEntity
 from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.references_pb2 import AttributeRef
 from bento.graph.plotter import Plotter
+from tests.components import Position, Keyboard
 
 # sanity check empty plotter gives empty graph
 def test_graph_plotter_empty():

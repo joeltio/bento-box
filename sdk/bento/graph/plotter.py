@@ -5,9 +5,11 @@
 #
 
 from typing import Any, Iterable
+
 from bento.graph.value import wrap_const
-from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode
 from bento.protos.graph_pb2 import Graph, Node
+from bento.ecs.spec import EntityDef, ComponentDef
+from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode
 
 
 class Plotter:

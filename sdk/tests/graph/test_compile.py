@@ -11,7 +11,6 @@ from unittest.mock import Mock
 from typing import Callable, Any
 from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
 
-from bento import types
 from bento.client import Client
 from bento.sim import Simulation
 from tests.utils import assert_proto
@@ -21,7 +20,8 @@ from bento.graph.compile import compile_graph
 from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.sim_pb2 import SimulationDef
 from bento.protos.references_pb2 import AttributeRef
-from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
+from bento.ecs.spec import EntityDef, ComponentDef
+from tests.components import Position, Speed, Clock
 
 ## test tools
 # path to graph test cases in test resources
@@ -67,38 +67,6 @@ def build_sim(component_defs, entity_defs):
 
 
 ## tests
-# test components
-@pytest.fixture
-def Position():
-    return ComponentDef(
-        name="position",
-        schema={
-            "x": types.int32,
-            "y": types.int32,
-        },
-    )
-
-
-@pytest.fixture
-def Speed():
-    return ComponentDef(
-        name="speed",
-        schema={
-            "x_neg": types.int32,
-        },
-    )
-
-
-@pytest.fixture
-def Clock():
-    return ComponentDef(
-        name="clock",
-        schema={
-            "tick_ms": types.int64,
-        },
-    )
-
-
 # test that empty no op functions are compilable
 def test_graph_compile_empty():
     sim = build_sim(component_defs=[], entity_defs=[])
@@ -111,7 +79,7 @@ def test_graph_compile_empty():
 
 
 # test compile basic arithmetic example with one entity
-def test_graph_compile_arithmetic(Position):
+def test_graph_compile_arithmetic():
     sim = build_sim(
         component_defs=[Position],
         entity_defs=[EntityDef(components=[Position], entity_id=1)],
@@ -128,7 +96,7 @@ def test_graph_compile_arithmetic(Position):
 
 
 # test compile basic arithmetic example with multiple entities
-def test_graph_compile_arithmetic_multiple(Position, Speed, Clock):
+def test_graph_compile_arithmetic_multiple():
     sim = build_sim(
         component_defs=[Position, Speed, Clock],
         entity_defs=[
@@ -156,7 +124,7 @@ def test_graph_compile_arithmetic_multiple(Position, Speed, Clock):
 
 
 # test compile ternary conditional
-def test_graph_compile_ternary(Position, Clock):
+def test_graph_compile_ternary():
     sim = build_sim(
         component_defs=[Position, Clock],
         entity_defs=[
@@ -180,7 +148,7 @@ def test_graph_compile_ternary(Position, Clock):
 
 
 # test compil if else conditional conditional
-def test_graph_compile_ifelse(Position, Clock):
+def test_graph_compile_ifelse():
     sim = build_sim(
         component_defs=[Position, Clock],
         entity_defs=[
