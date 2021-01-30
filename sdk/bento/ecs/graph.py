@@ -178,6 +178,7 @@ class GraphComponent(Component):
         graph_ins, graph_outputs = component.inputs, component.outputs
     """
 
+    # TODO(mrzzy): add schema validation
     def __init__(self, entity_id: int, name: str):
         # use __dict__ assignment to prevent triggering __setattr__()
         self.__dict__["_entity_id"] = entity_id
@@ -227,6 +228,10 @@ class GraphComponent(Component):
         """Get the graph unique output nodes recorded by this Graph component"""
         return list(self._outputs.values())
 
+    @property
+    def component_name(self):
+        return self._name
+
 
 class GraphEntity(Entity):
     """Shim that represnets an ECS Entity when plotting computation graph.
@@ -235,10 +240,8 @@ class GraphEntity(Entity):
     The GraphEntity's GraphComponents can be accessed via `.components`.
     """
 
-    def __init__(self, components: Iterable[str]):
-        # TODO(zzy): obtain id from actual entity in engine
-        # compute entity id from hash of components to make entity id deterministic
-        self.id = crc32(",".join(sorted(components)).encode())
+    def __init__(self, components: Iterable[str], entity_id: int):
+        self.entity_id = entity_id
         self.component_map = {
             name: GraphComponent(self.id, name) for name in components
         }
@@ -252,6 +255,10 @@ class GraphEntity(Entity):
             raise KeyError(
                 f"Cannot get component: Component {name} not attached for entity"
             )
+
+    @property
+    def id(self):
+        return self.entity_id
 
     @property
     def components(self) -> Set[GraphComponent]:

@@ -11,6 +11,11 @@ from abc import ABC, abstractmethod, abstractproperty
 class Component(ABC):
     """Component represents a ECS Component in the Engine. """
 
+    @abstractproperty
+    def component_name(self):
+        """Get the name of the this Component"""
+        pass
+
     @abstractmethod
     def get_attr(self, name: str) -> Any:
         """Retrieve the attribute value with the given name from this ECS component
@@ -61,6 +66,11 @@ class Entity(ABC):
         Returns:
             Component that represents the ECS component.
         """
+        pass
+
+    @abstractproperty
+    def id(self) -> int:
+        """Get the id of this Entity"""
         pass
 
     @abstractproperty

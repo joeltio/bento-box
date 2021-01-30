@@ -8,8 +8,9 @@
 from typing import Any, Set, List
 
 from bento.ecs import base
-from bento.value import wrap, unwrap
+from bento.types import Type
 from bento.client import Client
+from bento.value import wrap, unwrap
 from bento.protos.references_pb2 import AttributeRef
 
 
@@ -48,6 +49,10 @@ class Component(base.Component):
             value=wrap(value),
         )
 
+    @property
+    def component_name(self):
+        return self._name
+
 
 class Entity(base.Entity):
     """Shim replicates a ECS entity on the bentobox Engine via gRPC.
@@ -74,6 +79,10 @@ class Entity(base.Entity):
             raise KeyError(
                 f"Cannot get component: Component {name} not attached for entity"
             )
+
+    @property
+    def id(self):
+        return self.entity_id
 
     @property
     def components(self) -> Set[Component]:
