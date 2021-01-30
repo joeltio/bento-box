@@ -4,7 +4,6 @@
 #include <bento/protos/graph.pb.h>
 #include <core/ics/componentStore.h>
 #include <index/indexStore.h>
-#include <utility>
 
 namespace interpreter {
 

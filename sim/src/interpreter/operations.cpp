@@ -6,17 +6,70 @@
 
 namespace {
 
-void validateNumerics(const bento::protos::Value& x,
-                      const bento::protos::Value& y) {
-    // Ensure that they are primitives
-    if (!x.has_primitive() || !y.has_primitive()) {
-        throw std::runtime_error("Numeric values must be primitive.");
+void validateSame(const bento::protos::Value_Primitive& x,
+                  const bento::protos::Value_Primitive& y) {
+    if (x.value_case() != y.value_case()) {
+        throw std::runtime_error("Primitive values must be the same type.");
+    }
+}
+
+void validateSame(const bento::protos::Value_Array& x,
+                  const bento::protos::Value_Array& y) {
+    if (x.values_size() != y.values_size()) {
+        throw std::runtime_error("Arrays must have the same size.");
     }
 
-    // Ensure that they are the same type
-    if (x.primitive().value_case() != y.primitive().value_case()) {
-        throw std::runtime_error(
-            "Values to perform arithmetic on must be the same type.");
+    for (size_t i = 0; i < x.values_size(); i++) {
+        auto& xPrimitive = x.values(i);
+        auto& yPrimitive = y.values(i);
+
+        validateSame(xPrimitive, yPrimitive);
+    }
+}
+
+void validateSame(const bento::protos::Value& x,
+                  const bento::protos::Value& y) {
+    if (x.kind_case() != y.kind_case()) {
+        throw std::runtime_error("Values must be the same type.");
+    }
+
+    // x and y are primitives
+    if (x.has_primitive()) {
+        validateSame(x.primitive(), y.primitive());
+        return;
+    }
+
+    validateSame(x.array(), y.array());
+}
+
+void validateNumeric(const bento::protos::Value_Primitive& x) {
+    typedef bento::protos::Value_Primitive Primitive;
+    switch (x.value_case()) {
+        case Primitive::kInt32:
+        case Primitive::kInt64:
+        case Primitive::kFloat33:
+        case Primitive::kFloat64:
+            return;
+        case Primitive::VALUE_NOT_SET: {
+            throw std::runtime_error("No value when validating numeric value.");
+        }
+        default: {
+            throw std::runtime_error("Value given is not numeric.");
+        }
+    }
+}
+
+void validateBoolean(const bento::protos::Value_Primitive& x) {
+    typedef bento::protos::Value_Primitive Primitive;
+    switch (x.value_case()) {
+        case Primitive::kBoolean:
+            return;
+        case Primitive::VALUE_NOT_SET: {
+            throw std::runtime_error("No value when validating boolean value.");
+        }
+        default: {
+            throw std::runtime_error("Value given is not a boolean.");
+        }
     }
 }
 
@@ -183,7 +236,8 @@ bento::protos::Value modOp(ics::ComponentStore& compStore,
 
     // Only integers can use modulo, so write the switch case here manually
     // This code is taken from runMathFn
-    validateNumerics(xVal, yVal);
+    validateSame(xVal, yVal);
+    validateNumeric(xVal.primitive());
 
     typedef bento::protos::Value_Primitive Primitive;
     switch (xVal.primitive().value_case()) {
@@ -276,7 +330,8 @@ bento::protos::Value randomOp(ics::ComponentStore& compStore,
 
     // Lambdas cannot capture static variables, so the code from runMathFn is
     // put here.
-    validateNumerics(lowVal, highVal);
+    validateSame(lowVal, highVal);
+    validateNumeric(lowVal.primitive());
 
     auto& lowPrimitive = lowVal.primitive();
     auto& highPrimitive = highVal.primitive();

@@ -8,10 +8,17 @@
 
 namespace {
 
-void validateNumerics(const bento::protos::Value& x,
-                      const bento::protos::Value& y);
+void validateSame(const bento::protos::Value_Primitive& x,
+                  const bento::protos::Value_Primitive& y);
+void validateSame(const bento::protos::Value_Array& x,
+                  const bento::protos::Value_Array& y);
+void validateSame(const bento::protos::Value& x, const bento::protos::Value& y);
 
-}
+void validateNumeric(const bento::protos::Value_Primitive& x);
+
+void validateBoolean(const bento::protos::Value_Primitive& x);
+
+}  // namespace
 
 namespace interpreter {
 
@@ -53,7 +60,8 @@ bento::protos::Value runMathFn(Fn fn, const bento::protos::Value& x) {
 template <class Fn>
 bento::protos::Value runMathFn(Fn fn, const bento::protos::Value& x,
                                const bento::protos::Value& y) {
-    validateNumerics(x, y);
+    validateSame(x, y);
+    validateNumeric(x.primitive());
 
     typedef bento::protos::Value_Primitive Primitive;
     switch (x.primitive().value_case()) {
