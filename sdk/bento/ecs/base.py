@@ -4,8 +4,8 @@
 # Base classes
 #
 
-from typing import List, Any
-from abc import ABC, abstractmethod
+from typing import List, Any, Set
+from abc import ABC, abstractmethod, abstractproperty
 
 
 class Component(ABC):
@@ -44,6 +44,9 @@ class Component(ABC):
         """ Alias for set_attr() """
         return self.set_attr(name, value)
 
+    def __str__(self):
+        return f"{type(self).__name__}<{self._entity_id}, {self._name}>"
+
 
 class Entity(ABC):
     """Entity represents a ECS entity in the Engine. """
@@ -60,6 +63,14 @@ class Entity(ABC):
         """
         pass
 
+    @abstractproperty
+    def components(self) -> Set[Component]:
+        """Get the components attached to this Entity"""
+        pass
+
     def __getitem__(self, name: str) -> Component:
         """Alias for get_component()"""
         return self.get_component(name)
+
+    def __str__(self):
+        return f"{type(self).__name__}<{self.id}>"

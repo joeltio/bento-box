@@ -37,7 +37,7 @@ class ComponentDef:
         return self.proto.schema
 
     def __repr__(self):
-        return f"{type(self)}<{self.proto.name}>"
+        return f"{self.proto.name}"
 
     def __hash__(self):
         return hash(self.proto)

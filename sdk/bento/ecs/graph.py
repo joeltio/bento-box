@@ -227,9 +227,6 @@ class GraphComponent(Component):
         """Get the graph unique output nodes recorded by this Graph component"""
         return list(self._outputs.values())
 
-    def __str__(self):
-        return f"{type(self).__name__}<{self._name}, {self._name}>"
-
 
 class GraphEntity(Entity):
     """Shim that represnets an ECS Entity when plotting computation graph.
@@ -247,6 +244,8 @@ class GraphEntity(Entity):
         }
 
     def get_component(self, name: str) -> GraphComponent:
+        # allow users to specify component class as name
+        name = str(name)
         try:
             return self.component_map[name]
         except KeyError:
@@ -255,9 +254,5 @@ class GraphEntity(Entity):
             )
 
     @property
-    def components(self) -> Set[str]:
-        """Get the GraphComponents attached to this GraphEntity"""
-        return set(self.component_map.values())
-
-    def __str__(self):
-        return f"{type(self).__name__}<{self.id}>"
+    def components(self) -> Set[GraphComponent]:
+        return frozenset(self.component_map.values())
