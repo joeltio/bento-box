@@ -71,11 +71,14 @@ def compile_graph(
     given `Simulation` platform are available for use in `convert_fn` in the form
     of `GraphEntity` and `GraphComponent` respectively.
 
+    Globals can be used read only in the `convert_fn`. Writing to globals is not supported.
+
     Compiles by converting the given `convert_fn` function to AST
     applying the given `preprocessors` transforms to perform preprocessing on the AST,
     applying given `analyzers` on the AST to perform static analysis,
     linting the AST with the given `linters` to perform static checks,
-    applying the given `transforms` to transform the AST to a function that plots the computational graph.
+    applying the given `transforms` to transform the AST to a function that
+    plots the computational graph when run.
 
     Note:
         Even though both `preprocessors` and `transforms` are comprised of  a list of `Transform`s
@@ -146,8 +149,11 @@ def compile_graph(
 
         # load AST back as a module
         compiled = load_ast_module(ast)
+        # allow the use of globals symbols with respect to convert_fn function
+        # to be used during graph plotting
+        compiled.build_graph.__globals__.update(convert_fn.__globals__)
         # unpack available Entities and components from target platform available for
-        # use during
+        # use during graph plotting.
         graph_entities = [
             GraphEntity([c.component_name for c in e.components], e.id)
             for e in platform.entities

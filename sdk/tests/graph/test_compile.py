@@ -84,13 +84,12 @@ def test_graph_compile_arithmetic():
         component_defs=[Position],
         entity_defs=[EntityDef(components=[Position], entity_id=1)],
     )
-    print(sim.entity_map)
 
     @compile_graph(sim)
     def actual_graph(g: Plotter):
-        car = g.entity(components=["position"])
+        car = g.entity(components=[Position])
         x_delta = 20
-        car["position"].x += x_delta
+        car[Position].x += x_delta
 
     assert_graph(actual_graph, "expected_graph_arithmetic.yaml")
 
@@ -108,17 +107,17 @@ def test_graph_compile_arithmetic_multiple():
     @compile_graph(sim)
     def actual_graph(g: Plotter):
         ms_in_sec = int(1e3)
-        env = g.entity(components=["clock"])
+        env = g.entity(components=[Clock])
         car = g.entity(
             components=[
-                "position",
-                "speed",
+                Position,
+                Speed,
             ]
         )
-        tick_ms = env["clock"].tick_ms
-        xps = -car["speed"].x_neg
+        tick_ms = env[Clock].tick_ms
+        xps = -car[Speed].x_neg
         x_delta = xps * (tick_ms * ms_in_sec)
-        car["position"].x = x_delta + car["position"].x
+        car[Position].x = x_delta + car[Position].x
 
     assert_graph(actual_graph, "expected_graph_arithmetic_multiple.yaml")
 
@@ -137,12 +136,12 @@ def test_graph_compile_ternary():
     def actual_graph(g: Plotter):
         car = g.entity(
             components=[
-                "position",
+                Position,
             ]
         )
-        env = g.entity(components=["clock"])
-        x_delta = 20 if env["clock"].tick_ms > 2000 else 10
-        car["position"].x = x_delta
+        env = g.entity(components=[Clock])
+        x_delta = 20 if env[Clock].tick_ms > 2000 else 10
+        car[Position].x = x_delta
 
     assert_graph(actual_graph, "expected_graph_ternary.yaml")
 
@@ -161,20 +160,20 @@ def test_graph_compile_ifelse():
     def actual_graph(g: Plotter):
         car = g.entity(
             components=[
-                "position",
+                Position,
             ]
         )
-        env = g.entity(components=["clock"])
-        if env["clock"].tick_ms > 2000:
+        env = g.entity(components=[Clock])
+        if env[Clock].tick_ms > 2000:
             x_delta = 20
             y_delta = x_delta + 2
-        elif env["clock"].tick_ms > 5000:
+        elif env[Clock].tick_ms > 5000:
             x_delta = 50
             y_delta = x_delta + 10
         else:
             x_delta = 10
             y_delta = x_delta - 5
-        car["position"].x += x_delta
-        car["position"].y += y_delta
+        car[Position].x += x_delta
+        car[Position].y += y_delta
 
     assert_graph(actual_graph, "expected_graph_ifelse.yaml")

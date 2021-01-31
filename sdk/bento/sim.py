@@ -12,7 +12,7 @@ from bento.protos.sim_pb2 import SimulationDef
 
 
 class Simulation:
-    # TODO(mrzzy): Add usage infomation into docs.
+    # TODO(mrzzy): Add a more complete usage example into docs.
     """Represents a Simulation in running in the Bentobox Engine.
 
     Example:
