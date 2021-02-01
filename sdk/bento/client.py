@@ -167,7 +167,7 @@ class Client:
         try:
             response = self.sim_grpc.GetAttribute(
                 GetAttributeReq(
-                    name=sim_name,
+                    sim_name=sim_name,
                     attribute=attr_ref,
                 )
             )
@@ -189,7 +189,7 @@ class Client:
         try:
             response = self.sim_grpc.SetAttribute(
                 SetAttributeReq(
-                    name=sim_name,
+                    sim_name=sim_name,
                     attribute=attr_ref,
                     value=value,
                 )

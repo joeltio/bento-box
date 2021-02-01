@@ -84,7 +84,7 @@ def mock_engine_port(sim_def, attr_ref, attr_val):
 
         def GetAttribute(self, request, context):
             # mock simulation not found error
-            if request.name != sim_def.name:
+            if request.sim_name != sim_def.name:
                 context.set_code(StatusCode.NOT_FOUND)
                 context.set_details("No simulation with the given name is found.")
             # mock attribute lookup error
@@ -95,7 +95,7 @@ def mock_engine_port(sim_def, attr_ref, attr_val):
 
         def SetAttribute(self, request, context):
             # mock simulation not found error
-            if request.name != sim_def.name:
+            if request.sim_name != sim_def.name:
                 context.set_code(StatusCode.NOT_FOUND)
                 context.set_details("No simulation with the given name is found.")
             # mock attribute lookup error
