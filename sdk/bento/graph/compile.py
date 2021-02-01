@@ -129,7 +129,7 @@ def compile_graph(
         The converted computational Graph as a `Graph` protobuf message.
     """
 
-    def _compile_graph(convert_fn: Callable):
+    def _compile_graph(convert_fn: Callable[[Plotter], None]):
         # parse ast from function source
         ast = parse_ast(convert_fn)
 
