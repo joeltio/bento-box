@@ -25,6 +25,8 @@ from bento.protos.services_pb2 import (
     GetAttributeResp,
     SetAttributeReq,
     SetAttributeResp,
+    StepSimulationReq,
+    StepSimulationResp,
 )
 from bento.protos.references_pb2 import AttributeRef
 from bento.protos.values_pb2 import Value
@@ -152,6 +154,22 @@ class Client:
         """
         try:
             response = self.sim_grpc.DropSimulation(DropSimulationReq(name=name))
+        except RpcError as e:
+            raise_native(e)
+
+    def step_sim(self, name: str):
+        """Run simulation with the given name for a single step
+
+        Runs the specified simulation's systems in the order they are registered.
+        Blocks until all systems of that simulation have finished running.
+
+        Args:
+            name: Name of the simulation to step.
+        Raises:
+            LookupError: If the no simulation with the given is name exists on the Engine.
+        """
+        try:
+            response = self.sim_grpc.StepSimulation(StepSimulationReq(name=name))
         except RpcError as e:
             raise_native(e)
 

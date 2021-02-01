@@ -29,6 +29,8 @@ from bento.protos.services_pb2 import (
     GetAttributeResp,
     SetAttributeReq,
     SetAttributeResp,
+    StepSimulationReq,
+    StepSimulationResp,
 )
 from bento.protos.services_pb2_grpc import (
     EngineServiceServicer,
@@ -81,6 +83,13 @@ def mock_engine_port(sim_def, attr_ref, attr_val):
                 context.set_code(StatusCode.NOT_FOUND)
                 context.set_details("No simulation with the given name is found.")
             return DropSimulationResp()
+
+        def StepSimulation(self, request, context):
+            # mock not found error
+            if request.name != sim_def.name:
+                context.set_code(StatusCode.NOT_FOUND)
+                context.set_details("No simulation with the given name is found.")
+            return StepSimulationResp()
 
         def GetAttribute(self, request, context):
             # mock simulation not found error
@@ -164,6 +173,18 @@ def test_client_remove_sim(client, sim_def):
     has_error = False
     try:
         client.remove_sim("not_found")
+    except LookupError:
+        has_error = True
+    assert has_error
+
+
+def test_client_step_sim(client, sim_def):
+    client.step_sim(sim_def.name)
+
+    # test not found error handling
+    has_error = False
+    try:
+        client.step_sim("not_found")
     except LookupError:
         has_error = True
     assert has_error
