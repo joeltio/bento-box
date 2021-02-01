@@ -33,6 +33,7 @@ set(TARGET_SIM_SOURCES
     src/system/render.cpp
     src/interpreter/graphInterpreter.cpp
     src/interpreter/operations.cpp
+    src/interpreter/util.cpp
     src/network/grpcServer.cpp
     src/service/engineService.cpp
     src/ics.cpp
@@ -53,6 +54,7 @@ add_executable(${TARGET_TEST}
     src/index/componentTypeIndex.test.cpp
     src/index/entity.test.cpp
     src/interpreter/graphInterpreter.test.cpp
+    src/interpreter/util.test.cpp
     src/network/grpcServer.test.cpp
     src/service/engineService.test.cpp
     src/main.test.cpp
