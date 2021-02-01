@@ -92,14 +92,14 @@ Status EngineServiceImpl::StepSimulation(
 Status EngineServiceImpl::GetAttribute(
     ServerContext* context, const bento::protos::GetAttributeReq* request,
     bento::protos::GetAttributeResp* response) {
-    if (!sims.contains(request->name())) {
+    if (!sims.contains(request->sim_name())) {
         return Status(grpc::NOT_FOUND,
                       "Could not find simulation with that name.");
     }
 
-    auto& indexStore = sims.at(request->name())->indexStore;
-    auto& compStore = sims.at(request->name())->compStore;
-    auto& simDef = sims.at(request->name())->simDef;
+    auto& indexStore = sims.at(request->sim_name())->indexStore;
+    auto& compStore = sims.at(request->sim_name())->compStore;
+    auto& simDef = sims.at(request->sim_name())->simDef;
 
     // Use interpreter's operations to find the attribute for consistency
     // Create the retrieve node
@@ -117,14 +117,14 @@ Status EngineServiceImpl::GetAttribute(
 Status EngineServiceImpl::SetAttribute(
     ServerContext* context, const bento::protos::SetAttributeReq* request,
     bento::protos::SetAttributeResp* response) {
-    if (!sims.contains(request->name())) {
+    if (!sims.contains(request->sim_name())) {
         return Status(grpc::NOT_FOUND,
                       "Could not find simulation with that name.");
     }
 
-    auto& indexStore = sims.at(request->name())->indexStore;
-    auto& compStore = sims.at(request->name())->compStore;
-    auto& simDef = sims.at(request->name())->simDef;
+    auto& indexStore = sims.at(request->sim_name())->indexStore;
+    auto& compStore = sims.at(request->sim_name())->compStore;
+    auto& simDef = sims.at(request->sim_name())->simDef;
 
     // Use interpreter's node to find the attribute for consistency
     // Create the retrieve node

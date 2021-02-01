@@ -71,7 +71,7 @@ message StepSimulationResp {}
 
 message GetAttributeReq {
   // Name of the simulation to retrieve the attribute from
-  string name = 1;
+  string sim_name = 1;
   // Reference to the attribute to retrieve
   AttributeRef attribute = 2;
 }
@@ -82,7 +82,7 @@ message GetAttributeResp {
 
 message SetAttributeReq {
   // Name of the simulation to set the attribute
-  string name = 1;
+  string sim_name = 1;
   // Reference to the target attribute to set
   AttributeRef attribute = 2;
   // The value to the set the target attribute to
