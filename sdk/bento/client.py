@@ -123,7 +123,7 @@ class Client:
         Returns:
             Specification of the simulation with the given name.
         Raises:
-            NameError: If the no simulation with the given is name exists on the Engine.
+            LookupError: If the no simulation with the given is name exists on the Engine.
         """
         try:
             response = self.sim_grpc.GetSimulation(GetSimulationReq(name=name))
@@ -148,38 +148,48 @@ class Client:
         Args:
             name: Name of the simulation to remove.
         Raises:
-            NameError: If the no simulation with the given is name exists on the Engine.
+            LookupError: If the no simulation with the given is name exists on the Engine.
         """
         try:
             response = self.sim_grpc.DropSimulation(DropSimulationReq(name=name))
         except RpcError as e:
             raise_native(e)
 
-    def get_attr(self, attr_ref: AttributeRef) -> Value:
+    def get_attr(self, sim_name: str, attr_ref: AttributeRef) -> Value:
         """Get the value of the attribute referenced by the given attr_ref
         Args:
+            sim_name: The name of the Simulation to retrieve the attribute from.
             attr_ref: AttributeRef that specifies the target attribute to get.
         Raises:
-            LookupError: If no such attribute exists for the given attr_ref
+            LookupError: If the no simulation with the given is name exists on the Engine
+                or if no such attribute exists for the given attr_ref.
         """
         try:
-            response = self.sim_grpc.GetAttribute(GetAttributeReq(attribute=attr_ref))
+            response = self.sim_grpc.GetAttribute(
+                GetAttributeReq(
+                    name=sim_name,
+                    attribute=attr_ref,
+                )
+            )
         except RpcError as e:
             raise_native(e)
         return response.value
 
-    def set_attr(self, attr_ref: AttributeRef, value: Value):
+    def set_attr(self, sim_name: str, attr_ref: AttributeRef, value: Value):
         """Set the attribute referenced by the given attr_ref to the given value
         Args:
+            sim_name: The name of the Simulation to set the attribute in.
             attr_ref: AttributeRef that specifies the target attribute to set.
             value: The value to set the target attribute to.
         Raises:
-            LookupError: If no such attribute exists for the given attr_ref
+            LookupError: If the no simulation with the given is name exists on the Engine
+                or if no such attribute exists for the given attr_ref.
             ValueError: If an invalid value is given.
         """
         try:
             response = self.sim_grpc.SetAttribute(
                 SetAttributeReq(
+                    name=sim_name,
                     attribute=attr_ref,
                     value=value,
                 )

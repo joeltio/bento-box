@@ -21,8 +21,9 @@ class Component(base.Component):
     performing gRPC requests when attributes are set or retrieved.
     """
 
-    def __init__(self, entity_id: int, name: str, client: Client):
+    def __init__(self, sim_name: str, entity_id: int, name: str, client: Client):
         # use __dict__ assignment to prevent triggering __setattr__()
+        self.__dict__["_sim_name"] = sim_name
         self.__dict__["_entity_id"] = entity_id
         self.__dict__["_name"] = name
         self.__dict__["_client"] = client
@@ -30,17 +31,19 @@ class Component(base.Component):
     def get_attr(self, name: str) -> Any:
         # retrieve attribute from engine
         value = self._client.get_attr(
-            AttributeRef(
+            sim_name=self._sim_name,
+            attr_ref=AttributeRef(
                 entity_id=self._entity_id,
                 component=self._name,
                 attribute=name,
-            )
+            ),
         )
         return unwrap(value)
 
     def set_attr(self, name: str, value: Any):
         # set attribute to value on the engine
         self._client.set_attr(
+            sim_name=self._sim_name,
             attr_ref=AttributeRef(
                 entity_id=self._entity_id,
                 component=self._name,
@@ -63,9 +66,12 @@ class Entity(base.Entity):
     The grpc Entity's grpc Components can be accessed via `.components`.
     """
 
-    def __init__(self, components: List[str], entity_id: int, client: Client):
+    def __init__(
+        self, sim_name: str, components: List[str], entity_id: int, client: Client
+    ):
+        self.sim_name = sim_name
         self.component_map = {
-            name: Component(entity_id, name, client) for name in components
+            name: Component(sim_name, entity_id, name, client) for name in components
         }
         self.entity_id = entity_id
         self.client = client

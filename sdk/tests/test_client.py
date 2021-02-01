@@ -83,14 +83,22 @@ def mock_engine_port(sim_def, attr_ref, attr_val):
             return DropSimulationResp()
 
         def GetAttribute(self, request, context):
-            # mock not found error
+            # mock simulation not found error
+            if request.name != sim_def.name:
+                context.set_code(StatusCode.NOT_FOUND)
+                context.set_details("No simulation with the given name is found.")
+            # mock attribute lookup error
             if request.attribute != attr_ref:
                 context.set_code(StatusCode.NOT_FOUND)
                 context.set_details("No attribute found for the given AttributeRef")
             return GetAttributeResp(value=attr_val)
 
         def SetAttribute(self, request, context):
-            # mock not found error
+            # mock simulation not found error
+            if request.name != sim_def.name:
+                context.set_code(StatusCode.NOT_FOUND)
+                context.set_details("No simulation with the given name is found.")
+            # mock attribute lookup error
             if request.attribute != attr_ref:
                 context.set_code(StatusCode.NOT_FOUND)
                 context.set_details("No attribute found for the given AttributeRef")
@@ -161,13 +169,14 @@ def test_client_remove_sim(client, sim_def):
     assert has_error
 
 
-def test_client_set_attr(client, attr_ref, attr_val):
-    client.set_attr(attr_ref, attr_val)
+def test_client_set_attr(client, sim_def, attr_ref, attr_val):
+    client.set_attr(sim_def.name, attr_ref, attr_val)
 
     # test not found error handling
     has_not_found_error = False
     try:
         client.set_attr(
+            sim_name=sim_def.name,
             attr_ref=AttributeRef(
                 entity_id=1,
                 component="not",
@@ -184,6 +193,7 @@ def test_client_set_attr(client, attr_ref, attr_val):
     invalid_val = Value()
     try:
         response = client.set_attr(
+            sim_name=sim_def.name,
             attr_ref=attr_ref,
             value=invalid_val,
         )
@@ -192,6 +202,22 @@ def test_client_set_attr(client, attr_ref, attr_val):
     assert has_invalid_error
 
 
-def test_client_get_attr(client, attr_ref, attr_val):
-    value = client.get_attr(attr_ref)
+def test_client_get_attr(client, sim_def, attr_ref, attr_val):
+    value = client.get_attr(sim_def.name, attr_ref)
     assert value == attr_val
+
+    # test not found error handling
+    # attribute not found
+    has_not_found_error = False
+    try:
+        client.get_attr(
+            sim_name=sim_def.name,
+            attr_ref=AttributeRef(
+                entity_id=1,
+                component="not",
+                attribute="found",
+            ),
+        )
+    except LookupError:
+        has_not_found_error = True
+    assert has_not_found_error

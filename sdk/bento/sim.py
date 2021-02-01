@@ -60,6 +60,7 @@ class Simulation:
         # unpack Entity protos into grpc backed entities (set(components) -> grpc entity)
         self.entity_map = {
             frozenset(e.components): Entity(
+                sim_name=self.name,
                 entity_id=e.id,
                 components=e.components,
                 client=self.client,

@@ -16,6 +16,11 @@ from bento.protos.references_pb2 import AttributeRef
 
 
 @pytest.fixture
+def sim_name():
+    return "test_sim"
+
+
+@pytest.fixture
 def mock_client():
     mock_client = Mock(spec=Client)
     mock_client.get_attr.return_value = wrap(3.2)
@@ -23,9 +28,11 @@ def mock_client():
 
 
 @pytest.fixture
-def component(mock_client):
+def component(mock_client, sim_name):
     # test grpc component
-    return Component(entity_id=1, name="position", client=mock_client)
+    return Component(
+        sim_name=sim_name, entity_id=1, name="position", client=mock_client
+    )
 
 
 def test_ecs_grpc_component_get_attr(component):
@@ -36,9 +43,10 @@ def test_ecs_grpc_component_get_attr(component):
     assert val == 3.2
 
 
-def test_ecs_grpc_component_get_attr(component, mock_client):
+def test_ecs_grpc_component_set_attr(component, mock_client, sim_name):
     def check_client_set_attr(x):
         mock_client.set_attr.assert_called_with(
+            sim_name=sim_name,
             attr_ref=AttributeRef(entity_id=1, component="position", attribute="y"),
             value=wrap(x),
         )
@@ -52,17 +60,20 @@ def test_ecs_grpc_component_get_attr(component, mock_client):
 
 
 @pytest.fixture
-def entity(mock_client):
+def entity(mock_client, sim_name):
     # test grpc entity
-    return Entity(components=["position"], entity_id=1, client=mock_client)
+    return Entity(
+        sim_name=sim_name, components=["position"], entity_id=1, client=mock_client
+    )
 
 
-def test_ecs_grpc_entity_get_component(entity, mock_client):
+def test_ecs_grpc_entity_get_component(entity, mock_client, sim_name):
     def check_component(component):
         assert (
             component._entity_id == 1
             and component._name == "position"
             and component._client == mock_client
+            and component._sim_name == sim_name
         )
 
     component = entity.get_component("position")
