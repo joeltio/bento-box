@@ -39,6 +39,9 @@ class ComponentDef:
     def __repr__(self):
         return self.proto.name
 
+    def __hash__(self):
+        return hash(self.proto.name)
+
 
 class EntityDef:
     """Specifies a ECS entity by defining its components.
@@ -64,8 +67,8 @@ class EntityDef:
         return self.proto.id
 
     @property
-    def components(self) -> List[ComponentDef]:
-        """Get the components attached of ECS entity defined in this EntityDef"""
+    def components(self) -> List[str]:
+        """Get the names of the components attached to the ECS entity defined in this EntityDef"""
         return self.proto.components
 
     def __repr__(self):
@@ -74,7 +77,7 @@ class EntityDef:
         return f"{type(self)}<{self.proto.id}>"
 
     def __hash__(self):
-        return hash(self.proto)
+        return hash(self.proto.id)
 
 
 class SystemDef:
@@ -93,6 +96,11 @@ class SystemDef:
         self.proto = ecs_pb2.SystemDef(graph=graph)
 
     @property
+    def id(self) -> int:
+        """Get the id of this system"""
+        return self.proto.id
+
+    @property
     def graph(self) -> Graph:
         """Get the computational graph of ECS system defined in this SystemDef"""
         return self.proto.graph
@@ -103,4 +111,4 @@ class SystemDef:
         return f"{type(self)}<{self.proto.id}>"
 
     def __hash__(self):
-        return hash(self.proto)
+        return hash(self.proto.id)

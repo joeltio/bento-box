@@ -5,8 +5,10 @@
 #
 
 from binascii import crc32
-from typing import Any, Iterable, Set, List
+from typing import Any, Iterable, Set, List, Dict
+from bento.types import Type
 from bento.ecs.base import Component, Entity
+from bento.ecs.spec import ComponentDef, EntityDef
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
@@ -179,14 +181,22 @@ class GraphComponent(Component):
     """
 
     # TODO(mrzzy): add schema validation
-    def __init__(self, entity_id: int, name: str):
+    def __init__(self, entity_id: int, name: str, schema: Dict[str, Type]):
         # use __dict__ assignment to prevent triggering __setattr__()
         self.__dict__["_entity_id"] = entity_id
         self.__dict__["_name"] = name
+        self.__dict__["_schema"] = schema
         # _inputs/_outputs are dict with AttributeRef as key and Retrieve/Mutate nodes as value
         # ensuring that we record unique input and output nodes
         self.__dict__["_inputs"] = {}
         self.__dict__["_outputs"] = {}
+
+    @classmethod
+    def from_def(cls, entity_id: int, component_def: ComponentDef):
+        """Construct a GraphComponent from a ComponentDef"""
+        return cls(
+            entity_id=entity_id, name=component_def.name, schema=component_def.schema
+        )
 
     def get_attr(self, name: str) -> Node:
         # Record the attribute retrieve operation as input graph node
@@ -240,11 +250,20 @@ class GraphEntity(Entity):
     The GraphEntity's GraphComponents can be accessed via `.components`.
     """
 
-    def __init__(self, components: Iterable[str], entity_id: int):
+    def __init__(self, components: Iterable[GraphComponent], entity_id: int):
         self.entity_id = entity_id
-        self.component_map = {
-            name: GraphComponent(self.id, name) for name in components
-        }
+        self.component_map = {c.component_name: c for c in components}
+
+    @classmethod
+    def from_def(cls, entity_def: EntityDef, component_defs: Iterable[ComponentDef]):
+        """Construct a GraphEntity from a EntityDef"""
+        return cls(
+            entity_id=entity_def.id,
+            components=[
+                GraphComponent.from_def(entity_id=entity_def.id, component_def=c)
+                for c in component_defs
+            ],
+        )
 
     def get_component(self, name: str) -> GraphComponent:
         # allow users to specify component class as name

@@ -8,28 +8,29 @@ from typing import Set
 from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode, wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
+from tests.components import Position
 
 
 def test_graph_ecs_entity():
-    components = ["position"]
+    components = [GraphComponent.from_def(entity_id=1, component_def=Position)]
     entity = GraphEntity(components=components, entity_id=1)
     # check Entity's components accessible via `.components`
-    assert len(set(c._name for c in entity.components) - set(components)) == 0
+    assert [c.component_name for c in entity.components] == [Position.name]
     # check component accessible by name using [] notation
-    position = entity[components[0]]
+    position = entity[Position]
     assert isinstance(position, GraphComponent)
 
 
 def test_graph_ecs_component_get_attr():
-    entity_id, name = 1, "position"
-    position = GraphComponent(entity_id=entity_id, name=name)
+    entity_id = 1
+    position = GraphComponent.from_def(entity_id, Position)
     # check that getting an attribute from a component returns a GraphNode
     # wrapping a Retrieve node that retrieves the attribute
     pos_x = position.x
     expected_node = Node(
         retrieve_op=Node.Retrieve(
             retrieve_attr=AttributeRef(
-                entity_id=entity_id, component=name, attribute="x"
+                entity_id=entity_id, component=Position.name, attribute="x"
             )
         )
     )
@@ -42,8 +43,8 @@ def test_graph_ecs_component_get_attr():
 
 
 def test_graph_ecs_component_set_attr_node():
-    entity_id, name = 1, "position"
-    position = GraphComponent(entity_id=entity_id, name=name)
+    entity_id = 1
+    position = GraphComponent.from_def(entity_id, Position)
     pos_x = position.x
     position.y = 10
     # check setting attribute to node sets expected output node.
@@ -52,7 +53,7 @@ def test_graph_ecs_component_set_attr_node():
         mutate_op=Node.Mutate(
             mutate_attr=AttributeRef(
                 entity_id=entity_id,
-                component="position",
+                component=Position.name,
                 attribute="y",
             ),
             to_node=pos_x.node,
@@ -65,31 +66,31 @@ def test_graph_ecs_component_set_attr_node():
 
 
 def test_graph_ecs_component_set_attr_native_value():
-    entity_id, name = 1, "position"
-    position = GraphComponent(entity_id=entity_id, name=name)
+    entity_id = 1
+    position = GraphComponent.from_def(entity_id, Position)
     # check setting attribute to native sets expected output node node.
-    position.y = 3.1
+    position.y = 3
     expected_node = Node(
         mutate_op=Node.Mutate(
             mutate_attr=AttributeRef(
                 entity_id=entity_id,
-                component="position",
+                component=Position.name,
                 attribute="y",
             ),
-            to_node=wrap_const(3.1),
+            to_node=wrap_const(3),
         )
     )
     assert position.outputs[0].node == expected_node
 
 
 def test_graph_ecs_component_aug_assign_node():
-    entity_id, name = 1, "position"
-    position = GraphComponent(entity_id=entity_id, name=name)
+    entity_id = 1
+    position = GraphComponent.from_def(entity_id, Position)
     # check augment assignment flags the attribute (position.x) as both input and output
     position.y += 30
     attr_ref = AttributeRef(
         entity_id=entity_id,
-        component="position",
+        component=Position.name,
         attribute="y",
     )
     expected_input = Node(retrieve_op=Node.Retrieve(retrieve_attr=attr_ref))
