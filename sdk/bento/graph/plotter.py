@@ -19,12 +19,30 @@ class Plotter:
     which can be obtained from `graph()` as a `Graph` protobuf message.
     """
 
-    def __init__(self, entities: Iterable[GraphEntity] = []):
-        # map components set to entity id
-        self.entity_map = {
-            frozenset([c.component_name for c in entity.components]): entity
-            for entity in entities
-        }
+    def __init__(
+        self,
+        entity_defs: Iterable[EntityDef],
+        component_defs: Iterable[ComponentDef],
+    ):
+        """
+        Construct a new Graph Plotter.
+
+        Args:
+            entity_defs: Specifies which ECS entities can be used when plotting.
+            components_defs: Specifies which ECS Components types can be used when plotting.
+        """
+        # map name to component def
+        component_map = {c.name: c for c in component_defs}
+
+        # map component name set to entity
+        self.entity_map = {}
+        for entity_def in entity_defs:
+            # construct graph entities from entity and component defs
+            graph_entity = GraphEntity.from_def(
+                entity_def=entity_def,
+                component_defs=[component_map[name] for name in entity_def.components],
+            )
+            self.entity_map[frozenset(entity_def.components)] = graph_entity
 
     def entity(self, components: Iterable[Union[str, ComponentDef]]) -> GraphEntity:
         """

@@ -2,25 +2,31 @@
 # Bentobox
 # SDK - Graph Tests
 # Test graph compilation @graph.compile
-#
 
 
 from bento.value import wrap
-from bento.ecs.graph import GraphEntity
+from bento.ecs.spec import EntityDef, ComponentDef
+from bento.ecs.graph import GraphEntity, GraphComponent
 from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.references_pb2 import AttributeRef
 from bento.graph.plotter import Plotter
-from tests.components import Position, Keyboard
+from tests.specs import Position, Keyboard
 
 # sanity check empty plotter gives empty graph
 def test_graph_plotter_empty():
-    g = Plotter()
+    g = Plotter(entity_defs=[], component_defs=[])
     assert g.graph() == Graph()
 
 
 # test that graph plotter can record a retrieve, mutate operation
 def test_graph_plotter_retrieve_mutate_op():
-    g = Plotter(entities=[GraphEntity(components=["position"], entity_id=1)])
+    entity_id = 1
+    g = Plotter(
+        entity_defs=[
+            EntityDef(components=[Position.name], entity_id=1),
+        ],
+        component_defs=[Position],
+    )
     person = g.entity(components=[Position])
     pos_x = person[Position].x
     person[Position].y = pos_x
@@ -30,8 +36,8 @@ def test_graph_plotter_retrieve_mutate_op():
         inputs=[
             Node.Retrieve(
                 retrieve_attr=AttributeRef(
-                    entity_id=person.id,
-                    component="position",
+                    entity_id=entity_id,
+                    component=Position.name,
                     attribute="x",
                 )
             )
@@ -39,8 +45,8 @@ def test_graph_plotter_retrieve_mutate_op():
         outputs=[
             Node.Mutate(
                 mutate_attr=AttributeRef(
-                    entity_id=person.id,
-                    component="position",
+                    entity_id=entity_id,
+                    component=Position.name,
                     attribute="y",
                 ),
                 # check that mutation node recorded assignment correctly
@@ -53,10 +59,11 @@ def test_graph_plotter_retrieve_mutate_op():
 # test that graph plotter can record switch condition and boolean ops
 def test_graph_plotter_conditional_boolean():
     g = Plotter(
-        entities=[
-            GraphEntity(components=["position"], entity_id=1),
-            GraphEntity(components=["keyboard"], entity_id=2),
-        ]
+        entity_defs=[
+            EntityDef(components=[Position], entity_id=1),
+            EntityDef(components=[Keyboard], entity_id=2),
+        ],
+        component_defs=[Position, Keyboard],
     )
     env = g.entity(components=[Keyboard])
     car = g.entity(components=[Position])
@@ -72,13 +79,12 @@ def test_graph_plotter_conditional_boolean():
         ),
     )
     car[Position].x = car_pos_x
-
     assert g.graph() == Graph(
         inputs=[
             Node.Retrieve(
                 retrieve_attr=AttributeRef(
                     entity_id=env.id,
-                    component="keyboard",
+                    component=Keyboard.name,
                     attribute="pressed",
                 )
             )
@@ -87,7 +93,7 @@ def test_graph_plotter_conditional_boolean():
             Node.Mutate(
                 mutate_attr=AttributeRef(
                     entity_id=car.id,
-                    component="position",
+                    component=Position.name,
                     attribute="x",
                 ),
                 # check that mutation node recorded assignment correctly
