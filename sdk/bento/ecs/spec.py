@@ -7,7 +7,7 @@
 from bento.types import Type
 from bento.protos import ecs_pb2
 from bento.protos.graph_pb2 import Graph
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Union
 
 
 class ComponentDef:
@@ -25,6 +25,11 @@ class ComponentDef:
             schema: Schema defining the attributes embeded within the defined ECS component.
         """
         self.proto = ecs_pb2.ComponentDef(name=name, schema=schema)
+
+    @classmethod
+    def from_proto(cls, proto: ecs_pb2.ComponentDef):
+        """Create a ComponentDef from a ComponentDef Proto"""
+        return cls(name=proto.name, schema=proto.schema)
 
     @property
     def name(self) -> str:
@@ -49,17 +54,25 @@ class EntityDef:
     can be accessed via the `.proto` attribute.
     """
 
-    def __init__(self, components: Iterable[ComponentDef], entity_id: int = 0):
+    def __init__(
+        self, components: Iterable[Union[ComponentDef, str]], entity_id: int = 0
+    ):
         """Create a EntityDef with the given components to attach.
 
         Args:
-            components: List of components to attach with to the ECS entity
-                defined by this EntityDef.
+            components: List of components or names of components to attach with
+                to the ECS entity defined by this EntityDef.
+            entity_id: id held by the ECS entity
         """
         self.proto = ecs_pb2.EntityDef(
-            components=[c.name for c in components],
+            components=[str(c) for c in components],
             id=entity_id,
         )
+
+    @classmethod
+    def from_proto(cls, proto: ecs_pb2.EntityDef):
+        """Create a EntityDef from a EntityDef Proto"""
+        return cls(components=proto.components, entity_id=proto.id)
 
     @property
     def id(self) -> int:
@@ -81,19 +94,25 @@ class EntityDef:
 
 
 class SystemDef:
-    """Specifies a ECS System by defining its computational graph.
+    """Specifies a ECS system by defining its computational graph.
     SystemDef provides a thin wrapper around the the SystemDef proto which
     can be accessed via the `.proto` attribute.
     """
 
-    def __init__(self, graph: Graph):
+    def __init__(self, graph: Graph, system_id: int = 0):
         """Create a SystemDef with the given computational graph.
 
         Args:
             graph: computational graph defining the implementation of the ECS system
                 defined by this SystemDef.
+            entity_id: id held by the ECS system
         """
         self.proto = ecs_pb2.SystemDef(graph=graph)
+
+    @classmethod
+    def from_proto(cls, proto: ecs_pb2.SystemDef):
+        """Create a SystemDef from a SystemDef Proto"""
+        return cls(graph == proto.graph, system_id=proto.id)
 
     @property
     def id(self) -> int:
