@@ -5,10 +5,11 @@
 #
 
 from typing import Set
+from bento.ecs.spec import ComponentDef, EntityDef
 from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode, wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
-from tests.components import Position
+from tests.specs import Position
 
 
 def test_graph_ecs_entity():
@@ -19,6 +20,39 @@ def test_graph_ecs_entity():
     # check component accessible by name using [] notation
     position = entity[Position]
     assert isinstance(position, GraphComponent)
+
+
+def test_graph_ecs_entity_from_def():
+    entity_id = 1
+    car = GraphEntity.from_def(
+        entity_def=EntityDef(components=[Position.name], entity_id=1),
+        component_defs=[Position],
+    )
+    assert car.id == entity_id
+    # check Entity's components accessible via `.components`
+    assert [c.component_name for c in car.components] == [Position.name]
+
+    # test that we cannnot create from EntityDef with unset id
+    has_error = False
+    try:
+        GraphEntity.from_def(EntityDef([]), [])
+    except ValueError:
+        has_error = True
+    assert has_error
+
+
+def test_graph_ecs_component_from_def():
+    entity_id = 1
+    position = GraphComponent.from_def(entity_id, Position)
+    assert position.component_name == Position.name
+
+    # test that we cannnot create from ComponentDef with unset name
+    has_error = False
+    try:
+        GraphComponent.from_def(entity_id, ComponentDef("", {}))
+    except ValueError:
+        has_error = True
+    assert has_error
 
 
 def test_graph_ecs_component_get_attr():

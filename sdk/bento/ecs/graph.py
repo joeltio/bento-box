@@ -194,6 +194,11 @@ class GraphComponent(Component):
     @classmethod
     def from_def(cls, entity_id: int, component_def: ComponentDef):
         """Construct a GraphComponent from a ComponentDef"""
+        # check that ComponentDef's id is set and not protobuf default
+        if component_def.name == "":
+            raise ValueError(
+                "Cannot construct GraphComponent from ComponentDef with unset name"
+            )
         return cls(
             entity_id=entity_id, name=component_def.name, schema=component_def.schema
         )
@@ -257,12 +262,16 @@ class GraphEntity(Entity):
     @classmethod
     def from_def(cls, entity_def: EntityDef, component_defs: Iterable[ComponentDef]):
         """Construct a GraphEntity from a EntityDef"""
+        # check that EntityDef's id is set and not protobuf default
+        if entity_def.id == 0:
+            raise ValueError("Cannot construct GraphEntity from Entity with unset id")
         return cls(
-            entity_id=entity_def.id,
             components=[
                 GraphComponent.from_def(entity_id=entity_def.id, component_def=c)
                 for c in component_defs
+                if c.name in entity_def.components
             ],
+            entity_id=entity_def.id,
         )
 
     def get_component(self, name: str) -> GraphComponent:
