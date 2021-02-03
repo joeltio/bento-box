@@ -30,6 +30,7 @@ set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 set(TARGET_SIM_SOURCES
     src/component/userComponent.cpp
     src/index/componentTypeIndex.cpp
+    src/index/entityIndex.cpp
     src/system/render.cpp
     src/interpreter/graphInterpreter.cpp
     src/interpreter/operations.cpp
