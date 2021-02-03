@@ -3,7 +3,8 @@
 #include <interpreter/operations.h>
 
 #include <bento/protos/ecs.pb.h>
-#include <component/userComponent.h>
+#include <interpreter/util.h>
+#include <test_simulation.h>
 #include <ics.h>
 
 #include <cmath>
@@ -12,37 +13,8 @@
 
 using namespace interpreter;
 
-// Define a component
-namespace {
-const char TEST_COMPONENT_NAME[] = "TestComponent";
-bento::protos::ComponentDef createCompDef() {
-    auto compDef = bento::protos::ComponentDef();
-    compDef.set_name(TEST_COMPONENT_NAME);
-
-    auto& schema = *compDef.mutable_schema();
-    schema["height"] = bento::protos::Type();
-    schema["height"].set_primitive(bento::protos::Type_Primitive_INT64);
-
-    schema["width"] = bento::protos::Type();
-    schema["width"].set_primitive(bento::protos::Type_Primitive_INT64);
-    return compDef;
-}
-
-struct TestComponent : public ics::component::UserComponent {
-    TestComponent() : UserComponent(TEST_COMPONENT_NAME, createCompDef()) {}
-    TestComponent(int width, int height)
-        : UserComponent(TEST_COMPONENT_NAME, createCompDef()) {
-        auto widthVal = bento::protos::Value();
-        widthVal.mutable_primitive()->set_int_64(width);
-        setValue("width", widthVal);
-
-        auto heightVal = bento::protos::Value();
-        heightVal.mutable_primitive()->set_int_64(height);
-        setValue("height", heightVal);
-    }
-};
-
-}  // namespace
+using test_simulation::TestComponent;
+using test_simulation::TEST_COMPONENT_NAME;
 
 class StoresFixture : public ::testing::Test {
    protected:
@@ -57,15 +29,6 @@ class StoresFixture : public ::testing::Test {
     ics::index::EntityIndex::EntityId entity2Id =
         indexStore.entity.addEntityId();
     TestComponent comp2{90, 10};
-
-    static bento::protos::AttributeRef createAttrRef(
-        ics::index::EntityIndex::EntityId entityId, const char* attrName) {
-        auto attrRef = bento::protos::AttributeRef();
-        attrRef.set_component(TEST_COMPONENT_NAME);
-        attrRef.set_entity_id(entityId);
-        attrRef.set_attribute(attrName);
-        return attrRef;
-    }
 
     void SetUp() override {
         // Add the components
@@ -86,7 +49,7 @@ class StoresFixture : public ::testing::Test {
 
 TEST_F(StoresFixture, RetrieveNode) {
     // Create the attribute ref
-    auto attrRef = createAttrRef(entity1Id, "width");
+    auto attrRef = createAttrRef(TEST_COMPONENT_NAME, entity1Id, "width");
 
     auto node = bento::protos::Node();
     auto retrieveAttr = node.mutable_retrieve_op()->mutable_retrieve_attr();
