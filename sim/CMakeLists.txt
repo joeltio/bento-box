@@ -58,9 +58,11 @@ add_executable(${TARGET_TEST}
     src/network/grpcServer.test.cpp
     src/service/engineService.test.cpp
     src/main.test.cpp
+    src/test_simulation.cpp
 )
 target_include_directories(${TARGET_TEST}
     PUBLIC include
+    PUBLIC test_include
     PUBLIC ${GENERATED_INCLUDES}
 )
 
