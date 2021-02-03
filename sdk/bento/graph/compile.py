@@ -9,8 +9,7 @@ from gast import FunctionDef, AST
 from textwrap import dedent
 from typing import Callable, List
 
-from bento.sim import Simulation
-from bento.ecs.graph import GraphEntity
+from bento.ecs.spec import EntityDef, ComponentDef
 from bento.graph.preprocessors import preprocess_augassign
 from bento.graph.analyzers import (
     analyze_func,
@@ -35,10 +34,13 @@ from bento.protos.graph_pb2 import Graph, Node
 Analyzer = Callable[[AST], AST]
 Linter = Callable[[AST], None]
 Transform = Callable[[AST], AST]
+ConvertFn = Callable[[Plotter], None]
 
 
 def compile_graph(
-    platform: Simulation,
+    convert_fn: ConvertFn,
+    entity_defs=List[EntityDef],
+    component_defs=List[ComponentDef],
     preprocessors: List[Transform] = [
         preprocess_augassign,
     ],
@@ -61,16 +63,6 @@ def compile_graph(
 ) -> Graph:
     """Compiles the given `convert_fn` into a computation Graph running the given sim.
 
-    Use by annotating the target `convert_fn` should be with `@compile_graph(sim)` to compile.
-
-    The target `convert_fn` should take in one parameter: a `Plotter` instance which
-    allows users to access graphing specific operations. Must be a plain Python
-    Function, not a Callable class, method, classmethod or staticmethod.
-
-    When compiling the computational graph, the ECS entities & components on the
-    given `Simulation` platform are available for use in `convert_fn` in the form
-    of `GraphEntity` and `GraphComponent` respectively.
-
     Globals can be used read only in the `convert_fn`. Writing to globals is not supported.
 
     Compiles by converting the given `convert_fn` function to AST
@@ -92,8 +84,7 @@ def compile_graph(
     The graph obtained from the `Plotter` is finally returned.
 
         Example:
-        @compile_graph(sim)
-        def car_pos_graph(g: Plotter):
+        def car_pos_fn(g: Plotter):
             car = g.entity(
                 components=[
                     "position",
@@ -103,11 +94,20 @@ def compile_graph(
             x_delta = 20 if env["clock"].tick_ms > 2000 else 10
             car["position"].x = x_delta
 
+        car_pos_graph = compile_graph(car_pos_fn, entity_defs, component_defs)
         # use compiled graph 'car_pos_graph' in code ...
 
     Args:
-        platform: Target simulation as the target platform for the compiled computation graph
-            to run on. Provides the ECS entity and components available for use in `convert_fn`.
+        convert_fn: Function containing the code that should be compiled into a computational graph.
+            The target `convert_fn` should take in one parameter: a `Plotter` instance which
+            allows users to access graphing specific operations. Must be a plain Python
+            Function, not a Callable class, method, classmethod or staticmethod.
+
+        entity_defs: List of EntityDef representing the ECS entities available for
+            use in `convert_fn` via the Plotter instance.
+
+        component_defs: List of ComponentDef representing the ECS component types
+            available for use in `convert_fn` via the Plotter instance.
 
         preprocessors: List of `Transform`s that are run sequentially to apply
             preprocesssing transforms to the AST before any static analysis is done.
@@ -129,13 +129,12 @@ def compile_graph(
         The converted computational Graph as a `Graph` protobuf message.
     """
 
-    def _compile_graph(convert_fn: Callable[[Plotter], None]):
-        # parse ast from function source
-        ast = parse_ast(convert_fn)
+    # parse ast from function source
+    ast = parse_ast(convert_fn)
 
-        # apply preprocessors to apply preprocesssing transforms on the AST
-        for preprocessor in preprocessors:
-            ast = preprocessor(ast)
+    # apply preprocessors to apply preprocesssing transforms on the AST
+    for preprocessor in preprocessors:
+        ast = preprocessor(ast)
 
         # apply analyzers to conduct static analysis
         for analyzer in analyzers:
@@ -152,16 +151,8 @@ def compile_graph(
         # allow the use of globals symbols with respect to convert_fn function
         # to be used during graph plotting
         compiled.build_graph.__globals__.update(convert_fn.__globals__)
-        # unpack available Entities and components from target platform available for
-        # use during graph plotting.
-        graph_entities = [
-            GraphEntity([c.component_name for c in e.components], e.id)
-            for e in platform.entities
-        ]
 
         # run build graph function with plotter to build final computation graph
-        g = Plotter(entities=graph_entities)
+        g = Plotter(entity_defs, component_defs)
         compiled.build_graph(g)
         return g.graph()
-
-    return _compile_graph

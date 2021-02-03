@@ -21,7 +21,7 @@ from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.sim_pb2 import SimulationDef
 from bento.protos.references_pb2 import AttributeRef
 from bento.ecs.spec import EntityDef, ComponentDef
-from tests.components import Position, Speed, Clock
+from tests.specs import Position, Speed, Clock
 
 ## test tools
 # path to graph test cases in test resources
@@ -49,63 +49,38 @@ def assert_graph(actual: Graph, expected_path: str):
     assert_proto(actual, expected)
 
 
-def build_sim(component_defs, entity_defs):
-    mock_client = Mock(spec=Client)
-    mock_client.apply_sim.return_value = SimulationDef(
-        name="test_sim",
-        entities=[e.proto for e in entity_defs],
-        components=[c.proto for c in component_defs],
-    )
-    sim = Simulation(
-        name="test_sim",
-        entities=entity_defs,
-        components=component_defs,
-        client=mock_client,
-    )
-    sim.start()
-    return sim
-
-
 ## tests
 # test that empty no op functions are compilable
 def test_graph_compile_empty():
-    sim = build_sim(component_defs=[], entity_defs=[])
-
-    @compile_graph(sim)
-    def actual_graph(g: Plotter):
+    def empty_fn(g: Plotter):
         pass
 
+    actual_graph = compile_graph(
+        convert_fn=empty_fn,
+        entity_defs=[],
+        component_defs=[],
+    )
     assert actual_graph == Graph()
 
 
 # test compile basic arithmetic example with one entity
 def test_graph_compile_arithmetic():
-    sim = build_sim(
-        component_defs=[Position],
-        entity_defs=[EntityDef(components=[Position], entity_id=1)],
-    )
-
-    @compile_graph(sim)
-    def actual_graph(g: Plotter):
+    def arithmetic_fn(g: Plotter):
         car = g.entity(components=[Position])
         x_delta = 20
         car[Position].x += x_delta
 
+    actual_graph = compile_graph(
+        convert_fn=arithmetic_fn,
+        component_defs=[Position],
+        entity_defs=[EntityDef(components=[Position], entity_id=1)],
+    )
     assert_graph(actual_graph, "expected_graph_arithmetic.yaml")
 
 
 # test compile basic arithmetic example with multiple entities
 def test_graph_compile_arithmetic_multiple():
-    sim = build_sim(
-        component_defs=[Position, Speed, Clock],
-        entity_defs=[
-            EntityDef(components=[Position, Speed], entity_id=1),
-            EntityDef(components=[Clock], entity_id=2),
-        ],
-    )
-
-    @compile_graph(sim)
-    def actual_graph(g: Plotter):
+    def arithmetic_multiple_fn(g: Plotter):
         ms_in_sec = int(1e3)
         env = g.entity(components=[Clock])
         car = g.entity(
@@ -119,21 +94,21 @@ def test_graph_compile_arithmetic_multiple():
         x_delta = xps * (tick_ms * ms_in_sec)
         car[Position].x = x_delta + car[Position].x
 
+    actual_graph = compile_graph(
+        convert_fn=arithmetic_multiple_fn,
+        component_defs=[Position, Speed, Clock],
+        entity_defs=[
+            EntityDef(components=[Position, Speed], entity_id=1),
+            EntityDef(components=[Clock], entity_id=2),
+        ],
+    )
+
     assert_graph(actual_graph, "expected_graph_arithmetic_multiple.yaml")
 
 
 # test compile ternary conditional
 def test_graph_compile_ternary():
-    sim = build_sim(
-        component_defs=[Position, Clock],
-        entity_defs=[
-            EntityDef(components=[Position], entity_id=1),
-            EntityDef(components=[Clock], entity_id=2),
-        ],
-    )
-
-    @compile_graph(sim)
-    def actual_graph(g: Plotter):
+    def ternary_fn(g: Plotter):
         car = g.entity(
             components=[
                 Position,
@@ -143,12 +118,8 @@ def test_graph_compile_ternary():
         x_delta = 20 if env[Clock].tick_ms > 2000 else 10
         car[Position].x = x_delta
 
-    assert_graph(actual_graph, "expected_graph_ternary.yaml")
-
-
-# test compil if else conditional conditional
-def test_graph_compile_ifelse():
-    sim = build_sim(
+    actual_graph = compile_graph(
+        convert_fn=ternary_fn,
         component_defs=[Position, Clock],
         entity_defs=[
             EntityDef(components=[Position], entity_id=1),
@@ -156,8 +127,12 @@ def test_graph_compile_ifelse():
         ],
     )
 
-    @compile_graph(sim)
-    def actual_graph(g: Plotter):
+    assert_graph(actual_graph, "expected_graph_ternary.yaml")
+
+
+# test compil if else conditional conditional
+def test_graph_compile_ifelse():
+    def ifelse_fn(g: Plotter):
         car = g.entity(
             components=[
                 Position,
@@ -176,4 +151,12 @@ def test_graph_compile_ifelse():
         car[Position].x += x_delta
         car[Position].y += y_delta
 
+    actual_graph = compile_graph(
+        convert_fn=ifelse_fn,
+        component_defs=[Position, Clock],
+        entity_defs=[
+            EntityDef(components=[Position], entity_id=1),
+            EntityDef(components=[Clock], entity_id=2),
+        ],
+    )
     assert_graph(actual_graph, "expected_graph_ifelse.yaml")
