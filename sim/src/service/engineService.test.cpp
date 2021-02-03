@@ -41,6 +41,25 @@ class EngineServiceTest : public testing::Test {
             CreateChannel(address, grpc::InsecureChannelCredentials());
         client = move(EngineService::NewStub(channel));
     }
+
+    ListSimulationResp listSims() {
+        ListSimulationReq req;
+        ListSimulationResp resp;
+        ClientContext context;
+        client->ListSimulation(&context, req, &resp);
+
+        return resp;
+    }
+
+    GetSimulationResp getSim(const char* name) {
+        GetSimulationReq req;
+        GetSimulationResp resp;
+        ClientContext context;
+        req.set_name(name);
+        client->GetSimulation(&context, req, &resp);
+
+        return resp;
+    }
 };
 
 TEST_F(EngineServiceTest, GetVersion) {
@@ -64,11 +83,7 @@ TEST_F(EngineServiceTest, ApplyAndGetSimDef) {
     Status s = client->ApplySimulation(&applyContext, applyReq, &applyResp);
     ASSERT_TRUE(s.ok());
 
-    GetSimulationReq getReq;
-    GetSimulationResp getResp;
-    ClientContext getContext;
-    getReq.set_name(simDef.name());
-    client->GetSimulation(&getContext, getReq, &getResp);
+    auto getResp = getSim(simDef.name().c_str());
     // For some reason, protobuf doesn't implement equality on its message
     // objects
     ASSERT_EQ(getResp.simulation().components_size(), simDef.components_size());
@@ -100,23 +115,14 @@ TEST_F(EngineServiceTest, ApplyCreatesEntities) {
     Status s = client->ApplySimulation(&applyContext, applyReq, &applyResp);
     ASSERT_TRUE(s.ok());
 
-    GetSimulationReq getReq;
-    GetSimulationResp getResp;
-    ClientContext getContext;
-    getReq.set_name(simDef.name());
-    client->GetSimulation(&getContext, getReq, &getResp);
+    auto getResp = getSim(simDef.name().c_str());
     const auto& createdSimDef = getResp.simulation();
     ASSERT_NE(createdSimDef.entities(0).id(), unsetEntityId);
 }
 
 TEST_F(EngineServiceTest, ListSims) {
     // Start with no simulations
-    ListSimulationReq listReq;
-    ListSimulationResp listResp;
-    ClientContext list1Context;
-    Status listStatus =
-        client->ListSimulation(&list1Context, listReq, &listResp);
-    ASSERT_TRUE(listStatus.ok());
+    auto listResp = listSims();
     ASSERT_EQ(listResp.sim_names_size(), 0);
 
     // Apply a sim
@@ -133,12 +139,7 @@ TEST_F(EngineServiceTest, ListSims) {
     ASSERT_TRUE(applyStatus.ok());
 
     // Ensure the new sim is listed
-    listReq = ListSimulationReq();
-    listResp = ListSimulationResp();
-    // Cannot reassign context variable, so use a new variable
-    ClientContext list2Context;
-    client->ListSimulation(&list2Context, listReq, &listResp);
-    ASSERT_TRUE(listStatus.ok());
+    listResp = listSims();
     ASSERT_EQ(listResp.sim_names_size(), 1);
     ASSERT_EQ(listResp.sim_names(0), simDef.name());
 }

@@ -19,7 +19,7 @@ struct Simulation {
         : simDef(std::move(simDef)) {
         // BE CAREFUL: Once simDef is moved into this->simDef, all references to
         // simDef are invalid. Always use this->simDef
-        for (size_t i=0; i < this->simDef.entities_size(); i++) {
+        for (size_t i = 0; i < this->simDef.entities_size(); i++) {
             if (this->simDef.entities(i).id() == UNSET_ENTITY_ID) {
                 ::google::protobuf::uint32 entityId;
                 do {
