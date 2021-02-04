@@ -27,9 +27,21 @@ struct TestComponent : public ics::component::UserComponent {
     TestComponent(int width, int height);
 };
 
-bento::protos::ComponentDef testCompDef();
+// Creates a system that increments to attribute to 100 then resets it to 0
+// The attribute must be int64
+bento::protos::SystemDef cycle100System(
+    const bento::protos::AttributeRef& attrRef);
 
-bento::protos::SimulationDef testSimDef();
+struct TestSimulation {
+    const char* SIM_NAME = "Test Simulation";
+    const char* COMP_TYPE_NAME = TEST_COMPONENT_NAME;
+
+    bento::protos::EntityDef entityDef;
+    const bento::protos::ComponentDef compDef = createCompDef();
+    bento::protos::SimulationDef simDef;
+
+    TestSimulation();
+};
 
 }  // namespace test_simulation
 
