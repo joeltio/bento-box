@@ -26,6 +26,11 @@ Status EngineServiceImpl::ApplySimulation(
     bento::protos::ApplySimulationResp* response) {
     // Overrides/Creates a new simulation
     auto name = request->simulation().name();
+
+    if (sims.contains(name) && sims[name]->locked) {
+        return Status(grpc::ALREADY_EXISTS, "The simulation has been created and stepped at least once.");
+    }
+
     sims[name] =
         std::make_unique<Simulation>(Simulation(request->simulation()));
 
@@ -84,10 +89,19 @@ Status EngineServiceImpl::StepSimulation(
                       "Could not find simulation with that name.");
     }
 
+    auto& sim = sims.at(request->name());
+
     // TODO: Run built-in systems as well
-    auto& indexStore = sims.at(request->name())->indexStore;
-    auto& compStore = sims.at(request->name())->compStore;
-    auto& simDef = sims.at(request->name())->simDef;
+    auto& indexStore = sim->indexStore;
+    auto& compStore = sim->compStore;
+    auto& simDef = sim->simDef;
+
+    // Lock the simulation
+    if (!sim->locked) {
+        sim->locked = true;
+        interpreter::runGraph(compStore, indexStore, sim->simDef.init_graph());
+    }
+
     for (size_t i = 0; i < simDef.systems_size(); i++) {
         const auto& graph = simDef.systems(i).graph();
         interpreter::runGraph(compStore, indexStore, graph);

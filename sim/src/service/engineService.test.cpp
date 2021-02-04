@@ -42,11 +42,27 @@ class EngineServiceTest : public testing::Test {
         client = move(EngineService::NewStub(channel));
     }
 
+    ApplySimulationResp applySim(const bento::protos::SimulationDef& simDef) {
+        ApplySimulationReq req;
+        ApplySimulationResp resp;
+        ClientContext context;
+        req.mutable_simulation()->CopyFrom(simDef);
+        Status s = client->ApplySimulation(&context, req, &resp);
+        if (!s.ok()) {
+            throw std::runtime_error(s.error_message());
+        }
+
+        return resp;
+    }
+
     ListSimulationResp listSims() {
         ListSimulationReq req;
         ListSimulationResp resp;
         ClientContext context;
-        client->ListSimulation(&context, req, &resp);
+        Status s = client->ListSimulation(&context, req, &resp);
+        if (!s.ok()) {
+            throw std::runtime_error(s.error_message());
+        }
 
         return resp;
     }
@@ -56,7 +72,10 @@ class EngineServiceTest : public testing::Test {
         GetSimulationResp resp;
         ClientContext context;
         req.set_name(name);
-        client->GetSimulation(&context, req, &resp);
+        Status s = client->GetSimulation(&context, req, &resp);
+        if (!s.ok()) {
+            throw std::runtime_error(s.error_message());
+        }
 
         return resp;
     }
@@ -72,29 +91,17 @@ TEST_F(EngineServiceTest, GetVersion) {
 }
 
 TEST_F(EngineServiceTest, ApplyAndGetSimDef) {
-    ApplySimulationReq applyReq;
-    ApplySimulationResp applyResp;
-    ClientContext applyContext;
+    auto testSim = test_simulation::TestSimulation();
+    const auto& simDef = testSim.simDef;
+    auto applyResp = applySim(testSim.simDef);
 
-    auto simDef = test_simulation::testSimDef();
-    applyReq.mutable_simulation()->CopyFrom(simDef);
-
-    // Execute ApplySimulation
-    Status s = client->ApplySimulation(&applyContext, applyReq, &applyResp);
-    ASSERT_TRUE(s.ok());
-
-    auto getResp = getSim(simDef.name().c_str());
     // For some reason, protobuf doesn't implement equality on its message
     // objects
-    ASSERT_EQ(getResp.simulation().components_size(), simDef.components_size());
-    ASSERT_EQ(getResp.simulation().entities_size(), simDef.entities_size());
+    ASSERT_EQ( applyResp.simulation().components_size(), simDef.components_size());
+    ASSERT_EQ(applyResp.simulation().entities_size(), simDef.entities_size());
 }
 
 TEST_F(EngineServiceTest, ApplyCreatesEntities) {
-    ApplySimulationReq applyReq;
-    ApplySimulationResp applyResp;
-    ClientContext applyContext;
-
     // Create comp def
     auto compDef = test_simulation::TestComponent().compDef;
 
@@ -109,11 +116,9 @@ TEST_F(EngineServiceTest, ApplyCreatesEntities) {
     simDef.set_name("test simulation");
     simDef.mutable_components()->Add(std::move(compDef));
     simDef.mutable_entities()->Add(std::move(entityDef));
-    applyReq.mutable_simulation()->CopyFrom(simDef);
 
-    // Execute ApplySimulation
-    Status s = client->ApplySimulation(&applyContext, applyReq, &applyResp);
-    ASSERT_TRUE(s.ok());
+    // Apply the sim
+    applySim(simDef);
 
     auto getResp = getSim(simDef.name().c_str());
     const auto& createdSimDef = getResp.simulation();
@@ -121,25 +126,80 @@ TEST_F(EngineServiceTest, ApplyCreatesEntities) {
 }
 
 TEST_F(EngineServiceTest, ListSims) {
+    Status s;
     // Start with no simulations
     auto listResp = listSims();
     ASSERT_EQ(listResp.sim_names_size(), 0);
 
     // Apply a sim
-    ApplySimulationReq applyReq;
-    ApplySimulationResp applyResp;
-    ClientContext applyContext;
-
-    auto simDef = test_simulation::testSimDef();
-    applyReq.mutable_simulation()->CopyFrom(simDef);
-
-    // Execute ApplySimulation
-    Status applyStatus =
-        client->ApplySimulation(&applyContext, applyReq, &applyResp);
-    ASSERT_TRUE(applyStatus.ok());
+    auto testSim = test_simulation::TestSimulation();
+    applySim(testSim.simDef);
 
     // Ensure the new sim is listed
     listResp = listSims();
     ASSERT_EQ(listResp.sim_names_size(), 1);
-    ASSERT_EQ(listResp.sim_names(0), simDef.name());
+    ASSERT_EQ(listResp.sim_names(0), testSim.SIM_NAME);
+}
+
+TEST_F(EngineServiceTest, DropSim) {
+    // Apply a sim
+    auto testSim = test_simulation::TestSimulation();
+    applySim(testSim.simDef);
+
+    // Start with no simulations
+    auto listResp = listSims();
+    ASSERT_EQ(listResp.sim_names_size(), 1);
+
+    // Drop the sim
+    DropSimulationReq dropReq;
+    DropSimulationResp dropResp;
+    ClientContext dropContext;
+    dropReq.set_name(testSim.SIM_NAME);
+    Status s = client->DropSimulation(&dropContext, dropReq, &dropResp);
+    ASSERT_TRUE(s.ok());
+
+    listResp = listSims();
+    ASSERT_EQ(listResp.sim_names_size(), 0);
+}
+
+TEST_F(EngineServiceTest, StepSim) {
+    // Apply a sim
+    auto testSim = test_simulation::TestSimulation();
+    applySim(testSim.simDef);
+
+    // Step the sim
+    StepSimulationReq stepReq;
+    StepSimulationResp stepResp;
+    ClientContext stepContext;
+    stepReq.set_name(testSim.SIM_NAME);
+    Status s = client->StepSimulation(&stepContext, stepReq, &stepResp);
+    ASSERT_TRUE(s.ok());
+
+    // Retrieve the height attribute
+    GetAttributeReq getReq;
+    GetAttributeResp getResp;
+    ClientContext getContext;
+    getReq.set_sim_name(testSim.SIM_NAME);
+    getReq.mutable_attribute()->CopyFrom(interpreter::createAttrRef(test_simulation::TEST_COMPONENT_NAME, 1, "height"));
+    s = client->GetAttribute(&getContext, getReq, &getResp);
+    ASSERT_TRUE(s.ok());
+
+    ASSERT_EQ(getResp.value().primitive().int_64(), 1);
+}
+
+TEST_F(EngineServiceTest, StepSimLocksSim) {
+    // Apply a sim
+    auto testSim = test_simulation::TestSimulation();
+    applySim(testSim.simDef);
+
+    // Step the sim
+    StepSimulationReq stepReq;
+    StepSimulationResp stepResp;
+    ClientContext stepContext;
+    stepReq.set_name(testSim.SIM_NAME);
+    Status s = client->StepSimulation(&stepContext, stepReq, &stepResp);
+    ASSERT_TRUE(s.ok());
+
+    // Reapply sim
+    EXPECT_ANY_THROW(applySim(testSim.simDef));
 }
