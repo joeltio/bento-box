@@ -67,6 +67,11 @@ Status EngineServiceImpl::ListSimulation(
 Status EngineServiceImpl::DropSimulation(
     ServerContext* context, const bento::protos::DropSimulationReq* request,
     bento::protos::DropSimulationResp* response) {
+    if (!sims.contains(request->name())) {
+        return Status(grpc::NOT_FOUND,
+                      "Could not find simulation with that name.");
+    }
+
     sims.erase(request->name());
     return Status::OK;
 }
