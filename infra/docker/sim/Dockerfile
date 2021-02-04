@@ -33,6 +33,7 @@ COPY sim/CMakeLists.txt /repo/sim/CMakeLists.txt
 COPY sim/cmake /repo/sim/cmake
 COPY sim/lib /repo/sim/lib
 COPY sim/include /repo/sim/include
+COPY sim/test_include /repo/sim/test_include
 COPY sim/src /repo/sim/src
 # do the bulk of the building the simulator
 RUN make build-sim
