@@ -28,7 +28,9 @@ Status EngineServiceImpl::ApplySimulation(
     auto name = request->simulation().name();
 
     if (sims.contains(name) && sims[name]->locked) {
-        return Status(grpc::ALREADY_EXISTS, "The simulation has been created and stepped at least once.");
+        return Status(
+            grpc::ALREADY_EXISTS,
+            "The simulation has been created and stepped at least once.");
     }
 
     sims[name] =

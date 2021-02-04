@@ -97,7 +97,8 @@ TEST_F(EngineServiceTest, ApplyAndGetSimDef) {
 
     // For some reason, protobuf doesn't implement equality on its message
     // objects
-    ASSERT_EQ( applyResp.simulation().components_size(), simDef.components_size());
+    ASSERT_EQ(applyResp.simulation().components_size(),
+              simDef.components_size());
     ASSERT_EQ(applyResp.simulation().entities_size(), simDef.entities_size());
 }
 
@@ -180,7 +181,8 @@ TEST_F(EngineServiceTest, StepSim) {
     GetAttributeResp getResp;
     ClientContext getContext;
     getReq.set_sim_name(testSim.SIM_NAME);
-    getReq.mutable_attribute()->CopyFrom(interpreter::createAttrRef(test_simulation::TEST_COMPONENT_NAME, 1, "height"));
+    getReq.mutable_attribute()->CopyFrom(interpreter::createAttrRef(
+        test_simulation::TEST_COMPONENT_NAME, 1, "height"));
     s = client->GetAttribute(&getContext, getReq, &getResp);
     ASSERT_TRUE(s.ok());
 

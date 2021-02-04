@@ -13,8 +13,8 @@
 
 using namespace interpreter;
 
-using test_simulation::TestComponent;
 using test_simulation::TEST_COMPONENT_NAME;
+using test_simulation::TestComponent;
 
 class StoresFixture : public ::testing::Test {
    protected:
