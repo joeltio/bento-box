@@ -41,7 +41,10 @@ message ApplySimulationReq {
   // Definition of the simulation to create or apply
   SimulationDef simulation = 1;
 }
-message ApplySimulationResp {}
+message ApplySimulationResp {
+  // Simulations def with all unspecified entities created
+  SimulationDef simulation = 1;
+}
 
 message GetSimulationReq {
   // Name of the simulation to get

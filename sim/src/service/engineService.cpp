@@ -29,6 +29,8 @@ Status EngineServiceImpl::ApplySimulation(
     sims[name] =
         std::make_unique<Simulation>(Simulation(request->simulation()));
 
+    response->mutable_simulation()->CopyFrom(sims[name]->simDef);
+
     return Status::OK;
 }
 
