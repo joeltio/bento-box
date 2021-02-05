@@ -51,7 +51,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax=&#39;proto3&#39;,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b&#39;\n\x1b\x62\x65nto/protos/services.proto\x12\x0c\x62\x65nto.protos\x1a\x19\x62\x65nto/protos/values.proto\x1a\x1d\x62\x65nto/protos/references.proto\x1a\x16\x62\x65nto/protos/sim.proto\&#34;\x0f\n\rGetVersionReq\&#34;%\n\x0eGetVersionResp\x12\x13\n\x0b\x63ommit_hash\x18\x01 \x01(\t\&#34;E\n\x12\x41pplySimulationReq\x12/\n\nsimulation\x18\x01 \x01(\x0b\x32\x1b.bento.protos.SimulationDef\&#34;\x15\n\x13\x41pplySimulationResp\&#34; \n\x10GetSimulationReq\x12\x0c\n\x04name\x18\x01 \x01(\t\&#34;D\n\x11GetSimulationResp\x12/\n\nsimulation\x18\x01 \x01(\x0b\x32\x1b.bento.protos.SimulationDef\&#34;\x13\n\x11ListSimulationReq\&#34;\&#39;\n\x12ListSimulationResp\x12\x11\n\tsim_names\x18\x01 \x03(\t\&#34;!\n\x11\x44ropSimulationReq\x12\x0c\n\x04name\x18\x01 \x01(\t\&#34;\x14\n\x12\x44ropSimulationResp\&#34;\x13\n\x11StepSimulationReq\&#34;\x14\n\x12StepSimulationResp\&#34;@\n\x0fGetAttributeReq\x12-\n\tattribute\x18\x01 \x01(\x0b\x32\x1a.bento.protos.AttributeRef\&#34;6\n\x10GetAttributeResp\x12\&#34;\n\x05value\x18\x01 \x01(\x0b\x32\x13.bento.protos.Value\&#34;d\n\x0fSetAttributeReq\x12-\n\tattribute\x18\x01 \x01(\x0b\x32\x1a.bento.protos.AttributeRef\x12\&#34;\n\x05value\x18\x02 \x01(\x0b\x32\x13.bento.protos.Value\&#34;\x12\n\x10SetAttributeResp2\x9f\x05\n\rEngineService\x12G\n\nGetVersion\x12\x1b.bento.protos.GetVersionReq\x1a\x1c.bento.protos.GetVersionResp\x12V\n\x0f\x41pplySimulation\x12 .bento.protos.ApplySimulationReq\x1a!.bento.protos.ApplySimulationResp\x12P\n\rGetSimulation\x12\x1e.bento.protos.GetSimulationReq\x1a\x1f.bento.protos.GetSimulationResp\x12S\n\x0eListSimulation\x12\x1f.bento.protos.ListSimulationReq\x1a .bento.protos.ListSimulationResp\x12S\n\x0e\x44ropSimulation\x12\x1f.bento.protos.DropSimulationReq\x1a .bento.protos.DropSimulationResp\x12S\n\x0eStepSimulation\x12\x1f.bento.protos.StepSimulationReq\x1a .bento.protos.StepSimulationResp\x12M\n\x0cGetAttribute\x12\x1d.bento.protos.GetAttributeReq\x1a\x1e.bento.protos.GetAttributeResp\x12M\n\x0cSetAttribute\x12\x1d.bento.protos.SetAttributeReq\x1a\x1e.bento.protos.SetAttributeRespb\x06proto3&#39;
+  serialized_pb=b&#39;\n\x1b\x62\x65nto/protos/services.proto\x12\x0c\x62\x65nto.protos\x1a\x19\x62\x65nto/protos/values.proto\x1a\x1d\x62\x65nto/protos/references.proto\x1a\x16\x62\x65nto/protos/sim.proto\&#34;\x0f\n\rGetVersionReq\&#34;%\n\x0eGetVersionResp\x12\x13\n\x0b\x63ommit_hash\x18\x01 \x01(\t\&#34;E\n\x12\x41pplySimulationReq\x12/\n\nsimulation\x18\x01 \x01(\x0b\x32\x1b.bento.protos.SimulationDef\&#34;F\n\x13\x41pplySimulationResp\x12/\n\nsimulation\x18\x01 \x01(\x0b\x32\x1b.bento.protos.SimulationDef\&#34; \n\x10GetSimulationReq\x12\x0c\n\x04name\x18\x01 \x01(\t\&#34;D\n\x11GetSimulationResp\x12/\n\nsimulation\x18\x01 \x01(\x0b\x32\x1b.bento.protos.SimulationDef\&#34;\x13\n\x11ListSimulationReq\&#34;\&#39;\n\x12ListSimulationResp\x12\x11\n\tsim_names\x18\x01 \x03(\t\&#34;!\n\x11\x44ropSimulationReq\x12\x0c\n\x04name\x18\x01 \x01(\t\&#34;\x14\n\x12\x44ropSimulationResp\&#34;!\n\x11StepSimulationReq\x12\x0c\n\x04name\x18\x01 \x01(\t\&#34;\x14\n\x12StepSimulationResp\&#34;R\n\x0fGetAttributeReq\x12\x10\n\x08sim_name\x18\x01 \x01(\t\x12-\n\tattribute\x18\x02 \x01(\x0b\x32\x1a.bento.protos.AttributeRef\&#34;6\n\x10GetAttributeResp\x12\&#34;\n\x05value\x18\x01 \x01(\x0b\x32\x13.bento.protos.Value\&#34;v\n\x0fSetAttributeReq\x12\x10\n\x08sim_name\x18\x01 \x01(\t\x12-\n\tattribute\x18\x02 \x01(\x0b\x32\x1a.bento.protos.AttributeRef\x12\&#34;\n\x05value\x18\x03 \x01(\x0b\x32\x13.bento.protos.Value\&#34;\x12\n\x10SetAttributeResp2\x9f\x05\n\rEngineService\x12G\n\nGetVersion\x12\x1b.bento.protos.GetVersionReq\x1a\x1c.bento.protos.GetVersionResp\x12V\n\x0f\x41pplySimulation\x12 .bento.protos.ApplySimulationReq\x1a!.bento.protos.ApplySimulationResp\x12P\n\rGetSimulation\x12\x1e.bento.protos.GetSimulationReq\x1a\x1f.bento.protos.GetSimulationResp\x12S\n\x0eListSimulation\x12\x1f.bento.protos.ListSimulationReq\x1a .bento.protos.ListSimulationResp\x12S\n\x0e\x44ropSimulation\x12\x1f.bento.protos.DropSimulationReq\x1a .bento.protos.DropSimulationResp\x12S\n\x0eStepSimulation\x12\x1f.bento.protos.StepSimulationReq\x1a .bento.protos.StepSimulationResp\x12M\n\x0cGetAttribute\x12\x1d.bento.protos.GetAttributeReq\x1a\x1e.bento.protos.GetAttributeResp\x12M\n\x0cSetAttribute\x12\x1d.bento.protos.SetAttributeReq\x1a\x1e.bento.protos.SetAttributeRespb\x06proto3&#39;
   ,
   dependencies=[bento_dot_protos_dot_values__pb2.DESCRIPTOR,bento_dot_protos_dot_references__pb2.DESCRIPTOR,bento_dot_protos_dot_sim__pb2.DESCRIPTOR,])
 
@@ -155,6 +155,13 @@ _APPLYSIMULATIONRESP = _descriptor.Descriptor(
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;simulation&#39;, full_name=&#39;bento.protos.ApplySimulationResp.simulation&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -168,7 +175,7 @@ _APPLYSIMULATIONRESP = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=254,
-  serialized_end=275,
+  serialized_end=324,
 )
 
 
@@ -199,8 +206,8 @@ _GETSIMULATIONREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=277,
-  serialized_end=309,
+  serialized_start=326,
+  serialized_end=358,
 )
 
 
@@ -231,8 +238,8 @@ _GETSIMULATIONRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=311,
-  serialized_end=379,
+  serialized_start=360,
+  serialized_end=428,
 )
 
 
@@ -256,8 +263,8 @@ _LISTSIMULATIONREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=381,
-  serialized_end=400,
+  serialized_start=430,
+  serialized_end=449,
 )
 
 
@@ -288,8 +295,8 @@ _LISTSIMULATIONRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=402,
-  serialized_end=441,
+  serialized_start=451,
+  serialized_end=490,
 )
 
 
@@ -320,8 +327,8 @@ _DROPSIMULATIONREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=443,
-  serialized_end=476,
+  serialized_start=492,
+  serialized_end=525,
 )
 
 
@@ -345,8 +352,8 @@ _DROPSIMULATIONRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=478,
-  serialized_end=498,
+  serialized_start=527,
+  serialized_end=547,
 )
 
 
@@ -358,6 +365,13 @@ _STEPSIMULATIONREQ = _descriptor.Descriptor(
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;name&#39;, full_name=&#39;bento.protos.StepSimulationReq.name&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b&#34;&#34;.decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -370,8 +384,8 @@ _STEPSIMULATIONREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=500,
-  serialized_end=519,
+  serialized_start=549,
+  serialized_end=582,
 )
 
 
@@ -395,8 +409,8 @@ _STEPSIMULATIONRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=521,
-  serialized_end=541,
+  serialized_start=584,
+  serialized_end=604,
 )
 
 
@@ -409,8 +423,15 @@ _GETATTRIBUTEREQ = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name=&#39;attribute&#39;, full_name=&#39;bento.protos.GetAttributeReq.attribute&#39;, index=0,
-      number=1, type=11, cpp_type=10, label=1,
+      name=&#39;sim_name&#39;, full_name=&#39;bento.protos.GetAttributeReq.sim_name&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b&#34;&#34;.decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;attribute&#39;, full_name=&#39;bento.protos.GetAttributeReq.attribute&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -427,8 +448,8 @@ _GETATTRIBUTEREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=543,
-  serialized_end=607,
+  serialized_start=606,
+  serialized_end=688,
 )
 
 
@@ -459,8 +480,8 @@ _GETATTRIBUTERESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=609,
-  serialized_end=663,
+  serialized_start=690,
+  serialized_end=744,
 )
 
 
@@ -473,15 +494,22 @@ _SETATTRIBUTEREQ = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name=&#39;attribute&#39;, full_name=&#39;bento.protos.SetAttributeReq.attribute&#39;, index=0,
-      number=1, type=11, cpp_type=10, label=1,
+      name=&#39;sim_name&#39;, full_name=&#39;bento.protos.SetAttributeReq.sim_name&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b&#34;&#34;.decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;attribute&#39;, full_name=&#39;bento.protos.SetAttributeReq.attribute&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name=&#39;value&#39;, full_name=&#39;bento.protos.SetAttributeReq.value&#39;, index=1,
-      number=2, type=11, cpp_type=10, label=1,
+      name=&#39;value&#39;, full_name=&#39;bento.protos.SetAttributeReq.value&#39;, index=2,
+      number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -498,8 +526,8 @@ _SETATTRIBUTEREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=665,
-  serialized_end=765,
+  serialized_start=746,
+  serialized_end=864,
 )
 
 
@@ -523,11 +551,12 @@ _SETATTRIBUTERESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=767,
-  serialized_end=785,
+  serialized_start=866,
+  serialized_end=884,
 )
 
 _APPLYSIMULATIONREQ.fields_by_name[&#39;simulation&#39;].message_type = bento_dot_protos_dot_sim__pb2._SIMULATIONDEF
+_APPLYSIMULATIONRESP.fields_by_name[&#39;simulation&#39;].message_type = bento_dot_protos_dot_sim__pb2._SIMULATIONDEF
 _GETSIMULATIONRESP.fields_by_name[&#39;simulation&#39;].message_type = bento_dot_protos_dot_sim__pb2._SIMULATIONDEF
 _GETATTRIBUTEREQ.fields_by_name[&#39;attribute&#39;].message_type = bento_dot_protos_dot_references__pb2._ATTRIBUTEREF
 _GETATTRIBUTERESP.fields_by_name[&#39;value&#39;].message_type = bento_dot_protos_dot_values__pb2._VALUE
@@ -672,8 +701,8 @@ _ENGINESERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=788,
-  serialized_end=1459,
+  serialized_start=887,
+  serialized_end=1558,
   methods=[
   _descriptor.MethodDescriptor(
     name=&#39;GetVersion&#39;,
@@ -816,6 +845,13 @@ DESCRIPTOR.services_by_name[&#39;EngineService&#39;] = _ENGINESERVICE
 <div class="desc"></div>
 </dd>
 </dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.ApplySimulationResp.simulation"><code class="name">var <span class="ident">simulation</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.ApplySimulationResp.simulation</p></div>
+</dd>
+</dl>
 </dd>
 <dt id="bento.protos.services_pb2.DropSimulationReq"><code class="flex name class">
 <span>class <span class="ident">DropSimulationReq</span></span>
@@ -885,6 +921,10 @@ DESCRIPTOR.services_by_name[&#39;EngineService&#39;] = _ENGINESERVICE
 <dt id="bento.protos.services_pb2.GetAttributeReq.attribute"><code class="name">var <span class="ident">attribute</span></code></dt>
 <dd>
 <div class="desc"><p>Field bento.protos.GetAttributeReq.attribute</p></div>
+</dd>
+<dt id="bento.protos.services_pb2.GetAttributeReq.sim_name"><code class="name">var <span class="ident">sim_name</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.GetAttributeReq.sim_name</p></div>
 </dd>
 </dl>
 </dd>
@@ -1080,6 +1120,10 @@ DESCRIPTOR.services_by_name[&#39;EngineService&#39;] = _ENGINESERVICE
 <dd>
 <div class="desc"><p>Field bento.protos.SetAttributeReq.attribute</p></div>
 </dd>
+<dt id="bento.protos.services_pb2.SetAttributeReq.sim_name"><code class="name">var <span class="ident">sim_name</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.SetAttributeReq.sim_name</p></div>
+</dd>
 <dt id="bento.protos.services_pb2.SetAttributeReq.value"><code class="name">var <span class="ident">value</span></code></dt>
 <dd>
 <div class="desc"><p>Field bento.protos.SetAttributeReq.value</p></div>
@@ -1121,6 +1165,13 @@ DESCRIPTOR.services_by_name[&#39;EngineService&#39;] = _ENGINESERVICE
 <dt id="bento.protos.services_pb2.StepSimulationReq.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
 <dd>
 <div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.protos.services_pb2.StepSimulationReq.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.StepSimulationReq.name</p></div>
 </dd>
 </dl>
 </dd>
@@ -1170,6 +1221,7 @@ DESCRIPTOR.services_by_name[&#39;EngineService&#39;] = _ENGINESERVICE
 <h4><code><a title="bento.protos.services_pb2.ApplySimulationResp" href="#bento.protos.services_pb2.ApplySimulationResp">ApplySimulationResp</a></code></h4>
 <ul class="">
 <li><code><a title="bento.protos.services_pb2.ApplySimulationResp.DESCRIPTOR" href="#bento.protos.services_pb2.ApplySimulationResp.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.ApplySimulationResp.simulation" href="#bento.protos.services_pb2.ApplySimulationResp.simulation">simulation</a></code></li>
 </ul>
 </li>
 <li>
@@ -1190,6 +1242,7 @@ DESCRIPTOR.services_by_name[&#39;EngineService&#39;] = _ENGINESERVICE
 <ul class="">
 <li><code><a title="bento.protos.services_pb2.GetAttributeReq.DESCRIPTOR" href="#bento.protos.services_pb2.GetAttributeReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
 <li><code><a title="bento.protos.services_pb2.GetAttributeReq.attribute" href="#bento.protos.services_pb2.GetAttributeReq.attribute">attribute</a></code></li>
+<li><code><a title="bento.protos.services_pb2.GetAttributeReq.sim_name" href="#bento.protos.services_pb2.GetAttributeReq.sim_name">sim_name</a></code></li>
 </ul>
 </li>
 <li>
@@ -1244,6 +1297,7 @@ DESCRIPTOR.services_by_name[&#39;EngineService&#39;] = _ENGINESERVICE
 <ul class="">
 <li><code><a title="bento.protos.services_pb2.SetAttributeReq.DESCRIPTOR" href="#bento.protos.services_pb2.SetAttributeReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
 <li><code><a title="bento.protos.services_pb2.SetAttributeReq.attribute" href="#bento.protos.services_pb2.SetAttributeReq.attribute">attribute</a></code></li>
+<li><code><a title="bento.protos.services_pb2.SetAttributeReq.sim_name" href="#bento.protos.services_pb2.SetAttributeReq.sim_name">sim_name</a></code></li>
 <li><code><a title="bento.protos.services_pb2.SetAttributeReq.value" href="#bento.protos.services_pb2.SetAttributeReq.value">value</a></code></li>
 </ul>
 </li>
@@ -1257,6 +1311,7 @@ DESCRIPTOR.services_by_name[&#39;EngineService&#39;] = _ENGINESERVICE
 <h4><code><a title="bento.protos.services_pb2.StepSimulationReq" href="#bento.protos.services_pb2.StepSimulationReq">StepSimulationReq</a></code></h4>
 <ul class="">
 <li><code><a title="bento.protos.services_pb2.StepSimulationReq.DESCRIPTOR" href="#bento.protos.services_pb2.StepSimulationReq.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="bento.protos.services_pb2.StepSimulationReq.name" href="#bento.protos.services_pb2.StepSimulationReq.name">name</a></code></li>
 </ul>
 </li>
 <li>

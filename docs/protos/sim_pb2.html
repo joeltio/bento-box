@@ -41,6 +41,7 @@ _sym_db = _symbol_database.Default()
 
 
 from bento.protos import ecs_pb2 as bento_dot_protos_dot_ecs__pb2
+from bento.protos import graph_pb2 as bento_dot_protos_dot_graph__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -49,9 +50,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax=&#39;proto3&#39;,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b&#39;\n\x16\x62\x65nto/protos/sim.proto\x12\x0c\x62\x65nto.protos\x1a\x16\x62\x65nto/protos/ecs.proto\&#34;\xa2\x01\n\rSimulationDef\x12\x0c\n\x04name\x18\x01 \x01(\t\x12)\n\x08\x65ntities\x18\x02 \x03(\x0b\x32\x17.bento.protos.EntityDef\x12.\n\ncomponents\x18\x03 \x03(\x0b\x32\x1a.bento.protos.ComponentDef\x12(\n\x07systems\x18\x04 \x03(\x0b\x32\x17.bento.protos.SystemDefb\x06proto3&#39;
+  serialized_pb=b&#39;\n\x16\x62\x65nto/protos/sim.proto\x12\x0c\x62\x65nto.protos\x1a\x16\x62\x65nto/protos/ecs.proto\x1a\x18\x62\x65nto/protos/graph.proto\&#34;\xcb\x01\n\rSimulationDef\x12\x0c\n\x04name\x18\x01 \x01(\t\x12)\n\x08\x65ntities\x18\x02 \x03(\x0b\x32\x17.bento.protos.EntityDef\x12.\n\ncomponents\x18\x03 \x03(\x0b\x32\x1a.bento.protos.ComponentDef\x12(\n\x07systems\x18\x04 \x03(\x0b\x32\x17.bento.protos.SystemDef\x12\&#39;\n\ninit_graph\x18\x05 \x01(\x0b\x32\x13.bento.protos.Graphb\x06proto3&#39;
   ,
-  dependencies=[bento_dot_protos_dot_ecs__pb2.DESCRIPTOR,])
+  dependencies=[bento_dot_protos_dot_ecs__pb2.DESCRIPTOR,bento_dot_protos_dot_graph__pb2.DESCRIPTOR,])
 
 
 
@@ -92,6 +93,13 @@ _SIMULATIONDEF = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name=&#39;init_graph&#39;, full_name=&#39;bento.protos.SimulationDef.init_graph&#39;, index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -104,13 +112,14 @@ _SIMULATIONDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=65,
-  serialized_end=227,
+  serialized_start=91,
+  serialized_end=294,
 )
 
 _SIMULATIONDEF.fields_by_name[&#39;entities&#39;].message_type = bento_dot_protos_dot_ecs__pb2._ENTITYDEF
 _SIMULATIONDEF.fields_by_name[&#39;components&#39;].message_type = bento_dot_protos_dot_ecs__pb2._COMPONENTDEF
 _SIMULATIONDEF.fields_by_name[&#39;systems&#39;].message_type = bento_dot_protos_dot_ecs__pb2._SYSTEMDEF
+_SIMULATIONDEF.fields_by_name[&#39;init_graph&#39;].message_type = bento_dot_protos_dot_graph__pb2._GRAPH
 DESCRIPTOR.message_types_by_name[&#39;SimulationDef&#39;] = _SIMULATIONDEF
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -162,6 +171,10 @@ _sym_db.RegisterMessage(SimulationDef)
 <dd>
 <div class="desc"><p>Field bento.protos.SimulationDef.entities</p></div>
 </dd>
+<dt id="bento.protos.sim_pb2.SimulationDef.init_graph"><code class="name">var <span class="ident">init_graph</span></code></dt>
+<dd>
+<div class="desc"><p>Field bento.protos.SimulationDef.init_graph</p></div>
+</dd>
 <dt id="bento.protos.sim_pb2.SimulationDef.name"><code class="name">var <span class="ident">name</span></code></dt>
 <dd>
 <div class="desc"><p>Field bento.protos.SimulationDef.name</p></div>
@@ -190,10 +203,11 @@ _sym_db.RegisterMessage(SimulationDef)
 <ul>
 <li>
 <h4><code><a title="bento.protos.sim_pb2.SimulationDef" href="#bento.protos.sim_pb2.SimulationDef">SimulationDef</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="bento.protos.sim_pb2.SimulationDef.DESCRIPTOR" href="#bento.protos.sim_pb2.SimulationDef.DESCRIPTOR">DESCRIPTOR</a></code></li>
 <li><code><a title="bento.protos.sim_pb2.SimulationDef.components" href="#bento.protos.sim_pb2.SimulationDef.components">components</a></code></li>
 <li><code><a title="bento.protos.sim_pb2.SimulationDef.entities" href="#bento.protos.sim_pb2.SimulationDef.entities">entities</a></code></li>
+<li><code><a title="bento.protos.sim_pb2.SimulationDef.init_graph" href="#bento.protos.sim_pb2.SimulationDef.init_graph">init_graph</a></code></li>
 <li><code><a title="bento.protos.sim_pb2.SimulationDef.name" href="#bento.protos.sim_pb2.SimulationDef.name">name</a></code></li>
 <li><code><a title="bento.protos.sim_pb2.SimulationDef.systems" href="#bento.protos.sim_pb2.SimulationDef.systems">systems</a></code></li>
 </ul>
