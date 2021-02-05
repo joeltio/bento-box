@@ -132,28 +132,57 @@ TEST_F(EngineServiceTest, ApplyAndGetSimDef) {
     ASSERT_EQ(applyResp.simulation().entities_size(), simDef.entities_size());
 }
 
-TEST_F(EngineServiceTest, ApplyCreatesEntities) {
-    // Create comp def
-    auto compDef = test_simulation::TestComponent().compDef;
-
-    // Create entity def
-    auto entityDef = bento::protos::EntityDef();
-    auto unsetEntityId = Simulation::UNSET_ENTITY_ID;
-    entityDef.mutable_components()->Add(std::string(compDef.name()));
-    entityDef.set_id(unsetEntityId);
+TEST_F(EngineServiceTest, ApplyCreatesEntityAndSystemIds) {
+    // For some reason, C++ doesn't allow me to use these constants directly
+    auto UNSET_SYSTEM_ID = Simulation::UNSET_SYSTEM_ID;
+    auto UNSET_ENTITY_ID = Simulation::UNSET_ENTITY_ID;
 
     // Create sim def
     auto simDef = bento::protos::SimulationDef();
-    simDef.set_name("test simulation");
-    simDef.mutable_components()->Add(std::move(compDef));
-    simDef.mutable_entities()->Add(std::move(entityDef));
+
+    // To be safe, the creation of compDef and entityDef are put in their own
+    // scope. This is needed because compDef and entityDef are "std::move"d into
+    // simDef. This means that compDef and entityDef will be undefined.
+    {
+        // Create comp def
+        auto compDef = test_simulation::TestComponent().compDef;
+
+        // Create entity def
+        auto entityDef = bento::protos::EntityDef();
+        entityDef.mutable_components()->Add(std::string(compDef.name()));
+        entityDef.set_id(UNSET_ENTITY_ID);
+
+        simDef.set_name("test simulation");
+        simDef.mutable_components()->Add(std::move(compDef));
+        simDef.mutable_entities()->Add(std::move(entityDef));
+    }
 
     // Apply the sim
     applySim(simDef);
 
     auto getResp = getSim(simDef.name().c_str());
     const auto& createdSimDef = getResp.simulation();
-    ASSERT_NE(createdSimDef.entities(0).id(), unsetEntityId);
+    ASSERT_NE(createdSimDef.entities(0).id(), UNSET_ENTITY_ID);
+
+    // Apply again with a system def
+    auto newSimDef = bento::protos::SimulationDef();
+    newSimDef.CopyFrom(createdSimDef);
+
+    {
+        auto& compDef = newSimDef.components(0);
+        auto& entityDef = newSimDef.entities(0);
+        auto attrRef = interpreter::createAttrRef(compDef.name().c_str(),
+                                                  entityDef.id(), "width");
+        auto systemDef = test_simulation::cycle100System(attrRef);
+        systemDef.set_id(UNSET_SYSTEM_ID);
+
+        newSimDef.mutable_systems()->Add()->CopyFrom(systemDef);
+    }
+
+    applySim(newSimDef);
+    getResp = getSim(newSimDef.name().c_str());
+    const auto& updatedSimDef = getResp.simulation();
+    ASSERT_NE(updatedSimDef.systems(0).id(), UNSET_SYSTEM_ID);
 }
 
 TEST_F(EngineServiceTest, ListSims) {

@@ -13,6 +13,7 @@ struct Simulation {
     // Value that indicates that the entity ID is unset
     // An entity ID will be generated if the entity ID is set to this value
     static const ::google::protobuf::uint32 UNSET_ENTITY_ID = 0;
+    static const ::google::protobuf::uint32 UNSET_SYSTEM_ID = 0;
     bento::protos::SimulationDef simDef;
     ics::ComponentStore compStore;
     ics::index::IndexStore indexStore;
@@ -65,6 +66,25 @@ struct Simulation {
                 auto compStoreId =
                     ics::addComponent(indexStore, compStore, comp);
                 indexStore.entity.addComponent(entity.id(), compStoreId);
+            }
+        }
+
+        // Retrieve all the existing system IDs to avoid
+        uint32_t maxId = 0;
+        for (size_t i = 0; i < this->simDef.systems_size(); i++) {
+            auto& system = this->simDef.systems(i);
+            if (system.id() != UNSET_SYSTEM_ID && system.id() > maxId) {
+                maxId = system.id();
+            }
+        }
+
+        // Set the system IDs of the rest of the systems
+        for (size_t i = 0; i < this->simDef.systems_size(); i++) {
+            auto& system = this->simDef.systems(i);
+            // If the system ID is unset, create one and set it
+            if (system.id() == UNSET_SYSTEM_ID) {
+                maxId++;
+                this->simDef.mutable_systems(i)->set_id(maxId);
             }
         }
     }
