@@ -7,6 +7,7 @@
 #include <grpc++/grpc++.h>
 
 #include "git.h"
+#include <google/protobuf/util/message_differencer.h>
 #include <network/grpcServer.h>
 #include <service/engineService.h>
 #include <test_simulation.h>
@@ -127,9 +128,10 @@ TEST_F(EngineServiceTest, ApplyAndGetSimDef) {
 
     // For some reason, protobuf doesn't implement equality on its message
     // objects
-    ASSERT_EQ(applyResp.simulation().components_size(),
-              simDef.components_size());
-    ASSERT_EQ(applyResp.simulation().entities_size(), simDef.entities_size());
+    auto differencer = google::protobuf::util::MessageDifferencer();
+    // true means that they are the same
+    // https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.util.message_differencer#MessageDifferencer.Compare.details
+    ASSERT_TRUE(differencer.Compare(applyResp.simulation(), simDef));
 }
 
 TEST_F(EngineServiceTest, ApplyCreatesEntityAndSystemIds) {
