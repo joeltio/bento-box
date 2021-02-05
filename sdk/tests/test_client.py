@@ -9,8 +9,9 @@ import pytest
 from grpc import StatusCode, RpcError
 from concurrent.futures.thread import ThreadPoolExecutor
 
-from bento.client import Client
 from bento.value import wrap
+from bento.client import Client
+from bento.utils import to_yaml_proto
 from bento.protos.values_pb2 import Value
 from bento.protos.sim_pb2 import SimulationDef
 from bento.protos.references_pb2 import AttributeRef
@@ -36,7 +37,6 @@ from bento.protos.services_pb2_grpc import (
     EngineServiceServicer,
     add_EngineServiceServicer_to_server,
 )
-from bento.utils import assert_proto
 
 
 @pytest.fixture
@@ -145,7 +145,7 @@ def test_client_get_version(client):
 def test_client_apply_sim(client):
     sim = SimulationDef(name="test_sim")
     got_sim = client.apply_sim(sim)
-    assert_proto(got_sim, sim)
+    assert to_yaml_proto(got_sim) == to_yaml_proto(sim)
 
 
 def test_client_get_sim(client, sim_def):

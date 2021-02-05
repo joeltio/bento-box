@@ -13,7 +13,7 @@ from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
 
 from bento.client import Client
 from bento.sim import Simulation
-from bento.utils import assert_proto, to_yaml_proto
+from bento.utils import to_yaml_proto
 from bento.graph.plotter import Plotter
 from bento.graph.value import wrap_const
 from bento.graph.compile import compile_graph
@@ -45,8 +45,8 @@ def assert_graph(actual: Graph, expected_path: str):
         ParseDict(yaml.safe_load(f.read()), expected)
     # sort graph inputs and outputs to ensure position invariance when comparing
     actual, expected = sort_input_outputs(actual), sort_input_outputs(expected)
-    # pytest -vv gives us a nice diff when comparing as JSON
-    assert_proto(actual, expected)
+    # pytest -vv gives us a nice diff when comparing as YAML
+    assert to_yaml_proto(actual) == to_yaml_proto(expected)
 
 
 ## tests

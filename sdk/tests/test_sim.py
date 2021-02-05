@@ -10,9 +10,9 @@ from unittest.mock import Mock
 from bento import types
 from bento.client import Client
 from bento.sim import Simulation
+from bento.utils import to_yaml_proto
 from bento.graph.plotter import Plotter
 from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
-from bento.utils import assert_proto
 from bento.example.specs import Position, Speed
 from bento.protos.sim_pb2 import SimulationDef
 
@@ -76,7 +76,7 @@ def test_sim_simulation_init(mock_client, component_defs, entity_defs, sim_proto
     # check for apply to obtain entity ids
     mock_client.apply_sim.assert_called_once()
     actual_sim_proto = mock_client.apply_sim.call_args[0][0]
-    assert_proto(actual_sim_proto, noid_sim_proto)
+    assert to_yaml_proto(actual_sim_proto) == to_yaml_proto(noid_sim_proto)
 
     # check entity ids provided by the engine are applied
     assert sim.entities[0].id == 1
