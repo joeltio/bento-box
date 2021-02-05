@@ -76,7 +76,7 @@ message GetValueReq {
   // Name of the simulation to retrieve the value from
   string sim_name = 1;
   // Reference to the value to retrieve
-  ValueRef valueRef = 2;
+  ValueRef value_ref = 2;
 }
 message GetValueResp {
   // Stored value of the requested value
@@ -87,7 +87,7 @@ message SetValueReq {
   // Name of the simulation to set the value
   string sim_name = 1;
   // Reference to the target value to set
-  ValueRef valueRef = 2;
+  ValueRef value_ref = 2;
   // The value to the set the target ValueRef to
   Value value = 3;
 }
