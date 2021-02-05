@@ -211,7 +211,6 @@ class GraphComponent(Component):
             attribute=name,
         )
         get_op = GraphNode(node=Node(retrieve_op=Node.Retrieve(retrieve_attr=attr_ref)))
-        # print(get_op)
         self._inputs[to_str_attr(attr_ref)] = get_op
         return get_op
 

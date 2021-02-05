@@ -12,8 +12,8 @@ from bento.client import Client
 from bento.sim import Simulation
 from bento.graph.plotter import Plotter
 from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
-from tests.utils import assert_proto
-from tests.specs import Position, Speed
+from bento.utils import assert_proto
+from bento.example.specs import Position, Speed
 from bento.protos.sim_pb2 import SimulationDef
 
 

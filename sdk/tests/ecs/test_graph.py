@@ -9,7 +9,7 @@ from bento.ecs.spec import ComponentDef, EntityDef
 from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode, wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
-from tests.specs import Position
+from bento.example.specs import Position
 
 
 def test_graph_ecs_entity():

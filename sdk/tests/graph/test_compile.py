@@ -13,7 +13,7 @@ from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
 
 from bento.client import Client
 from bento.sim import Simulation
-from tests.utils import assert_proto, to_yaml_proto
+from bento.utils import assert_proto, to_yaml_proto
 from bento.graph.plotter import Plotter
 from bento.graph.value import wrap_const
 from bento.graph.compile import compile_graph
@@ -21,7 +21,7 @@ from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.sim_pb2 import SimulationDef
 from bento.protos.references_pb2 import AttributeRef
 from bento.ecs.spec import EntityDef, ComponentDef
-from tests.specs import Position, Speed, Clock, Velocity
+from bento.example.specs import Position, Speed, Clock, Velocity
 
 ## test tools
 # path to graph test cases in test resources

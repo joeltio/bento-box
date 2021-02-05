@@ -36,7 +36,7 @@ from bento.protos.services_pb2_grpc import (
     EngineServiceServicer,
     add_EngineServiceServicer_to_server,
 )
-from tests.utils import assert_proto
+from bento.utils import assert_proto
 
 
 @pytest.fixture
