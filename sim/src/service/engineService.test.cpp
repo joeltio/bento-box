@@ -79,6 +79,36 @@ class EngineServiceTest : public testing::Test {
 
         return resp;
     }
+
+    GetAttributeResp getAttr(const char* simName,
+                             const bento::protos::AttributeRef& attrRef) {
+        GetAttributeReq req;
+        GetAttributeResp resp;
+        ClientContext context;
+        req.set_sim_name(simName);
+        req.mutable_attribute()->CopyFrom(attrRef);
+        Status s = client->GetAttribute(&context, req, &resp);
+        if (!s.ok()) {
+            throw std::runtime_error(s.error_message());
+        }
+
+        return resp;
+    }
+
+    void setAttr(const char* simName,
+                 const bento::protos::AttributeRef& attrRef,
+                 const bento::protos::Value& val) {
+        SetAttributeReq req;
+        SetAttributeResp resp;
+        ClientContext context;
+        req.set_sim_name(simName);
+        req.mutable_attribute()->CopyFrom(attrRef);
+        req.mutable_value()->CopyFrom(val);
+        Status s = client->SetAttribute(&context, req, &resp);
+        if (!s.ok()) {
+            throw std::runtime_error(s.error_message());
+        }
+    }
 };
 
 TEST_F(EngineServiceTest, GetVersion) {
@@ -204,4 +234,38 @@ TEST_F(EngineServiceTest, StepSimLocksSim) {
 
     // Reapply sim
     EXPECT_ANY_THROW(applySim(testSim.simDef));
+}
+
+TEST_F(EngineServiceTest, GetAndSetAttribute) {
+    // Apply a sim
+    auto testSim = test_simulation::TestSimulation();
+    applySim(testSim.simDef);
+
+    // Step the sim so that init graph is executed
+    StepSimulationReq stepReq;
+    StepSimulationResp stepResp;
+    ClientContext stepContext;
+    stepReq.set_name(testSim.SIM_NAME);
+    Status s = client->StepSimulation(&stepContext, stepReq, &stepResp);
+    ASSERT_TRUE(s.ok());
+
+    // Get the height attribute
+    auto attr = interpreter::createAttrRef(testSim.compDef.name().c_str(),
+                                           testSim.entityDef.id(), "height");
+    auto resp = getAttr(testSim.SIM_NAME, attr);
+
+    ASSERT_EQ(resp.value().primitive().int_64(), 1);
+
+    // Set the value to something else
+    int newVal = 90;
+    auto newValProto = bento::protos::Value();
+    newValProto.mutable_primitive()->set_int_64(newVal);
+    newValProto.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
+
+    setAttr(testSim.SIM_NAME, attr, newValProto);
+
+    // Ensure that the value has been updated
+    resp = getAttr(testSim.SIM_NAME, attr);
+    ASSERT_EQ(resp.value().primitive().int_64(), newVal);
 }

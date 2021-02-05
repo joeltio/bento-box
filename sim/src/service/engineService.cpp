@@ -150,10 +150,14 @@ Status EngineServiceImpl::SetAttribute(
     auto& simDef = sims.at(request->sim_name())->simDef;
 
     // Use interpreter's node to find the attribute for consistency
+    // Create a const node holding the value
+    auto valConstNode = bento::protos::Node();
+    valConstNode.mutable_const_op()->mutable_held_value()->CopyFrom(
+        request->value());
     // Create the retrieve node
     auto mutateNode = bento::protos::Node_Mutate();
     mutateNode.mutable_mutate_attr()->CopyFrom(request->attribute());
-    mutateNode.mutable_to_node()->CopyFrom(request->value());
+    mutateNode.mutable_to_node()->CopyFrom(valConstNode);
 
     interpreter::mutateOp(compStore, indexStore, mutateNode);
 
