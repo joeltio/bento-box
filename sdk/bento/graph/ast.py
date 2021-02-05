@@ -17,7 +17,7 @@ from gast import (
     keyword,
     arguments,
     Return,
-    Tuple,
+    Tuple as TupleAST,
     Name,
     Load,
     Store,
@@ -31,7 +31,7 @@ from gast import (
 )
 from inspect import getsource, cleandoc
 from textwrap import dedent
-from typing import Any, Dict, Optional, Callable, Union, List
+from typing import Any, Dict, Optional, Callable, Union, List, Tuple
 
 
 class FuncASTTransform(gast.NodeTransformer):
@@ -87,10 +87,10 @@ def assign_ast(
         multi_assign: Whether to assign multiple targets to the same value
     """
     if len(targets) >= 2:
-        targets = targets if multi_assign else [Tuple(elts=targets, ctx=Store())]
+        targets = targets if multi_assign else [TupleAST(elts=targets, ctx=Store())]
     return Assign(
         targets=targets,
-        value=values[0] if len(values) == 1 else Tuple(elts=values, ctx=Load()),
+        value=values[0] if len(values) == 1 else TupleAST(elts=values, ctx=Load()),
     )
 
 
@@ -159,7 +159,7 @@ def wrap_func_ast(
     if len(returns) > 0:
         # convert return names to return AST node
         return_ast = Return(
-            value=[Tuple(elts=[name_ast(r) for r in returns], ctx=Load())]
+            value=[TupleAST(elts=[name_ast(r) for r in returns], ctx=Load())]
             if len(returns) > 1 or return_tuple
             else name_ast(returns[0])
         )
@@ -203,8 +203,16 @@ def wrap_block_ast(
     )
 
 
-def load_ast_module(ast: AST) -> Any:
-    # TODO(mrzzy): docs
+def load_ast_module(ast: AST, remove_src: bool = True) -> Union[Any, Tuple[Any, str]]:
+    """Loads the given AST as module
+
+    Args:
+        ast: The AST node to load as a module.
+        remove_src: Whether to remove the intermediate module source file.
+    Returns:
+        The AST loaded as a module. If remove_src is True, returns both
+        the loaded module and a path to the intermediate source file.
+    """
     src = unparse(ast)
     with NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(src)
@@ -215,6 +223,7 @@ def load_ast_module(ast: AST) -> Any:
         mod_spec.loader.exec_module(module)
     # delete the temporary file manually as NamedTemporaryFile runs into
     # permission issues trying to remove it on Windows.
-    os.remove(f.name)
-
-    return module
+    if remove_src:
+        os.remove(f.name)
+        return module
+    return module, f.name

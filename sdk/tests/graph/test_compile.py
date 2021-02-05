@@ -63,8 +63,6 @@ def test_graph_compile_empty():
     assert actual_graph == Graph()
 
 
-# TODO(mrzzy): test using attributes inside plotter calls
-
 # test compile basic arithmetic example with one entity
 def test_graph_compile_arithmetic():
     def arithmetic_fn(g: Plotter):
@@ -139,29 +137,27 @@ def test_graph_compile_ifelse():
         car = g.entity(
             components=[
                 Position,
+                Speed,
                 Velocity,
             ]
         )
         env = g.entity(components=[Clock])
         if env[Clock].tick_ms > 2000:
-            x_delta = 2 * car[Velocity].x
-            y_delta = x_delta + 2
+            car[Position].x += g.min(car[Speed].max_x, 2 * car[Velocity].x)
+            car[Position].y = car[Position].x + 2
         elif env[Clock].tick_ms > 5000:
-            x_delta = 5 * car[Velocity].x
-            y_delta = x_delta + 10
+            car[Position].x += g.min(car[Speed].max_x, 5 * car[Velocity].x)
+            car[Position].y = car[Position].x + 10
         else:
-            x_delta = 1 * car[Velocity].x
-            y_delta = x_delta - 5
-        car[Position].x += x_delta
-        car[Position].y += y_delta
+            car[Position].x = g.min(car[Speed].max_x, 1 * car[Velocity].x)
+            car[Position].y = car[Position].x - 5
 
     actual_graph = compile_graph(
         convert_fn=ifelse_fn,
-        component_defs=[Position, Clock, Velocity],
+        component_defs=[Position, Clock, Velocity, Speed],
         entity_defs=[
-            EntityDef(components=[Position, Velocity], entity_id=1),
+            EntityDef(components=[Position, Velocity, Speed], entity_id=1),
             EntityDef(components=[Clock], entity_id=2),
         ],
     )
-    print(to_yaml_proto(actual_graph))
     assert_graph(actual_graph, "expected_graph_ifelse.yaml")
