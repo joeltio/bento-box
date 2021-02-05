@@ -65,7 +65,9 @@ class Plotter:
             raise ValueError("Given component names should not contain duplicates")
         # retrieve entity for components, create if not does not yet exist
         if comp_set not in self.entity_map:
-            raise KeyError("No entity found with the given components attached")
+            raise KeyError(
+                f"No entity found with the given components attached: {', '.join(comp_set)}"
+            )
         return self.entity_map[comp_set]
 
     def graph(self) -> Graph:
