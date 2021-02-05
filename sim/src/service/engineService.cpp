@@ -33,8 +33,15 @@ Status EngineServiceImpl::ApplySimulation(
             "The simulation has been created and stepped at least once.");
     }
 
-    sims[name] =
-        std::make_unique<Simulation>(Simulation(request->simulation()));
+    try {
+        sims[name] =
+            std::make_unique<Simulation>(Simulation(request->simulation()));
+    } catch (const std::exception& e) {
+        return Status(
+            grpc::UNKNOWN,
+            "Something went wrong while creating the simulation object",
+            e.what());
+    }
 
     response->mutable_simulation()->CopyFrom(sims[name]->simDef);
 
@@ -101,12 +108,29 @@ Status EngineServiceImpl::StepSimulation(
     // Lock the simulation
     if (!sim->locked) {
         sim->locked = true;
-        interpreter::runGraph(compStore, indexStore, sim->simDef.init_graph());
+        try {
+            interpreter::runGraph(compStore, indexStore,
+                                  sim->simDef.init_graph());
+        } catch (const std::exception& e) {
+            return Status(grpc::UNKNOWN,
+                          "Something went wrong while running the initGraph of "
+                          "the simulation",
+                          e.what());
+        }
     }
 
     for (size_t i = 0; i < simDef.systems_size(); i++) {
         const auto& graph = simDef.systems(i).graph();
-        interpreter::runGraph(compStore, indexStore, graph);
+
+        try {
+            interpreter::runGraph(compStore, indexStore, graph);
+        } catch (const std::exception& e) {
+            return Status(
+                grpc::UNKNOWN,
+                "Something went wrong while running system with ID: " +
+                    std::to_string(i) + ".",
+                e.what());
+        }
     }
 
     return Status::OK;
@@ -129,10 +153,18 @@ Status EngineServiceImpl::GetAttribute(
     auto retrieveNode = bento::protos::Node_Retrieve();
     retrieveNode.mutable_retrieve_attr()->CopyFrom(request->attribute());
 
-    auto val = interpreter::retrieveOp(compStore, indexStore, retrieveNode);
-    // CopyFrom does not accept rvalue references, so there is no speed-up from
-    // moving
-    response->mutable_value()->CopyFrom(val);
+    try {
+        auto val = interpreter::retrieveOp(compStore, indexStore, retrieveNode);
+        // CopyFrom does not accept rvalue references, so there is no speed-up
+        // from moving
+        response->mutable_value()->CopyFrom(val);
+    } catch (const std::exception& e) {
+        // It is fair to assume that retrieveOp will only throw errors because
+        // the data could not be found
+        return Status(grpc::NOT_FOUND,
+                      "RetrieveOp failed when retrieving requested attribute.",
+                      e.what());
+    }
 
     return Status::OK;
 }
@@ -159,7 +191,13 @@ Status EngineServiceImpl::SetAttribute(
     mutateNode.mutable_mutate_attr()->CopyFrom(request->attribute());
     mutateNode.mutable_to_node()->CopyFrom(valConstNode);
 
-    interpreter::mutateOp(compStore, indexStore, mutateNode);
+    try {
+        interpreter::mutateOp(compStore, indexStore, mutateNode);
+    } catch (const std::exception& e) {
+        // We can't be sure whether there was something wrong with evaluating
+        // the node to set or retrieving attributes failed
+        return Status(grpc::UNKNOWN, "Setting attribute failed.", e.what());
+    }
 
     return Status::OK;
 }
