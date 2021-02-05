@@ -24,9 +24,9 @@ service EngineService {
   // Run one step of the simulation
   rpc StepSimulation(StepSimulationReq) returns (StepSimulationResp);
 
-  // Set, Get component's Attributes
-  rpc GetAttribute(GetAttributeReq) returns (GetAttributeResp);
-  rpc SetAttribute(SetAttributeReq) returns (SetAttributeResp);
+  // Set, Get values in components
+  rpc GetValue(GetValueReq) returns (GetValueResp);
+  rpc SetValue(SetValueReq) returns (SetValueResp);
 }
 
 message GetVersionReq {}
@@ -72,23 +72,23 @@ message StepSimulationReq {
 }
 message StepSimulationResp {}
 
-message GetAttributeReq {
-  // Name of the simulation to retrieve the attribute from
+message GetValueReq {
+  // Name of the simulation to retrieve the value from
   string sim_name = 1;
-  // Reference to the attribute to retrieve
-  AttributeRef attribute = 2;
+  // Reference to the value to retrieve
+  ValueRef valueRef = 2;
 }
-message GetAttributeResp {
-  // Stored value of the requested attribute
+message GetValueResp {
+  // Stored value of the requested value
   Value value = 1;
 }
 
-message SetAttributeReq {
-  // Name of the simulation to set the attribute
+message SetValueReq {
+  // Name of the simulation to set the value
   string sim_name = 1;
-  // Reference to the target attribute to set
-  AttributeRef attribute = 2;
-  // The value to the set the target attribute to
+  // Reference to the target value to set
+  ValueRef valueRef = 2;
+  // The value to the set the target ValueRef to
   Value value = 3;
 }
-message SetAttributeResp {}
+message SetValueResp {}

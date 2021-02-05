@@ -18,3 +18,10 @@ message AttributeRef {
   // Name of the attribute to retrieve from component
   string attribute = 3;
 }
+
+message ValueRef {
+  // Which component to retrieve the value
+  AttributeRef attr = 1;
+  // A list of indexes
+  repeated int64 attr_indexes = 2;
+}
