@@ -69,7 +69,8 @@ struct Simulation {
             }
         }
 
-        // Retrieve all the existing system IDs to avoid
+        // Find the maximum ID that the given simDefs use, then generate the
+        // other IDs from there
         uint32_t maxId = 0;
         for (size_t i = 0; i < this->simDef.systems_size(); i++) {
             auto& system = this->simDef.systems(i);

@@ -38,7 +38,7 @@ Status EngineServiceImpl::ApplySimulation(
             std::make_unique<Simulation>(Simulation(request->simulation()));
     } catch (const std::exception& e) {
         return Status(
-            grpc::UNKNOWN,
+            grpc::INTERNAL,
             "Something went wrong while creating the simulation object",
             e.what());
     }
@@ -112,7 +112,7 @@ Status EngineServiceImpl::StepSimulation(
             interpreter::runGraph(compStore, indexStore,
                                   sim->simDef.init_graph());
         } catch (const std::exception& e) {
-            return Status(grpc::UNKNOWN,
+            return Status(grpc::INTERNAL,
                           "Something went wrong while running the initGraph of "
                           "the simulation",
                           e.what());
@@ -126,7 +126,7 @@ Status EngineServiceImpl::StepSimulation(
             interpreter::runGraph(compStore, indexStore, graph);
         } catch (const std::exception& e) {
             return Status(
-                grpc::UNKNOWN,
+                grpc::INTERNAL,
                 "Something went wrong while running system with ID: " +
                     std::to_string(i) + ".",
                 e.what());
@@ -196,7 +196,7 @@ Status EngineServiceImpl::SetAttribute(
     } catch (const std::exception& e) {
         // We can't be sure whether there was something wrong with evaluating
         // the node to set or retrieving attributes failed
-        return Status(grpc::UNKNOWN, "Setting attribute failed.", e.what());
+        return Status(grpc::INTERNAL, "Setting attribute failed.", e.what());
     }
 
     return Status::OK;
