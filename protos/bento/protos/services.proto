@@ -42,7 +42,7 @@ message ApplySimulationReq {
   SimulationDef simulation = 1;
 }
 message ApplySimulationResp {
-  // Simulations def with all unspecified entities created
+  // Simulation def with all unspecified entity and system IDs created
   SimulationDef simulation = 1;
 }
 
