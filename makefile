@@ -68,7 +68,7 @@ lint-proto:
 SIM_TARGET:=bentobox
 SIM_TEST:=bentobox-test
 SIM_SRC:=sim
-SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib/core/src $(SIM_SRC)/lib/core/include $(SIM_SRC)/include
+SIM_SRC_DIRS:=$(SIM_SRC)/src $(SIM_SRC)/lib/core/src $(SIM_SRC)/lib/core/include $(SIM_SRC)/include $(SIM_SRC)/test_include
 SIM_BUILD_DIR:=sim/build
 FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 SIM_BUILD_TYPE:=Debug

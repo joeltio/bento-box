@@ -8,6 +8,7 @@ syntax = "proto3";
 package bento.protos;
 
 import "bento/protos/ecs.proto";
+import "bento/protos/graph.proto";
 
 message SimulationDef {
   // unique name that identifies this simulation
@@ -19,4 +20,6 @@ message SimulationDef {
   // List of systems to run in this simulation.
   // Systems would run in sequentially in the order provided in this list
   repeated SystemDef systems = 4;
+  // Graph to run to initialise all component values
+  Graph init_graph = 5;
 }

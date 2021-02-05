@@ -30,9 +30,11 @@ set(TARGETS ${TARGET_SIM} ${TARGET_TEST})
 set(TARGET_SIM_SOURCES
     src/component/userComponent.cpp
     src/index/componentTypeIndex.cpp
+    src/index/entityIndex.cpp
     src/system/render.cpp
     src/interpreter/graphInterpreter.cpp
     src/interpreter/operations.cpp
+    src/interpreter/util.cpp
     src/network/grpcServer.cpp
     src/service/engineService.cpp
     src/ics.cpp
@@ -53,12 +55,15 @@ add_executable(${TARGET_TEST}
     src/index/componentTypeIndex.test.cpp
     src/index/entity.test.cpp
     src/interpreter/graphInterpreter.test.cpp
+    src/interpreter/util.test.cpp
     src/network/grpcServer.test.cpp
     src/service/engineService.test.cpp
     src/main.test.cpp
+    src/test_simulation.cpp
 )
 target_include_directories(${TARGET_TEST}
     PUBLIC include
+    PUBLIC test_include
     PUBLIC ${GENERATED_INCLUDES}
 )
 

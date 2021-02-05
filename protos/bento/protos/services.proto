@@ -41,7 +41,10 @@ message ApplySimulationReq {
   // Definition of the simulation to create or apply
   SimulationDef simulation = 1;
 }
-message ApplySimulationResp {}
+message ApplySimulationResp {
+  // Simulation def with all unspecified entity and system IDs created
+  SimulationDef simulation = 1;
+}
 
 message GetSimulationReq {
   // Name of the simulation to get
@@ -63,12 +66,17 @@ message DropSimulationReq {
 }
 message DropSimulationResp {}
 
-message StepSimulationReq {}
+message StepSimulationReq {
+  // Name of the simulation to step
+  string name = 1;
+}
 message StepSimulationResp {}
 
 message GetAttributeReq {
+  // Name of the simulation to retrieve the attribute from
+  string sim_name = 1;
   // Reference to the attribute to retrieve
-  AttributeRef attribute = 1;
+  AttributeRef attribute = 2;
 }
 message GetAttributeResp {
   // Stored value of the requested attribute
@@ -76,9 +84,11 @@ message GetAttributeResp {
 }
 
 message SetAttributeReq {
+  // Name of the simulation to set the attribute
+  string sim_name = 1;
   // Reference to the target attribute to set
-  AttributeRef attribute = 1;
+  AttributeRef attribute = 2;
   // The value to the set the target attribute to
-  Value value = 2;
+  Value value = 3;
 }
 message SetAttributeResp {}
