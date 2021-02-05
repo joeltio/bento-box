@@ -298,8 +298,6 @@ def resolve_symbol(ast: AST) -> AST:
         The given AST with to symbol nodes annotated with their definitions
     """
     # TODO(mrzzy): resolve qualified symbols, ClassDef.
-    # TODO(mrzzy): resolve AugAssign symbols
-    # TODO(mrzzy): resolve Global symbol table provided by `globals()`.
     def walk_resolve(ast, symbol_table=deque([{}])):
         # get current stack frame of the symbol table
         symbol_frame = symbol_table[-1]

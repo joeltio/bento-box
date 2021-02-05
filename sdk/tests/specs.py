@@ -16,10 +16,19 @@ Position = ComponentDef(
     },
 )
 
+Velocity = ComponentDef(
+    name="velocity",
+    schema={
+        "x": types.int32,
+        "y": types.int32,
+    },
+)
+
 Speed = ComponentDef(
     name="speed",
     schema={
-        "x_neg": types.int32,
+        "max_x": types.int32,
+        "max_y": types.int32,
     },
 )
 

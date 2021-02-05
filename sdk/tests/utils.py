@@ -4,7 +4,8 @@
 # Testing utilities
 #
 
-from google.protobuf.json_format import MessageToJson
+import yaml
+from google.protobuf.json_format import MessageToDict, MessageToJson
 
 
 def assert_proto(actual_proto, expected_proto):
@@ -17,3 +18,8 @@ def assert_proto(actual_proto, expected_proto):
     assert MessageToJson(actual_proto, sort_keys=True) == MessageToJson(
         expected_proto, sort_keys=True
     )
+
+
+def to_yaml_proto(proto):
+    """Convert and return the given protobuf message as YAML"""
+    return yaml.safe_dump(MessageToDict(proto))

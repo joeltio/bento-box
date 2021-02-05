@@ -13,7 +13,7 @@ from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
 
 from bento.client import Client
 from bento.sim import Simulation
-from tests.utils import assert_proto
+from tests.utils import assert_proto, to_yaml_proto
 from bento.graph.plotter import Plotter
 from bento.graph.value import wrap_const
 from bento.graph.compile import compile_graph
@@ -21,7 +21,7 @@ from bento.protos.graph_pb2 import Graph, Node
 from bento.protos.sim_pb2 import SimulationDef
 from bento.protos.references_pb2 import AttributeRef
 from bento.ecs.spec import EntityDef, ComponentDef
-from tests.specs import Position, Speed, Clock
+from tests.specs import Position, Speed, Clock, Velocity
 
 ## test tools
 # path to graph test cases in test resources
@@ -63,6 +63,8 @@ def test_graph_compile_empty():
     assert actual_graph == Graph()
 
 
+# TODO(mrzzy): test using attributes inside plotter calls
+
 # test compile basic arithmetic example with one entity
 def test_graph_compile_arithmetic():
     def arithmetic_fn(g: Plotter):
@@ -86,22 +88,23 @@ def test_graph_compile_arithmetic_multiple():
         car = g.entity(
             components=[
                 Position,
-                Speed,
+                Velocity,
             ]
         )
         tick_ms = env[Clock].tick_ms
-        xps = -car[Speed].x_neg
-        x_delta = xps * (tick_ms * ms_in_sec)
+        neg_xps = -car[Velocity].x
+        x_delta = neg_xps * (tick_ms * ms_in_sec)
         car[Position].x = x_delta + car[Position].x
 
     actual_graph = compile_graph(
         convert_fn=arithmetic_multiple_fn,
-        component_defs=[Position, Speed, Clock],
+        component_defs=[Position, Velocity, Clock],
         entity_defs=[
-            EntityDef(components=[Position, Speed], entity_id=1),
+            EntityDef(components=[Position, Velocity], entity_id=1),
             EntityDef(components=[Clock], entity_id=2),
         ],
     )
+    to_yaml_proto(actual_graph)
 
     assert_graph(actual_graph, "expected_graph_arithmetic_multiple.yaml")
 
@@ -130,33 +133,35 @@ def test_graph_compile_ternary():
     assert_graph(actual_graph, "expected_graph_ternary.yaml")
 
 
-# test compil if else conditional conditional
+# test compile if else conditional
 def test_graph_compile_ifelse():
     def ifelse_fn(g: Plotter):
         car = g.entity(
             components=[
                 Position,
+                Velocity,
             ]
         )
         env = g.entity(components=[Clock])
         if env[Clock].tick_ms > 2000:
-            x_delta = 20
+            x_delta = 2 * car[Velocity].x
             y_delta = x_delta + 2
         elif env[Clock].tick_ms > 5000:
-            x_delta = 50
+            x_delta = 5 * car[Velocity].x
             y_delta = x_delta + 10
         else:
-            x_delta = 10
+            x_delta = 1 * car[Velocity].x
             y_delta = x_delta - 5
         car[Position].x += x_delta
         car[Position].y += y_delta
 
     actual_graph = compile_graph(
         convert_fn=ifelse_fn,
-        component_defs=[Position, Clock],
+        component_defs=[Position, Clock, Velocity],
         entity_defs=[
-            EntityDef(components=[Position], entity_id=1),
+            EntityDef(components=[Position, Velocity], entity_id=1),
             EntityDef(components=[Clock], entity_id=2),
         ],
     )
+    print(to_yaml_proto(actual_graph))
     assert_graph(actual_graph, "expected_graph_ifelse.yaml")
