@@ -105,9 +105,9 @@ class SystemDef:
         Args:
             graph: computational graph defining the implementation of the ECS system
                 defined by this SystemDef.
-            entity_id: id held by the ECS system
+            system_id: id held by the ECS system
         """
-        self.proto = ecs_pb2.SystemDef(graph=graph)
+        self.proto = ecs_pb2.SystemDef(graph=graph, id=system_id)
 
     @classmethod
     def from_proto(cls, proto: ecs_pb2.SystemDef):
