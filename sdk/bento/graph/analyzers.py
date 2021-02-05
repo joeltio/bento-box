@@ -5,6 +5,7 @@
 #
 
 import gast
+from astunparse import unparse
 
 from collections import deque
 from collections.abc import Iterable
@@ -256,7 +257,9 @@ def analyze_symbol(ast: AST) -> AST:
                 if isinstance(qualifier, Attribute):
                     symbol += f".{qualifier.attr}"
                 elif isinstance(qualifier, Subscript):
-                    symbol += f"[{gast.dump(qualifier.slice)}]"
+                    # render slice AST as source code
+                    src_slice = unparse(qualifier.slice).rstrip()
+                    symbol += f"[{src_slice}]"
             # label top level symbol
             top_attr = qualifiers[0]
             top_attr.is_symbol, top_attr.symbol = True, symbol

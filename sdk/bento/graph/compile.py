@@ -149,7 +149,6 @@ def compile_graph(
 
         # load AST back as a module
         compiled, src_path = load_ast_module(ast, remove_src=False)
-        print(src_path)
         # allow the use of globals symbols with respect to convert_fn function
         # to be used during graph plotting
         compiled.build_graph.__globals__.update(convert_fn.__globals__)

@@ -1,6 +1,10 @@
 # expected graph for test_graph_compile_ifelse()
 inputs:
 - retrieveAttr:
+    attribute: max_x
+    component: speed
+    entityId: 1
+- retrieveAttr:
     attribute: x
     component: velocity
     entityId: 1
@@ -22,207 +26,64 @@ outputs:
     component: position
     entityId: 1
   toNode:
-    addOp:
-      x:
+    switchOp:
+      conditionNode:
+        ltOp:
+          x:
+            constOp:
+              heldValue:
+                dataType:
+                  primitive: INT32
+                primitive:
+                  int32: 2000
+          y:
+            retrieveOp:
+              retrieveAttr:
+                attribute: tick_ms
+                component: clock
+                entityId: 2
+      falseNode:
         retrieveOp:
           retrieveAttr:
             attribute: x
             component: position
             entityId: 1
-      y:
-        switchOp:
-          conditionNode:
-            ltOp:
-              x:
-                constOp:
-                  heldValue:
-                    dataType:
-                      primitive: INT32
-                    primitive:
-                      int32: 2000
-              y:
-                retrieveOp:
-                  retrieveAttr:
-                    attribute: tick_ms
-                    component: clock
-                    entityId: 2
-          falseNode:
-            switchOp:
-              conditionNode:
-                ltOp:
-                  x:
-                    constOp:
-                      heldValue:
-                        dataType:
-                          primitive: INT32
-                        primitive:
-                          int32: 5000
-                  y:
-                    retrieveOp:
-                      retrieveAttr:
-                        attribute: tick_ms
-                        component: clock
-                        entityId: 2
-              falseNode:
-                mulOp:
-                  x:
-                    constOp:
-                      heldValue:
-                        dataType:
-                          primitive: INT32
-                        primitive:
-                          int32: 1
-                  y:
-                    retrieveOp:
-                      retrieveAttr:
-                        attribute: x
-                        component: velocity
-                        entityId: 1
-              trueNode:
-                mulOp:
-                  x:
-                    constOp:
-                      heldValue:
-                        dataType:
-                          primitive: INT32
-                        primitive:
-                          int32: 5
-                  y:
-                    retrieveOp:
-                      retrieveAttr:
-                        attribute: x
-                        component: velocity
-                        entityId: 1
-          trueNode:
-            mulOp:
-              x:
-                constOp:
-                  heldValue:
-                    dataType:
-                      primitive: INT32
-                    primitive:
-                      int32: 2
-              y:
-                retrieveOp:
-                  retrieveAttr:
-                    attribute: x
-                    component: velocity
-                    entityId: 1
+      trueNode:
+        retrieveOp:
+          retrieveAttr:
+            attribute: x
+            component: position
+            entityId: 1
 - mutateAttr:
     attribute: y
     component: position
     entityId: 1
   toNode:
-    addOp:
-      x:
+    switchOp:
+      conditionNode:
+        ltOp:
+          x:
+            constOp:
+              heldValue:
+                dataType:
+                  primitive: INT32
+                primitive:
+                  int32: 2000
+          y:
+            retrieveOp:
+              retrieveAttr:
+                attribute: tick_ms
+                component: clock
+                entityId: 2
+      falseNode:
         retrieveOp:
           retrieveAttr:
             attribute: y
             component: position
             entityId: 1
-      y:
-        switchOp:
-          conditionNode:
-            ltOp:
-              x:
-                constOp:
-                  heldValue:
-                    dataType:
-                      primitive: INT32
-                    primitive:
-                      int32: 2000
-              y:
-                retrieveOp:
-                  retrieveAttr:
-                    attribute: tick_ms
-                    component: clock
-                    entityId: 2
-          falseNode:
-            switchOp:
-              conditionNode:
-                ltOp:
-                  x:
-                    constOp:
-                      heldValue:
-                        dataType:
-                          primitive: INT32
-                        primitive:
-                          int32: 5000
-                  y:
-                    retrieveOp:
-                      retrieveAttr:
-                        attribute: tick_ms
-                        component: clock
-                        entityId: 2
-              falseNode:
-                subOp:
-                  x:
-                    mulOp:
-                      x:
-                        constOp:
-                          heldValue:
-                            dataType:
-                              primitive: INT32
-                            primitive:
-                              int32: 1
-                      y:
-                        retrieveOp:
-                          retrieveAttr:
-                            attribute: x
-                            component: velocity
-                            entityId: 1
-                  y:
-                    constOp:
-                      heldValue:
-                        dataType:
-                          primitive: INT32
-                        primitive:
-                          int32: 5
-              trueNode:
-                addOp:
-                  x:
-                    mulOp:
-                      x:
-                        constOp:
-                          heldValue:
-                            dataType:
-                              primitive: INT32
-                            primitive:
-                              int32: 5
-                      y:
-                        retrieveOp:
-                          retrieveAttr:
-                            attribute: x
-                            component: velocity
-                            entityId: 1
-                  y:
-                    constOp:
-                      heldValue:
-                        dataType:
-                          primitive: INT32
-                        primitive:
-                          int32: 10
-          trueNode:
-            addOp:
-              x:
-                mulOp:
-                  x:
-                    constOp:
-                      heldValue:
-                        dataType:
-                          primitive: INT32
-                        primitive:
-                          int32: 2
-                  y:
-                    retrieveOp:
-                      retrieveAttr:
-                        attribute: x
-                        component: velocity
-                        entityId: 1
-              y:
-                constOp:
-                  heldValue:
-                    dataType:
-                      primitive: INT32
-                    primitive:
-                      int32: 2
+      trueNode:
+        retrieveOp:
+          retrieveAttr:
+            attribute: y
+            component: position
+            entityId: 1

@@ -199,6 +199,7 @@ def test_symbol_analyzer():
         y, z = True, False
         m[k1] = "v1"
         m["k2"] = "v2"
+        m["k" + "3"] = "v3"
 
     ast = parse_ast(symbol_fn)
     analyzed_ast = analyze_symbol(ast)
@@ -213,16 +214,15 @@ def test_symbol_analyzer():
     assert y_target.is_symbol and y_target.symbol == "y"
     assert z_target.is_symbol and z_target.symbol == "z"
 
-    mk1_target, mk2_target = [fn_ast.body[i].targets[0] for i in range(3, 5)]
-    mk1_value, mk2_value = [fn_ast.body[i].value for i in range(3, 5)]
-    assert (
-        mk1_target.is_symbol
-        and mk1_target.symbol == f"m[{gast.dump(mk1_target.slice)}]"
-    )
-    assert (
-        mk2_target.is_symbol
-        and mk2_target.symbol == f"m[{gast.dump(mk2_target.slice)}]"
-    )
+    mk1_target, mk2_target, mk3_target = [
+        fn_ast.body[i].targets[0] for i in range(3, 6)
+    ]
+    mk1_value, mk2_value, mk3_value = [fn_ast.body[i].value for i in range(3, 6)]
+
+    assert mk1_target.is_symbol and mk1_target.symbol == "m[k1]"
+    assert mk2_target.is_symbol and mk2_target.symbol == "m['k2']"
+
+    assert mk3_target.is_symbol and mk3_target.symbol == "m[('k' + '3')]"
 
     assert all(
         [
