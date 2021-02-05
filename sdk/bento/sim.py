@@ -161,6 +161,24 @@ class Simulation:
         graph = compile_graph(system_fn, self.entity_defs, self.component_defs)
         self.system_defs.append(SystemDef(graph))
 
+    def step(self):
+        """Run this simulation for one step
+
+        Runs this simulation's systems in the order they are registered.
+        Blocks until all systems of that simulation have finished running.
+
+        The Simulation must have already started before running the simulation with step()`
+
+        Args:
+            RuntimeError: If step() is called on a simulation that has not started yet
+                or has already been stopped.
+        """
+        if not self.started:
+            raise RuntimeError(
+                "Cannot step a simulation that has not started or already stopped."
+            )
+        self.client.step_sim(self.name)
+
     def __enter__(self):
         self.start()
 

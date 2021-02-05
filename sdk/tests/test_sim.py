@@ -91,9 +91,40 @@ def test_sim_simulation_start(sim, mock_client, sim_proto):
 
 
 def test_sim_simulation_end(sim, mock_client):
-    sim.started = True
+    # test for RuntimeError when stepping a sim that has not started
+    has_error = False
+    try:
+        sim.stop()
+    except RuntimeError:
+        has_error = True
+    assert has_error
+
+    sim.start()
     sim.stop()
     mock_client.remove_sim.assert_called_once_with(sim.name)
+
+
+def test_sim_simulation_step(sim, mock_client):
+    # test for RuntimeError when stepping a sim that has not started
+    has_error = False
+    try:
+        sim.step()
+    except RuntimeError:
+        has_error = True
+    assert has_error
+
+    sim.start()
+    sim.step()
+    mock_client.step_sim.assert_called_once_with(sim.name)
+
+    # test for RuntimeError when stepping a sim that has already stopped
+    sim.stop()
+    has_error = False
+    try:
+        sim.step()
+    except RuntimeError:
+        has_error = True
+    assert has_error
 
 
 def test_sim_simulation_with(sim):
