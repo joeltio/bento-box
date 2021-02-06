@@ -7,7 +7,8 @@
 from typing import Any, Iterable, Union
 
 from bento.graph.value import wrap_const
-from bento.protos.graph_pb2 import Graph, Node
+from bento.graph.spec import Graph
+from bento.protos.graph_pb2 import Node
 from bento.ecs.spec import EntityDef, ComponentDef
 from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode
 
@@ -16,13 +17,13 @@ class Plotter:
     """Graph Plotter records operations to plot a computation `Graph`.
 
     The Graph Plotter records operations performed on a computation graph
-    which can be obtained from `graph()` as a `Graph` protobuf message.
+    which can be obtained from `graph()` as a `Graph`
     """
 
     def __init__(
         self,
-        entity_defs: Iterable[EntityDef],
-        component_defs: Iterable[ComponentDef],
+        entity_defs: Iterable[EntityDef] = [],
+        component_defs: Iterable[ComponentDef] = [],
     ):
         """
         Construct a new Graph Plotter.
@@ -77,7 +78,7 @@ class Plotter:
         operations recorded by the Plotter.
 
         Returns:
-            The computation graph plotted by this Plotter as a `Graph` protobuf message.
+            The computation graph plotted by this Plotter as a `Graph`
         """
         # Extract graph inputs and outputs nodes from GraphComponent's GraphNodes
         inputs, outputs = [], []

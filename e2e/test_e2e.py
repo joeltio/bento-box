@@ -144,8 +144,6 @@ def test_e2e_engine_client_list_sims(sim, client):
 def test_e2e_engine_client_get_sim(sim, client):
     # check that sim's can be retrieved by name
     applied_proto = client.get_sim(sim.name)
-    from bento.utils import to_yaml_proto
-
     assert to_yaml_proto(applied_proto) == to_yaml_proto(sim.proto)
 
     # test error handling when getting nonexistent sim

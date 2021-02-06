@@ -112,7 +112,7 @@ class SystemDef:
     @classmethod
     def from_proto(cls, proto: ecs_pb2.SystemDef):
         """Create a SystemDef from a SystemDef Proto"""
-        return cls(graph=Graph.from_proto(proto), system_id=proto.id)
+        return cls(graph=Graph.from_proto(proto.graph), system_id=proto.id)
 
     @property
     def id(self) -> int:

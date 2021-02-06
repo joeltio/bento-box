@@ -46,7 +46,7 @@ def test_transform_build_graph():
 
         # try running the transformed function renamed to 'build_graph'
         mod = load_ast_module(trans_ast)
-        mod.build_graph(Plotter([], []))
+        mod.build_graph(Plotter(()))
 
 
 # test transformation of ternary expressions into plotting switch nodes
@@ -64,7 +64,7 @@ def test_transform_ternary():
     trans_ast = transform_build_graph(transform_ternary(ast))
 
     mod = load_ast_module(trans_ast)
-    mock_g = Mock(wraps=Plotter([], []))
+    mock_g = Mock(wraps=Plotter())
     mod.build_graph(mock_g)
     mock_g.switch.assert_called_once_with(
         condition=True,
@@ -112,7 +112,7 @@ def test_tranform_ifelse():
     ]
 
     # test case plotter => expected g.switch() call args
-    g = Plotter([], [])
+    g = Plotter()
     ifelse_fns = [
         (
             if_fn,
@@ -149,7 +149,7 @@ def test_tranform_ifelse():
         trans_ast = transform_build_graph(transform_ifelse(ast))
 
         mod = load_ast_module(trans_ast)
-        mock_g = Mock(wraps=Plotter([], []))
+        mock_g = Mock(wraps=Plotter())
         mod.build_graph(mock_g)
 
         for expected_arg in expected_switch_args:
