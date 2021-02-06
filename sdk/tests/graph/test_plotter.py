@@ -7,8 +7,9 @@
 from bento.value import wrap
 from bento.ecs.spec import EntityDef, ComponentDef
 from bento.ecs.graph import GraphEntity, GraphComponent
-from bento.protos.graph_pb2 import Graph, Node
+from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
+from bento.graph.spec import Graph
 from bento.graph.plotter import Plotter
 from bento.example.specs import Position, Keyboard
 

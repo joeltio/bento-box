@@ -6,7 +6,7 @@
 
 from bento.types import Type
 from bento.protos import ecs_pb2
-from bento.protos.graph_pb2 import Graph
+from bento.graph.spec import Graph
 from typing import Dict, Iterable, List, Union
 
 
@@ -107,12 +107,12 @@ class SystemDef:
                 defined by this SystemDef.
             system_id: id held by the ECS system
         """
-        self.proto = ecs_pb2.SystemDef(graph=graph, id=system_id)
+        self.proto = ecs_pb2.SystemDef(graph=graph.proto, id=system_id)
 
     @classmethod
     def from_proto(cls, proto: ecs_pb2.SystemDef):
         """Create a SystemDef from a SystemDef Proto"""
-        return cls(graph=proto.graph, system_id=proto.id)
+        return cls(graph=Graph.from_proto(proto), system_id=proto.id)
 
     @property
     def id(self) -> int:
@@ -122,7 +122,7 @@ class SystemDef:
     @property
     def graph(self) -> Graph:
         """Get the computational graph of ECS system defined in this SystemDef"""
-        return self.proto.graph
+        return Graph.from_proto(self.proto.graph)
 
     def __repr__(self):
         # default id to ? if not yet set by engine

@@ -11,6 +11,7 @@ from textwrap import dedent
 from typing import Callable, List
 
 from bento.ecs.spec import EntityDef, ComponentDef
+from bento.graph.spec import Graph
 from bento.graph.preprocessors import preprocess_augassign
 from bento.graph.analyzers import (
     analyze_func,
@@ -29,7 +30,6 @@ from bento.graph.transforms import (
 )
 from bento.graph.ast import parse_ast, load_ast_module
 from bento.graph.plotter import Plotter
-from bento.protos.graph_pb2 import Graph, Node
 
 
 Analyzer = Callable[[AST], AST]
@@ -127,7 +127,7 @@ def compile_graph(
             graph when called.
 
     Returns:
-        The converted computational Graph as a `Graph` protobuf message.
+        The converted computational Graph as a `Graph`.
     """
 
     # parse ast from function source

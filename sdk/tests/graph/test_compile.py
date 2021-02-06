@@ -13,11 +13,11 @@ from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
 
 from bento.client import Client
 from bento.sim import Simulation
-from bento.utils import to_yaml_proto
 from bento.graph.plotter import Plotter
 from bento.graph.value import wrap_const
 from bento.graph.compile import compile_graph
-from bento.protos.graph_pb2 import Graph, Node
+from bento.graph.spec import Graph
+from bento.protos.graph_pb2 import Node, Graph as GraphProto
 from bento.protos.sim_pb2 import SimulationDef
 from bento.protos.references_pb2 import AttributeRef
 from bento.ecs.spec import EntityDef, ComponentDef
@@ -28,25 +28,13 @@ from bento.example.specs import Position, Speed, Clock, Velocity
 GRAPH_DIR = path.join(path.dirname(__file__), "resources")
 
 
-def sort_input_outputs(graph: Graph):
-    inputs = sorted(graph.inputs, key=(lambda n: str(n.retrieve_attr)))
-    del graph.inputs[:]
-    graph.inputs.extend(inputs)
-
-    outputs = sorted(graph.outputs, key=(lambda n: str(n.mutate_attr)))
-    del graph.outputs[:]
-    graph.outputs.extend(outputs)
-    return graph
-
-
 def assert_graph(actual: Graph, expected_path: str):
     with open(path.join(GRAPH_DIR, expected_path), "r") as f:
-        expected = Graph()
-        ParseDict(yaml.safe_load(f.read()), expected)
-    # sort graph inputs and outputs to ensure position invariance when comparing
-    actual, expected = sort_input_outputs(actual), sort_input_outputs(expected)
+        expected_proto = GraphProto()
+        ParseDict(yaml.safe_load(f.read()), expected_proto)
+        expected = Graph.from_proto(expected_proto)
     # pytest -vv gives us a nice diff when comparing as YAML
-    assert to_yaml_proto(actual) == to_yaml_proto(expected)
+    assert actual.yaml == expected.yaml
 
 
 ## tests
@@ -102,7 +90,6 @@ def test_graph_compile_arithmetic_multiple():
             EntityDef(components=[Clock], entity_id=2),
         ],
     )
-    to_yaml_proto(actual_graph)
 
     assert_graph(actual_graph, "expected_graph_arithmetic_multiple.yaml")
 

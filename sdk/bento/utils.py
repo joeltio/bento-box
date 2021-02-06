@@ -5,11 +5,10 @@
 #
 
 import yaml
-import json
-from difflib import unified_diff, ndiff
+from google.protobuf.message import Message
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
 
-def to_yaml_proto(proto):
+def to_yaml_proto(proto: Message):
     """Convert and return the given protobuf message as YAML"""
-    return yaml.safe_dump(json.loads(MessageToJson(proto, sort_keys=True)))
+    return yaml.safe_dump(MessageToDict(proto), sort_keys=True)

@@ -10,7 +10,8 @@ from unittest.mock import Mock
 from bento import types
 from bento.client import Client
 from bento.sim import Simulation
-from bento.utils import to_yaml_proto, sort_ins_outs
+from bento.utils import to_yaml_proto
+from bento.graph.spec import Graph
 from bento.graph.plotter import Plotter
 from bento.graph.compile import compile_graph
 from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
@@ -157,7 +158,7 @@ def test_simulation_system(sim, entity_defs, component_defs):
     sim.system(test_sim_fn)
     expected_graph = compile_graph(test_sim_fn, entity_defs, component_defs)
 
-    assert to_yaml_proto(sim.proto.systems[0].graph) == to_yaml_proto(expected_graph)
+    assert Graph.from_proto(sim.proto.systems[0].graph).yaml == expected_graph.yaml
 
 
 def test_simulation_init(sim, entity_defs, component_defs):
@@ -170,4 +171,4 @@ def test_simulation_init(sim, entity_defs, component_defs):
 
     sim.init(test_init_fn)
     expected_graph = compile_graph(test_init_fn, entity_defs, component_defs)
-    assert to_yaml_proto(sim.proto.init_graph) == to_yaml_proto(expected_graph)
+    assert Graph.from_proto(sim.proto.init_graph).yaml == expected_graph.yaml

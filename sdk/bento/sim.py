@@ -10,7 +10,7 @@ from bento.client import Client
 from bento.ecs.grpc import Entity, Component
 from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
 from bento.graph.compile import compile_graph, ConvertFn
-from bento.protos.graph_pb2 import Graph
+from bento.graph.spec import Graph
 from bento.protos.sim_pb2 import SimulationDef
 
 
@@ -21,6 +21,11 @@ class Simulation:
     Example:
     # define simulation with entities and components
     sim = Simulation(name="sim", entities=[ ... ], components=[ ... ], client=client)
+
+    # use an init graph to initalize attribute values
+    @sim.init
+    def init_fn():
+        # initialize values with:  entity[Component].attribute = value
 
     # implement systems running in the simulation
     @sim.system
@@ -82,7 +87,7 @@ class Simulation:
             entities=[e.proto for e in self.entity_defs],
             components=[c.proto for c in self.component_defs],
             systems=[s.proto for s in self.system_defs],
-            init_graph=self.init_graph,
+            init_graph=self.init_graph.proto,
         )
         return proto
 
