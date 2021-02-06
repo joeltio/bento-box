@@ -52,6 +52,7 @@ class Simulation:
         self.component_defs = list(components)
         self.entity_defs = list(entities)
         self.system_defs = []
+        self.init_graph = Graph()
 
         # register sim on engine
         applied_proto = self.client.apply_sim(self.proto)
@@ -81,6 +82,7 @@ class Simulation:
             entities=[e.proto for e in self.entity_defs],
             components=[c.proto for c in self.component_defs],
             systems=[s.proto for s in self.system_defs],
+            init_graph=self.init_graph,
         )
         return proto
 
@@ -140,6 +142,26 @@ class Simulation:
             List of entities belonging to this Simulation
         """
         return list(self.entity_map.values())
+
+    def init(self, init_fn: ConvertFn):
+        """Register given init_fn as the init graph for this simulation.
+
+        The init graph allows for the initization of attribute's values,
+        running on the simulation first step() call, before any systems run.
+
+        Compiles the `init_fn` into a computational graph and registers the
+        result as a init graph for this Simulation.
+
+            Example:
+            @sim.system
+            def system_fn(g):
+                # ... implementation of the system ..
+
+        Args:
+            system_fn: Function that contains the implementation of the system.
+                Must be compilable by `compile_graph()`.
+        """
+        self.init_graph = compile_graph(init_fn, self.entity_defs, self.component_defs)
 
     def system(self, system_fn: ConvertFn):
         """Register ECS system with the given system_fn implementation on this Simulation.

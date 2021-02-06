@@ -10,8 +10,9 @@ from unittest.mock import Mock
 from bento import types
 from bento.client import Client
 from bento.sim import Simulation
-from bento.utils import to_yaml_proto
+from bento.utils import to_yaml_proto, sort_ins_outs
 from bento.graph.plotter import Plotter
+from bento.graph.compile import compile_graph
 from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
 from bento.example.specs import Position, Speed
 from bento.protos.sim_pb2 import SimulationDef
@@ -54,7 +55,7 @@ def sim(mock_client, component_defs, entity_defs):
     )
 
 
-def test_sim_simulation_init(mock_client, component_defs, entity_defs, sim_proto):
+def test_simulation_init(mock_client, component_defs, entity_defs, sim_proto):
     # remove ids from entity_def to simulate entity defs created by use without entity_id set.
     noid_entity_defs = []
     for entity_def in entity_defs:
@@ -82,7 +83,7 @@ def test_sim_simulation_init(mock_client, component_defs, entity_defs, sim_proto
     assert sim.entities[0].id == 1
 
 
-def test_sim_simulation_start(sim, mock_client, sim_proto):
+def test_simulation_start(sim, mock_client, sim_proto):
     sim.start()
     assert sim.started
     # test calling again does nothing
@@ -90,7 +91,7 @@ def test_sim_simulation_start(sim, mock_client, sim_proto):
     assert sim.started
 
 
-def test_sim_simulation_end(sim, mock_client):
+def test_simulation_end(sim, mock_client):
     # test for RuntimeError when stepping a sim that has not started
     has_error = False
     try:
@@ -104,7 +105,7 @@ def test_sim_simulation_end(sim, mock_client):
     mock_client.remove_sim.assert_called_once_with(sim.name)
 
 
-def test_sim_simulation_step(sim, mock_client):
+def test_simulation_step(sim, mock_client):
     # test for RuntimeError when stepping a sim that has not started
     has_error = False
     try:
@@ -127,7 +128,7 @@ def test_sim_simulation_step(sim, mock_client):
     assert has_error
 
 
-def test_sim_simulation_with(sim):
+def test_simulation_with(sim):
     # test that exceptions are not suppress by with statement
     has_error = False
     try:
@@ -138,7 +139,7 @@ def test_sim_simulation_with(sim):
     assert has_error
 
 
-def test_sim_simulation_entity(sim, entity_defs, component_defs):
+def test_simulation_entity(sim, entity_defs, component_defs):
     sim.start()
     component_names = [c.name for c in component_defs]
     entity = sim.entity(component_names)
@@ -148,12 +149,25 @@ def test_sim_simulation_entity(sim, entity_defs, component_defs):
     )
 
 
-def test_sim_simulation_system(sim, entity_defs, component_defs):
-    @sim.system
+def test_simulation_system(sim, entity_defs, component_defs):
     def test_sim_fn(g: Plotter):
-        # test that we can use registered entiies and components when plotting
         car = g.entity(components=[Position, Speed])
         car[Position].x = 2 * car[Speed].x_neg
 
-    # check system is added
-    assert len(sim.system_defs) == 1
+    sim.system(test_sim_fn)
+    expected_graph = compile_graph(test_sim_fn, entity_defs, component_defs)
+
+    assert to_yaml_proto(sim.proto.systems[0].graph) == to_yaml_proto(expected_graph)
+
+
+def test_simulation_init(sim, entity_defs, component_defs):
+    def test_init_fn(g: Plotter):
+        car = g.entity(components=[Position, Speed])
+        car[Position].x = 50
+        car[Position].y = 25
+        car[Speed].x = 1
+        car[Speed].y = 2
+
+    sim.init(test_init_fn)
+    expected_graph = compile_graph(test_init_fn, entity_defs, component_defs)
+    assert to_yaml_proto(sim.proto.init_graph) == to_yaml_proto(expected_graph)
