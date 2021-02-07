@@ -206,23 +206,38 @@ def test_symbol_analyzer():
     fn_ast = analyzed_ast.body[0]
     x_target, abc_target = [fn_ast.body[i].targets[0] for i in range(2)]
     x_value, abc_value = [fn_ast.body[i].value for i in range(2)]
-    assert x_target.is_symbol and x_target.symbol == "x"
-    assert abc_target.is_symbol and abc_target.symbol == "a.b.c"
+    assert x_target.is_symbol and x_target.symbol == "x" and x_target.base_symbol == "x"
+    assert (
+        abc_target.is_symbol
+        and abc_target.symbol == "a.b.c"
+        and abc_target.base_symbol == "a"
+    )
 
     y_target, z_target = fn_ast.body[2].targets[0].elts
     y_value, z_value = fn_ast.body[2].value.elts
-    assert y_target.is_symbol and y_target.symbol == "y"
-    assert z_target.is_symbol and z_target.symbol == "z"
+    assert y_target.is_symbol and y_target.symbol == "y" and y_target.base_symbol == "y"
+    assert z_target.is_symbol and z_target.symbol == "z" and z_target.base_symbol == "z"
 
     mk1_target, mk2_target, mk3_target = [
         fn_ast.body[i].targets[0] for i in range(3, 6)
     ]
     mk1_value, mk2_value, mk3_value = [fn_ast.body[i].value for i in range(3, 6)]
 
-    assert mk1_target.is_symbol and mk1_target.symbol == "m[k1]"
-    assert mk2_target.is_symbol and mk2_target.symbol == "m['k2']"
-
-    assert mk3_target.is_symbol and mk3_target.symbol == "m[('k' + '3')]"
+    assert (
+        mk1_target.is_symbol
+        and mk1_target.symbol == "m[k1]"
+        and mk1_target.base_symbol == "m"
+    )
+    assert (
+        mk2_target.is_symbol
+        and mk2_target.symbol == "m['k2']"
+        and mk2_target.base_symbol == "m"
+    )
+    assert (
+        mk3_target.is_symbol
+        and mk3_target.symbol == "m[('k' + '3')]"
+        and mk3_target.base_symbol == "m"
+    )
 
     assert all(
         [
@@ -437,13 +452,72 @@ def test_analyze_activity():
             x = x - 1
             y = 3
 
+    def qualified_in_out():
+        # test with qualified symbol A.x
+        class A:
+            x = 1
+
+        if True:
+            y = A.x + 1
+            A.x = 2
+            y = A.x + 3
+
     # test case, expected attributes
     activity_fns = [
-        (output_only_fn, {"input_syms": [], "output_syms": ["x", "y"]}),
-        (input_only_fn, {"input_syms": ["x", "f"], "output_syms": []}),
-        (input_output_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
-        (nested_in_out_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
-        (multi_in_out_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
+        (
+            output_only_fn,
+            {
+                "input_syms": [],
+                "output_syms": ["x", "y"],
+                "base_in_syms": [],
+                "base_out_syms": ["x", "y"],
+            },
+        ),
+        (
+            input_only_fn,
+            {
+                "input_syms": ["x", "f"],
+                "output_syms": [],
+                "base_in_syms": ["x", "f"],
+                "base_out_syms": [],
+            },
+        ),
+        (
+            input_output_fn,
+            {
+                "input_syms": ["x"],
+                "output_syms": ["x", "y"],
+                "base_in_syms": ["x"],
+                "base_out_syms": ["x", "y"],
+            },
+        ),
+        (
+            nested_in_out_fn,
+            {
+                "input_syms": ["x"],
+                "output_syms": ["x", "y"],
+                "base_in_syms": ["x"],
+                "base_out_syms": ["x", "y"],
+            },
+        ),
+        (
+            multi_in_out_fn,
+            {
+                "input_syms": ["x"],
+                "output_syms": ["x", "y"],
+                "base_in_syms": [],
+                "base_out_syms": ["x", "y"],
+            },
+        ),
+        (
+            qualified_in_out,
+            {
+                "input_syms": ["A.x"],
+                "output_syms": ["A.x", "y"],
+                "base_in_syms": ["A"],
+                "base_out_syms": ["A", "y"],
+            },
+        ),
     ]
     activity_fns = [(multi_in_out_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]})]
 

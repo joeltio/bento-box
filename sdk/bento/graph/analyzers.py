@@ -230,6 +230,7 @@ def analyze_symbol(ast: AST) -> AST:
     and labels the top-level AST node with:
     - `is_symbol` set to whether the node is an symbol.
     - `symbol` set to the name of symbol as string on symbol AST nodes.
+    - `base_symbol` set to the base symbol ie `x` for `x.y.z` and `x[y]`
 
     Args:
         ast:
@@ -246,14 +247,14 @@ def analyze_symbol(ast: AST) -> AST:
         ast.is_symbol = False
         # check if name is unqualified symbol
         if isinstance(ast, Name) and len(qualifiers) == 0:
-            ast.is_symbol, ast.symbol = True, ast.id
+            ast.is_symbol, ast.symbol, ast.base_symbol = True, ast.id, ast.id
         # append qualifiers of a incomplete qualified symbol
         elif isinstance(ast, (Subscript, Attribute)):
             qualifiers = qualifiers + [ast]
         # check if name part of qualified symbol and not part of a subcript's slice
         elif isinstance(ast, Name) and field_name != "slice":
             # qualifiers are recorded in reverse order
-            symbol = ast.id
+            base_sym = symbol = ast.id
             for qualifier in reversed(qualifiers):
                 if isinstance(qualifier, Attribute):
                     symbol += f".{qualifier.attr}"
@@ -263,7 +264,11 @@ def analyze_symbol(ast: AST) -> AST:
                     symbol += f"[{src_slice}]"
             # label top level symbol
             top_attr = qualifiers[0]
-            top_attr.is_symbol, top_attr.symbol = True, symbol
+            top_attr.is_symbol, top_attr.symbol, top_attr.base_symbol = (
+                True,
+                symbol,
+                base_sym,
+            )
 
         # recursively inspect child nodes for constants
         for name, value in gast.iter_fields(ast):
@@ -422,6 +427,9 @@ def analyze_activity(ast: AST) -> AST:
     and the value a list the of the AST nodes where the symbol is assigned or used.
     The list of AST nodes are sorted in the order they appear in source code.
 
+    Additionally labels the base input and output symbols by setting to the
+    base version of input and output symbols `base_in_syms` and `base_out_syms`.
+
     Args:
         ast:
             AST to analyze and annotate code block AST nodes in.
@@ -433,14 +441,21 @@ def analyze_activity(ast: AST) -> AST:
         block = symbol.block
         input_syms = getattr(block, "input_syms", {})
         output_syms = getattr(block, "output_syms", {})
+        base_in_syms = getattr(block, "base_in_syms", {})
+        base_out_syms = getattr(block, "base_out_syms", {})
 
-        def add_symbol_ref(sym_dict, symbol):
-            sym_refs = sym_dict.get(symbol.symbol, [])
+        def add_symbol_ref(sym_dict, symbol, use_base=False):
+            if use_base:
+                symbol_str = symbol.base_symbol
+            else:
+                symbol_str = symbol.symbol
+
+            sym_refs = sym_dict.get(symbol_str, [])
             sym_refs.append(symbol)
             # tim-sort should be relatively performant when sorting almost sorted lists
             # https://stackoverflow.com/a/23809854
             sym_refs = sorted(sym_refs, key=(lambda ast: (ast.lineno, ast.col_offset)))
-            sym_dict[symbol.symbol] = sym_refs
+            sym_dict[symbol_str] = sym_refs
             return sym_dict
 
         # detect input symbol by checking symbol context and that its declared outside code block
@@ -450,29 +465,42 @@ def analyze_activity(ast: AST) -> AST:
             and any(sym_def.block == block for sym_def in symbol.definitions)
         ):
             input_syms = add_symbol_ref(input_syms, symbol)
+            base_in_syms = add_symbol_ref(base_in_syms, symbol, use_base=True)
         # detect output symbol by checking symbol context
         elif isinstance(symbol.ctx, (Store, Del)):
             output_syms = add_symbol_ref(output_syms, symbol)
+            base_out_syms = add_symbol_ref(base_out_syms, symbol, use_base=True)
         block.input_syms, block.output_syms = input_syms, output_syms
+        block.base_in_syms, block.base_out_syms = base_in_syms, base_out_syms
 
     # walk the AST bottom up to propagate symbol activity to parent code blocks
     def propagate_activity(ast):
         # recursively obtain symbol activity from child code blocks
-        input_syms, output_syms = {}, {}
+        input_syms, output_syms, base_in_syms, base_out_syms = {}, {}, {}, {}
         for node in gast.iter_child_nodes(ast):
-            child_inputs, child_outputs = propagate_activity(node)
+            (
+                child_inputs,
+                child_outputs,
+                child_base_ins,
+                child_base_outs,
+            ) = propagate_activity(node)
             input_syms.update(child_inputs)
             output_syms.update(child_outputs)
+            base_in_syms.update(child_base_ins)
+            base_out_syms.update(child_base_outs)
 
         if not ast.is_block:
-            return input_syms, output_syms
+            return input_syms, output_syms, base_in_syms, base_out_syms
         # include symbol activity from this blockf
         block = ast
         input_syms.update(getattr(ast, "input_syms", {}))
         output_syms.update(getattr(ast, "output_syms", {}))
+        base_in_syms.update(getattr(ast, "base_in_syms", {}))
+        base_out_syms.update(getattr(ast, "base_out_syms", {}))
         block.input_syms, block.output_syms = input_syms, output_syms
+        block.base_in_syms, block.base_out_syms = base_in_syms, base_out_syms
 
-        return input_syms, output_syms
+        return input_syms, output_syms, base_in_syms, base_out_syms
 
     propagate_activity(ast)
     return ast
