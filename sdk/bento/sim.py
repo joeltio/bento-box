@@ -134,7 +134,7 @@ class Simulation:
             raise RuntimeError(
                 "Cannot obtain a gRPC Entity from a Simulation that has not started yet."
             )
-        comp_set = frozenset(components)
+        comp_set = frozenset([str(c) for c in components])
         # check for duplicates in given components
         if len(comp_set) != len(components):
             raise ValueError("Given component names should not contain duplicates")

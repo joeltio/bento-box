@@ -142,11 +142,11 @@ def test_simulation_with(sim):
 
 def test_simulation_entity(sim, entity_defs, component_defs):
     sim.start()
-    component_names = [c.name for c in component_defs]
-    entity = sim.entity(component_names)
+    entity = sim.entity([Position, Speed])
     assert entity.entity_id == 1
+
     assert frozenset([c.component_name for c in entity.components]) == frozenset(
-        component_names
+        [c.name for c in component_defs]
     )
 
 
