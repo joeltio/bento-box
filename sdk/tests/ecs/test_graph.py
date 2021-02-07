@@ -5,6 +5,7 @@
 #
 
 from typing import Set
+from bento.utils import to_yaml_proto
 from bento.ecs.spec import ComponentDef, EntityDef
 from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode, wrap_const
 from bento.protos.graph_pb2 import Node
@@ -74,6 +75,17 @@ def test_graph_ecs_component_get_attr():
     # check that retrieving the same attribute only records it once
     pos_y = position.x
     assert len(position.inputs) == 1
+
+
+def test_graph_ecs_component_get_attr_preserve_set_graph():
+    entity_id = 1
+    position = GraphComponent.from_def(entity_id, Position)
+    # check that getting an attribute from a component preserves
+    # any graph that has already being built by set_attr()
+    position.x = 2
+    pos_x = position.x
+    expected_node = wrap_const(2)
+    assert to_yaml_proto(pos_x.node) == to_yaml_proto(expected_node)
 
 
 def test_graph_ecs_component_set_attr_node():

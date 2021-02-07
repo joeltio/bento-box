@@ -204,12 +204,18 @@ class GraphComponent(Component):
         )
 
     def get_attr(self, name: str) -> Node:
-        # record the attribute retrieve operation as input graph node
         attr_ref = AttributeRef(
             entity_id=self._entity_id,
             component=self._name,
             attribute=name,
         )
+        # check if attribute has been defined in earlier set_attr()
+        # if so return that definition to preserve the graph already built for that attribute
+        if to_str_attr(attr_ref) in self._outputs:
+            built_graph = self._outputs[to_str_attr(attr_ref)].node.mutate_op.to_node
+            return GraphNode(built_graph)
+
+        # record the attribute retrieve operation as input graph node
         get_op = GraphNode(node=Node(retrieve_op=Node.Retrieve(retrieve_attr=attr_ref)))
         self._inputs[to_str_attr(attr_ref)] = get_op
         return get_op
