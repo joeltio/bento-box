@@ -152,8 +152,10 @@ def transform_ifelse(ast: AST) -> AST:
             return ifelse_ast
 
         # convert ifelse condition branches into functions with the arguments
-        # set to the names of the input symbols and return values set to output symbols
-        args = list(ifelse_ast.input_syms.keys())
+        # set to the names of the base input symbols and return values set to output symbols.
+        # base symbols are use to generate the arguments as the full symbol might be qualified
+        # ie A.x which is not a valid argument name: https://github.com/joeltio/bento-box/issues/37
+        args = list(ifelse_ast.base_in_syms.keys())
         returns = list(ifelse_ast.output_syms.keys())
         fn_asts = [
             wrap_func_ast(

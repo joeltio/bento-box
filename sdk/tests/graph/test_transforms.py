@@ -161,7 +161,10 @@ def test_tranform_ifelse():
             ast = analyzer(ast)
         trans_ast = transform_build_graph(transform_ifelse(ast))
 
-        mod = load_ast_module(trans_ast)
+        # TODO(mrzzy): remove before commit
+        # mod = load_ast_module(trans_ast)
+        mod, src_path = load_ast_module(trans_ast, remove_src=False)
+        print(src_path)
         mock_g = Mock(wraps=Plotter())
         mod.build_graph(mock_g)
 
