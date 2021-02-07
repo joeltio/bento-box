@@ -452,11 +452,12 @@ def test_analyze_activity():
             x = x - 1
             y = 3
 
-    def qualified_in_out():
-        # test with qualified symbol A.x
-        class A:
-            x = 1
+    class A:
+        x = 1
 
+    def qualified_in_out():
+        A.x = 1
+        # test with qualified symbol A.x
         if True:
             y = A.x + 1
             A.x = 2
@@ -505,7 +506,7 @@ def test_analyze_activity():
             {
                 "input_syms": ["x"],
                 "output_syms": ["x", "y"],
-                "base_in_syms": [],
+                "base_in_syms": ["x"],
                 "base_out_syms": ["x", "y"],
             },
         ),
@@ -519,7 +520,6 @@ def test_analyze_activity():
             },
         ),
     ]
-    activity_fns = [(multi_in_out_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]})]
 
     for fn, expected_attrs in activity_fns:
         required_analyzers = [
@@ -539,13 +539,15 @@ def test_analyze_activity():
         actual_attrs = {
             "output_syms": block_ast.output_syms.keys(),
             "input_syms": block_ast.input_syms.keys(),
+            "base_in_syms": block_ast.base_in_syms.keys(),
+            "base_out_syms": block_ast.base_out_syms.keys(),
         }
         # check detect of input and output symbols
         for attr in expected_attrs.keys():
             if set(actual_attrs[attr]) != set(expected_attrs[attr]):
                 print(fn)
                 __import__("pprint").pprint(expected_attrs)
-                print(gast.dump(block_ast))
+                __import__("pprint").pprint(actual_attrs)
             assert set(actual_attrs[attr]) == set(expected_attrs[attr])
 
         # check contents of symbol dict

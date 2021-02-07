@@ -462,7 +462,7 @@ def analyze_activity(ast: AST) -> AST:
         if (
             isinstance(symbol.ctx, Load)
             and symbol.definition is not None
-            and any(sym_def.block == block for sym_def in symbol.definitions)
+            and any(sym_def.block != block for sym_def in symbol.definitions)
         ):
             input_syms = add_symbol_ref(input_syms, symbol)
             base_in_syms = add_symbol_ref(base_in_syms, symbol, use_base=True)

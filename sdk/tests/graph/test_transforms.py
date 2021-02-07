@@ -89,7 +89,7 @@ def test_tranform_ifelse():
             x = y
             z = 2
 
-    def ifelse_elif_fn(g: Plotter):
+    def ifelse_elif_else_fn(g: Plotter):
         y, m, n = "str1", "str2", "str3"
         if True:
             x = y
@@ -101,7 +101,7 @@ def test_tranform_ifelse():
             x = n
             z = 3
 
-    def if_augassign_fn(g: Plotter):
+    def ifelse_augassign_fn(g: Plotter):
         x = 1
         if True:
             x = x + 1
@@ -135,7 +135,7 @@ def test_tranform_ifelse():
             ],
         ),
         (
-            ifelse_elif_fn,
+            ifelse_elif_else_fn,
             [
                 {
                     "condition": True,
@@ -148,7 +148,7 @@ def test_tranform_ifelse():
             ],
         ),
         (
-            if_augassign_fn,
+            ifelse_augassign_fn,
             [
                 {"condition": True, "true": 2, "false": 3},
             ],
