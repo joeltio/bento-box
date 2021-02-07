@@ -193,7 +193,7 @@ def transform_ifelse(ast: AST) -> AST:
             attr_parent=ast.convert_fn.plotter_name,
         )
 
-        # symbols = [g.switch(...) for if_out, else_out in zip(if_outputs, else_outputs)]
+        # (symbol, ...) = [g.switch(...) for if_out, else_out in zip(if_outputs, else_outputs)]
         switch_asts = assign_ast(
             targets=[name_ast(r, ctx=Store()) for r in returns],
             values=[
@@ -218,6 +218,7 @@ def transform_ifelse(ast: AST) -> AST:
                     ],
                 )
             ],
+            force_tuple=True,
         )
         # wrap transformed code block as single AST node
         return wrap_block_ast(

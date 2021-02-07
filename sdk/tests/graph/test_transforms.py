@@ -101,6 +101,13 @@ def test_tranform_ifelse():
             x = n
             z = 3
 
+    def if_augassign_fn(g: Plotter):
+        x = 1
+        if True:
+            x = x + 1
+        else:
+            x = x + 2
+
     req_analyzers = [
         analyze_func,
         analyze_convert_fn,
@@ -138,6 +145,12 @@ def test_tranform_ifelse():
                 {"condition": True, "true": 1, "false": g.switch(False, 2, 3)},
                 {"condition": False, "true": "str2", "false": "str3"},
                 {"condition": False, "true": 2, "false": 3},
+            ],
+        ),
+        (
+            if_augassign_fn,
+            [
+                {"condition": True, "true": 2, "false": 3},
             ],
         ),
     ]

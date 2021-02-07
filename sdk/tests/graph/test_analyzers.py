@@ -257,16 +257,23 @@ def test_symbol_resolution():
         # is scoped to only within function
         scoped
 
-    # test case functions to the line number wrt. the function where the variable is defined.
+    def aug_assign():
+        aug = 0
+        aug = aug + 1
+        aug
+
+    # test case functions, the line no. wrt. the function where the variable last defined
+    # and finally list of all line no. where variable is defined.
     # if line no. is None, the symbols is defined global symbol
     symbol_fns = [
-        (simple_fn, 0),
-        (multi_assign, 0),
-        (repeated_assign, 1),
-        (scoped_assign, 0),
+        (simple_fn, 0, [0]),
+        (multi_assign, 0, [0]),
+        (repeated_assign, 1, [0, 1]),
+        (scoped_assign, 0, [0]),
+        (aug_assign, 1, [0, 1]),
     ]
 
-    for symbol_fn, n_def_line in symbol_fns:
+    for symbol_fn, n_latest_def_line, n_def_lines in symbol_fns:
         ast = parse_ast(symbol_fn)
         required_analyzers = [
             analyze_symbol,
@@ -277,15 +284,25 @@ def test_symbol_resolution():
         analyzed_ast = resolve_symbol(ast)
         fn_ast = analyzed_ast.body[0]
 
-        sym_def = fn_ast.body[n_def_line]
+        # check latest symbol definition labeled as 'definition'
+        latest_sym_def = fn_ast.body[n_latest_def_line]
         sym_ref = fn_ast.body[-1].value
-        sym_defs = sym_def.values
+        latest_sym_defs = latest_sym_def.values
         sym_refs = sym_ref.elts if isinstance(sym_ref, Tuple) else [sym_ref]
-        for sym_def, sym_ref in zip(sym_defs, sym_refs):
-            if sym_ref.definition != sym_def:
+        for latest_sym_def, sym_ref in zip(latest_sym_defs, sym_refs):
+            if sym_ref.definition != latest_sym_def:
+                print(gast.dump(sym_ref))
                 print(gast.dump(sym_ref.definition))
-                print(gast.dump(sym_def))
-            assert sym_ref.definition == sym_def
+            assert sym_ref.definition == latest_sym_def
+
+        # check all symbol definitions labeled as 'definitions'
+        sym_defs = [fn_ast.body[n_line] for n_line in n_def_lines]
+        for line_sym_defs in sym_defs:
+            for sym_def, sym_ref in zip(line_sym_defs.values, sym_refs):
+                if sym_ref.definitions.count(sym_def) != 1:
+                    print(gast.dump(sym_ref))
+                    print([gast.dump(d) for d in sym_ref.definitions])
+                assert sym_ref.definitions.count(sym_def) == 1
 
 
 # test that the parents of AST nodes are labeled correctly
@@ -411,13 +428,24 @@ def test_analyze_activity():
                 x = 2
                 y = x + 3
 
+    def multi_in_out_fn():
+        x = 0
+        if True:
+            x = x + 1
+            y = 2
+        else:
+            x = x - 1
+            y = 3
+
     # test case, expected attributes
     activity_fns = [
         (output_only_fn, {"input_syms": [], "output_syms": ["x", "y"]}),
         (input_only_fn, {"input_syms": ["x", "f"], "output_syms": []}),
         (input_output_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
         (nested_in_out_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
+        (multi_in_out_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]}),
     ]
+    activity_fns = [(multi_in_out_fn, {"input_syms": ["x"], "output_syms": ["x", "y"]})]
 
     for fn, expected_attrs in activity_fns:
         required_analyzers = [
@@ -440,7 +468,11 @@ def test_analyze_activity():
         }
         # check detect of input and output symbols
         for attr in expected_attrs.keys():
-            assert set(actual_attrs[attr]) == set(actual_attrs[attr])
+            if set(actual_attrs[attr]) != set(expected_attrs[attr]):
+                print(fn)
+                __import__("pprint").pprint(expected_attrs)
+                print(gast.dump(block_ast))
+            assert set(actual_attrs[attr]) == set(expected_attrs[attr])
 
         # check contents of symbol dict
         combined_syms = list(block_ast.input_syms.items()) + list(

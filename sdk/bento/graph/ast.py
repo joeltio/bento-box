@@ -77,16 +77,22 @@ def name_ast(name: str, ctx: Union[Load, Store, Del] = Load()) -> Name:
 
 
 def assign_ast(
-    targets: List[AST], values: List[AST], multi_assign: bool = False
+    targets: List[AST],
+    values: List[AST],
+    multi_assign: bool = False,
+    force_tuple: bool = False,
 ) -> AST:
     """Convenience function for creating Assignment AST
 
     Args:
         targets: List of target AST nodes to assign to.
         values: List of values as AST nodes to assign to the target nodes.
-        multi_assign: Whether to assign multiple targets to the same value
+        multi_assign: Whether to assign multiple targets to the same value instead
+            of using tuple assignment.
+        force_tuple: Whether to always assign to tuple even when assigning to
+            a single target.
     """
-    if len(targets) >= 2:
+    if len(targets) >= 2 or force_tuple:
         targets = targets if multi_assign else [TupleAST(elts=targets, ctx=Store())]
     return Assign(
         targets=targets,

@@ -6,6 +6,7 @@
 
 import gast
 from astunparse import unparse
+from copy import deepcopy
 
 from collections import deque
 from collections.abc import Iterable
@@ -292,7 +293,10 @@ def resolve_symbol(ast: AST) -> AST:
     - Assign AST nodes
     - FunctionDef AST nodes
     and annotates the symbol nodes with `definition` set to the node that provides
-    the definition for that node, or None if no definition can be resolved for the symbol.
+    the latest definition for that node, or None if no definition can be resolved for the symbol.
+
+    Additionally, annotates symbol nodes with `definitions` set to a list of all definitions
+    resolved for that node, or an empty list of no definition can be resolved for the symbol.
 
     Args:
         ast:
@@ -301,32 +305,44 @@ def resolve_symbol(ast: AST) -> AST:
         The given AST with to symbol nodes annotated with their definitions
     """
     # TODO(mrzzy): resolve qualified symbols, ClassDef.
+    # symbol table: stack of dict[symbol: list of definitions for symbol]
     def walk_resolve(ast, symbol_table=deque([{}])):
         # get current stack frame of the symbol table
         symbol_frame = symbol_table[-1]
         new_scope = False
+
+        def push_definition(symbol_frame, target_sym, assign_value):
+            # record definition (assign value) for symbol in symbol table
+            definitions = symbol_frame.get(target_sym, [])
+            definitions.append(assign_value)
+            symbol_frame[target_sym] = definitions
+
         if isinstance(ast, (Assign, AnnAssign)):
             # update frame with definitions for symbol defined in assignment
             assign = ast
             target_syms = {t.symbol: getattr(t, "symbol", None) for t in assign.tgts}
-            # create mapping of assignments made in this assign AST node
-            assign_map = dict(zip(target_syms, assign.values))
-            symbol_frame.update(assign_map)
+            for target_sym, assign_value in zip(target_syms, assign.values):
+                push_definition(symbol_frame, target_sym, assign_value)
         elif isinstance(ast, FunctionDef):
             # record symbol defined by function definition
             fn_def = ast
-            symbol_frame[fn_def.name] = fn_def
+            push_definition(symbol_frame, target_sym=fn_def.name, assign_value=fn_def)
             # record arguments defined in function as symbols
             for arg in fn_def.args.args:
-                symbol_frame[arg.id] = arg
+                push_definition(symbol_frame, target_sym=arg.id, assign_value=arg)
             # function definition creates a new scope
             new_scope = True
         elif hasattr(ast, "symbol"):
-            # try to resolve symbol and label definition of symbol on symbol AST node
-            ast.definition = symbol_frame.get(ast.symbol, None)
+            # try to resolve symbol definitions
+            definitions = symbol_frame.get(ast.symbol, [])
+            # label latest definition of symbol on symbol AST node
+            ast.definition = definitions[-1] if len(definitions) >= 1 else None
+            # label all resolved definitions of symbol on symbol AST node
+            ast.definitions = definitions
+
         # create a new stack frame if in new scope
         if new_scope:
-            new_frame = dict(symbol_frame)
+            new_frame = deepcopy(symbol_frame)
             symbol_table.append(new_frame)
         # recursively resolve attributes of child nodes
         for node in gast.iter_child_nodes(ast):
@@ -431,7 +447,7 @@ def analyze_activity(ast: AST) -> AST:
         if (
             isinstance(symbol.ctx, Load)
             and symbol.definition is not None
-            and symbol.definition.block != block
+            and any(sym_def.block == block for sym_def in symbol.definitions)
         ):
             input_syms = add_symbol_ref(input_syms, symbol)
         # detect output symbol by checking symbol context
