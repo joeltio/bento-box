@@ -117,6 +117,16 @@ def test_graph_ecs_component_set_attr_native_value():
     assert position.outputs[0].node == expected_node
 
 
+def test_graph_ecs_component_set_attr_ignore_self_assign():
+    entity_id = 1
+    position = GraphComponent.from_def(entity_id, Position)
+
+    # test assignment should be ignore as we are setting to the attribute to itself
+    position.x = position.x
+
+    assert len(position.outputs) == 0
+
+
 def test_graph_ecs_component_aug_assign_node():
     entity_id = 1
     position = GraphComponent.from_def(entity_id, Position)

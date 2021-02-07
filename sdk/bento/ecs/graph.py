@@ -204,7 +204,7 @@ class GraphComponent(Component):
         )
 
     def get_attr(self, name: str) -> Node:
-        # Record the attribute retrieve operation as input graph node
+        # record the attribute retrieve operation as input graph node
         attr_ref = AttributeRef(
             entity_id=self._entity_id,
             component=self._name,
@@ -216,12 +216,19 @@ class GraphComponent(Component):
 
     def set_attr(self, name: str, value: Any):
         value = GraphNode.wrap(value)
-        # Record the attribute set/mutate operation as output graph node
         attr_ref = AttributeRef(
             entity_id=self._entity_id,
             component=self._name,
             attribute=name,
         )
+        # ignore attribute self assignments (ie component.attr = component.attr)
+        if (
+            value.node.WhichOneof("op") == "retrieve_op"
+            and value.node.retrieve_op.retrieve_attr.SerializeToString()
+            == attr_ref.SerializeToString()
+        ):
+            return
+        # record the attribute set/mutate operation as output graph node
         set_op = GraphNode(
             node=Node(
                 mutate_op=Node.Mutate(
