@@ -28,6 +28,8 @@ from gast import (
     List as ListAST,
     If,
     Constant,
+    ImportFrom,
+    alias,
 )
 from inspect import getsource, cleandoc
 from textwrap import dedent
@@ -72,8 +74,27 @@ def name_ast(name: str, ctx: Union[Load, Store, Del] = Load()) -> Name:
     Args:
         name: Maps to the `id` parameter of the Name constructor.
         ctx: Maps to the `id` parameter of the Name constructor.
+    Returns:
+        The created name AST node.
     """
     return Name(id=name, ctx=ctx, annotation=None, type_comment="")
+
+
+def import_from_ast(module: str, names: List[str]) -> ImportFrom:
+    """Convenience function for creating 'from module import names, ...' as a AST node
+
+    Args:
+        module: The name of the module to import from.
+        names: List of names of symbols to import from the module.
+    Returns:
+        The created ImportFrom AST node.
+    """
+    return ImportFrom(
+        module=module,
+        names=[alias(name=n, asname=None) for n in names],
+        # 0 -> use absolute import
+        level=0,
+    )
 
 
 def assign_ast(

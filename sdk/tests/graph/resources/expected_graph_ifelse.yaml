@@ -81,36 +81,11 @@ outputs:
           trueNode:
             addOp:
               x:
-                addOp:
-                  x:
-                    retrieveOp:
-                      retrieveAttr:
-                        attribute: x
-                        component: position
-                        entityId: 1
-                  y:
-                    minOp:
-                      x:
-                        retrieveOp:
-                          retrieveAttr:
-                            attribute: max_x
-                            component: speed
-                            entityId: 1
-                      y:
-                        mulOp:
-                          x:
-                            constOp:
-                              heldValue:
-                                dataType:
-                                  primitive: INT32
-                                primitive:
-                                  int32: 2
-                          y:
-                            retrieveOp:
-                              retrieveAttr:
-                                attribute: x
-                                component: velocity
-                                entityId: 1
+                retrieveOp:
+                  retrieveAttr:
+                    attribute: x
+                    component: position
+                    entityId: 1
               y:
                 minOp:
                   x:
@@ -240,36 +215,11 @@ outputs:
               x:
                 addOp:
                   x:
-                    addOp:
-                      x:
-                        retrieveOp:
-                          retrieveAttr:
-                            attribute: x
-                            component: position
-                            entityId: 1
-                      y:
-                        minOp:
-                          x:
-                            retrieveOp:
-                              retrieveAttr:
-                                attribute: max_x
-                                component: speed
-                                entityId: 1
-                          y:
-                            mulOp:
-                              x:
-                                constOp:
-                                  heldValue:
-                                    dataType:
-                                      primitive: INT32
-                                    primitive:
-                                      int32: 2
-                              y:
-                                retrieveOp:
-                                  retrieveAttr:
-                                    attribute: x
-                                    component: velocity
-                                    entityId: 1
+                    retrieveOp:
+                      retrieveAttr:
+                        attribute: x
+                        component: position
+                        entityId: 1
                   y:
                     minOp:
                       x:

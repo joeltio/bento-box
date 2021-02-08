@@ -4,6 +4,7 @@
 # Graph based ECS
 #
 
+from copy import deepcopy
 from binascii import crc32
 from typing import Any, Iterable, Set, List, Dict
 from bento.types import Type
@@ -258,6 +259,17 @@ class GraphComponent(Component):
     @property
     def component_name(self):
         return self._name
+
+    def __deepcopy__(self, memo):
+        # override deepcopy as default implementaion unintentionally
+        # triggers get_attr()/set_attr().
+        copy = type(self)(self._entity_id, self._name, self._schema)
+        # don't deepcopy inputs as collected globally for the entire graph.
+        copy.__dict__["_inputs"] = self._inputs
+        # deepcopy outputs as they should be scoped with deepcopy()
+        copy.__dict__["_outputs"] = deepcopy(self._outputs, memo)
+
+        return copy
 
 
 class GraphEntity(Entity):
