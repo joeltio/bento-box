@@ -277,6 +277,13 @@ def test_symbol_resolution():
         aug = aug + 1
         aug
 
+    class Qualified:
+        a = 1
+
+    def qualified_assign():
+        Qualified.a = 1
+        Qualified.a
+
     # test case functions, the line no. wrt. the function where the variable last defined
     # and finally list of all line no. where variable is defined.
     # if line no. is None, the symbols is defined global symbol
@@ -286,6 +293,7 @@ def test_symbol_resolution():
         (repeated_assign, 1, [0, 1]),
         (scoped_assign, 0, [0]),
         (aug_assign, 1, [0, 1]),
+        (qualified_assign, 0, [0]),
     ]
 
     for symbol_fn, n_latest_def_line, n_def_lines in symbol_fns:

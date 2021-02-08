@@ -108,6 +108,16 @@ def test_transform_ifelse():
         else:
             x = x + 2
 
+    def if_assign_condition_fn(g: Plotter):
+        class A:
+            b = True
+
+        # test that the condition is evaluated immediately => True
+        if A.b:
+            A.b = True
+        else:
+            A.b = False
+
     req_analyzers = [
         analyze_func,
         analyze_convert_fn,
@@ -151,6 +161,12 @@ def test_transform_ifelse():
             ifelse_augassign_fn,
             [
                 {"condition": True, "true": 2, "false": 3},
+            ],
+        ),
+        (
+            if_assign_condition_fn,
+            [
+                {"condition": True, "true": True, "false": False},
             ],
         ),
     ]

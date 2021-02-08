@@ -126,17 +126,19 @@ def transform_ifelse(ast: AST) -> AST:
                 return x, z
 
             from copy import deepcopy
+            __if_condition = deepcopy(b)
             __if_outputs = if_block(m=deepcopy(m), n=deepcopy(n))
             __else_outputs = else_block(m=deepcopy(m), n=deepcopy(n))
 
-            x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+            x, z = [g.switch(__if_condition, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
             return x, z
 
         from copy import deepcopy
+        __if_condition = deepcopy(a)
         __if_outputs = __if_block(b=deepcopy(b), m=deepcopy(m), n=deepcopy(n))
         __else_outputs = __else_block(b=deepcopy(n), m=deepcopy(m), n=deepcopy(n))
 
-        x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+        x, z = [g.switch(__if_condition, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
 
         # which will evaluate to:
         x = g.switch(a, y, g.switch(b, m, n))
@@ -181,10 +183,19 @@ def transform_ifelse(ast: AST) -> AST:
             )
         ]
 
-        # call if/else block functions to trace results of evaluating each branch of the conditional
-        # if/else block functions have arguments with the same names as symbols we have to pass in.
-        # deepcopy to prevent input symbols from being passed by reference and causing interference between branches
-        # https://github.com/joeltio/bento-box/issues/39
+        # deepcopy the condition before tracing the if/else block functions to
+        # prevent side effects tracing from interfering with the condition.
+        condition_ast = name_ast("__if_condition")
+        eval_condition_ast = assign_ast(
+            targets=[condition_ast],
+            values=[call_func_ast("deepcopy", args=[ifelse_ast.test])],
+        )
+
+        # call if/else block functions to trace results of evaluating each branch
+        # of the conditional if/else block functions have arguments with the same
+        # names as symbols we have to pass in.
+        # deepcopy to prevent input symbols from being passed by reference and
+        # causing interference between branches https://github.com/joeltio/bento-box/issues/39
         import_deepcopy_ast = import_from_ast(module="copy", names=["deepcopy"])
 
         call_args = {
@@ -209,7 +220,7 @@ def transform_ifelse(ast: AST) -> AST:
         call_switch_ast = call_func_ast(
             fn_name=plot_switch_fn.name,
             args={
-                "condition": ifelse_ast.test,
+                "condition": condition_ast,
                 "true": name_ast("if_out"),
                 "false": name_ast("else_out"),
             },
@@ -245,7 +256,10 @@ def transform_ifelse(ast: AST) -> AST:
         )
         # wrap transformed code block as single AST node
         return wrap_block_ast(
-            block=fn_asts + [import_deepcopy_ast] + call_fn_asts + [switch_asts],
+            block=fn_asts
+            + [import_deepcopy_ast, eval_condition_ast]
+            + call_fn_asts
+            + [switch_asts],
         )
 
     ifelse_transform = FuncASTTransform(do_transform)
