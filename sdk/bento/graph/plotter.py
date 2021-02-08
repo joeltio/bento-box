@@ -133,6 +133,7 @@ class Plotter:
         return GraphNode(node=Node(max_op=Node.Max(x=x.node, y=y.node)))
 
     def min(self, x: Any, y: Any) -> GraphNode:
+        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
 
     def abs(self, x: Any) -> GraphNode:
