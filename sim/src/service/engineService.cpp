@@ -20,7 +20,6 @@ std::string formatError(const std::string& message, const std::exception& e) {
     err << message << ": " << e.what();
     return err.str();
 }
-    
 
 Status EngineServiceImpl::GetVersion(
     ServerContext* context, const bento::protos::GetVersionReq* request,
@@ -49,7 +48,8 @@ Status EngineServiceImpl::ApplySimulation(
         return Status(
             grpc::INTERNAL,
             formatError(
-                "Something went wrong while creating the simulation object", e));
+                "Something went wrong while creating the simulation object",
+                e));
     }
 
     response->mutable_simulation()->CopyFrom(sims[name]->simDef);
@@ -121,10 +121,12 @@ Status EngineServiceImpl::StepSimulation(
             interpreter::runGraph(compStore, indexStore,
                                   sim->simDef.init_graph());
         } catch (const std::exception& e) {
-            return Status(grpc::INTERNAL,
-                    formatError(
-                        "Something went wrong while running the initGraph of "
-                        "the simulation", e));
+            return Status(
+                grpc::INTERNAL,
+                formatError(
+                    "Something went wrong while running the initGraph of "
+                    "the simulation",
+                    e));
         }
     }
 
@@ -138,7 +140,8 @@ Status EngineServiceImpl::StepSimulation(
                 grpc::INTERNAL,
                 formatError(
                     "Something went wrong while running system with ID: " +
-                    std::to_string(i) + ".", e));
+                        std::to_string(i) + ".",
+                    e));
         }
     }
 
@@ -170,8 +173,10 @@ Status EngineServiceImpl::GetAttribute(
     } catch (const std::exception& e) {
         // It is fair to assume that retrieveOp will only throw errors because
         // the data could not be found
-        return Status(grpc::NOT_FOUND,
-                      formatError("RetrieveOp failed when retrieving requested attribute.", e));
+        return Status(
+            grpc::NOT_FOUND,
+            formatError(
+                "RetrieveOp failed when retrieving requested attribute.", e));
     }
 
     return Status::OK;
@@ -204,7 +209,8 @@ Status EngineServiceImpl::SetAttribute(
     } catch (const std::exception& e) {
         // We can't be sure whether there was something wrong with evaluating
         // the node to set or retrieving attributes failed
-        return Status(grpc::INTERNAL, formatError("Setting attribute failed.", e));
+        return Status(grpc::INTERNAL,
+                      formatError("Setting attribute failed.", e));
     }
 
     return Status::OK;
