@@ -7,7 +7,7 @@
 import os
 from setuptools import setup
 from distutils.cmd import Command
-from distutils.command.clean import clean
+from distutils.command.clean import clean # type: ignore
 from setuptools.command.build_py import build_py
 from setuptools.command.build_ext import build_ext
 from pathlib import Path
@@ -37,7 +37,7 @@ class GenProtos(Command):
         proto_glob = (GenProtos.protos_dir / "bento" / "protos").glob("*.proto")
         proto_paths = [str(p) for p in proto_glob]
         os.makedirs(GenProtos.binds_dir, exist_ok=True)
-        if self.verbose:
+        if self.verbose: # type: ignore
             print(f"compling python protobuf bindings to {GenProtos.binds_dir}")
         # generate python proto bindings with protoc
         protoc.main(
@@ -45,7 +45,9 @@ class GenProtos(Command):
                 __file__,
                 f"-I{GenProtos.protos_dir}",
                 f"--python_out=.",
+                f"--mypy_out=.",
                 f"--grpc_python_out=.",
+                f"--mypy_grpc_out=.",
             ]
             + proto_paths
         )
