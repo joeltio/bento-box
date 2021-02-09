@@ -115,13 +115,14 @@ def test_graph_plotter_preserve_code_order():
 
     car = g.entity(components=[Position, Velocity])
     # since Velocity.x is used first, it should appear in inputs before Position.x
-    car[Velocity].x += 2
-    car[Position].x += car[Velocity].x
+    car_velocity_x = car[Velocity].x
+    car_pos_x = car[Position].x
     # since Velocity.x is modified last, it should appear in outputs after Position.x
-    car[Velocity].x -= 2
+    car[Position].x = 3
+    car[Velocity].x = 2
 
-    velocity_x = car[Velocity].x
     position_x = car[Position].x
+    velocity_x = car[Velocity].x
 
     assert (
         g.graph().yaml

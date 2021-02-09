@@ -4,8 +4,10 @@
 # Base classes
 #
 
-from typing import List, Any, Set
+from typing import List, Any, Set, Union
 from abc import ABC, abstractmethod, abstractproperty
+
+from bento.ecs.spec import ComponentDef
 
 
 class Component(ABC):
@@ -69,18 +71,18 @@ class Entity(ABC):
         pass
 
     @abstractproperty
-    def id(self) -> int:
+    def id(self) -> int:  # type: ignore
         """Get the id of this Entity"""
         pass
 
     @abstractproperty
-    def components(self) -> Set[Component]:
+    def components(self) -> Set[Component]:  # type: ignore
         """Get the components attached to this Entity"""
         pass
 
-    def __getitem__(self, name: str) -> Component:
+    def __getitem__(self, name: Union[str, ComponentDef]) -> Component:
         """Alias for get_component()"""
-        return self.get_component(name)
+        return self.get_component(str(name))
 
     def __str__(self):
         return f"{type(self).__name__}<{self.id}>"

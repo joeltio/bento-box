@@ -33,17 +33,7 @@ class Graph:
         ie the Graph with the same inputs and outputs, but ordered differently should
         still count as the same graph.
         """
-        proto = GraphProto(inputs=inputs, outputs=outputs)
-        # sort graph inputs and outputs to ensure position invariance
-        inputs = sorted(proto.inputs, key=(lambda n: str(n.retrieve_attr)))
-        del proto.inputs[:]
-        proto.inputs.extend(inputs)
-
-        outputs = sorted(proto.outputs, key=(lambda n: str(n.mutate_attr)))
-        del proto.outputs[:]
-        proto.outputs.extend(outputs)
-
-        self.proto = proto
+        self.proto = GraphProto(inputs=inputs, outputs=outputs)
 
     @classmethod
     def from_proto(cls, proto: GraphProto):

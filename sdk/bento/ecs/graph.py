@@ -6,7 +6,7 @@
 
 from copy import deepcopy
 from binascii import crc32
-from typing import Any, Iterable, List, Dict, Union, FrozenSet
+from typing import Any, Iterable, List, Union, FrozenSet, OrderedDict, Dict
 from bento.types import Type
 from bento.utils import to_str_attr
 from bento.ecs.base import Component, Entity
@@ -183,8 +183,8 @@ class GraphComponent(Component):
         self.__dict__["_name"] = name
         self.__dict__["_schema"] = schema
         # _inputs/_outputs are dict with AttributeRef as key and Retrieve/Mutate nodes as value
-        self.__dict__["_inputs"] = {}
-        self.__dict__["_outputs"] = {}
+        self.__dict__["_inputs"] = OrderedDict()
+        self.__dict__["_outputs"] = OrderedDict()
 
     @classmethod
     def from_def(cls, entity_id: int, component_def: ComponentDef):
@@ -195,11 +195,13 @@ class GraphComponent(Component):
                 "Cannot construct GraphComponent from ComponentDef with unset name"
             )
         return cls(
-            entity_id=entity_id, name=component_def.name, schema=component_def.schema
+            entity_id=entity_id,
+            name=component_def.name,
+            schema=component_def.schema,
         )
 
     def use_input_outputs(
-        self, inputs: Dict[str, GraphNode], outputs: Dict[str, GraphNode]
+        self, inputs: OrderedDict[str, GraphNode], outputs: OrderedDict[str, GraphNode]
     ):
         """Use the given inputs and output dicts to record attribute operations.
         Useful for implementing a shared inputs and outputs between multiple GraphComponents.
@@ -252,6 +254,8 @@ class GraphComponent(Component):
             )
         )
         self._outputs[to_str_attr(attr_ref)] = set_op
+        # preserve order of execution in _outputs by moving set operation record to end
+        self._outputs.move_to_end(to_str_attr(attr_ref))
 
     @property
     def component_name(self):
@@ -296,7 +300,7 @@ class GraphEntity(Entity):
         )
 
     def use_input_outputs(
-        self, inputs: Dict[str, GraphNode], outputs: Dict[str, GraphNode]
+        self, inputs: OrderedDict[str, GraphNode], outputs: OrderedDict[str, GraphNode]
     ):
         """Use the given inputs and output dicts to record attribute operations.
         Useful for implementing a shared inputs and outputs between multiple GraphEntities.

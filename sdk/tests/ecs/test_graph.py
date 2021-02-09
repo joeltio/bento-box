@@ -4,7 +4,7 @@
 # Graph ECS
 #
 
-from typing import Set
+from typing import OrderedDict, Set
 
 from bento.ecs.graph import (
     GraphComponent,
@@ -51,7 +51,7 @@ def test_graph_ecs_entity_from_def():
 
 def test_graph_ecs_entity_update_input_outputs():
     # test use_input_outputs() propagates input and output dict to components
-    entity_id, inputs, outputs = 1, {}, {}
+    entity_id, inputs, outputs = 1, OrderedDict(), OrderedDict()
     car = GraphEntity.from_def(
         entity_def=EntityDef(components=[Position, Speed], entity_id=1),
         component_defs=[Position, Speed],
@@ -100,7 +100,7 @@ def test_graph_ecs_component_from_def():
 
 
 def test_graph_ecs_component_get_attr():
-    entity_id, inputs, outputs = 1, {}, {}
+    entity_id, inputs, outputs = 1, OrderedDict(), OrderedDict()
     position = GraphComponent.from_def(entity_id, Position)
     position.use_input_outputs(inputs, outputs)
 
@@ -132,7 +132,7 @@ def test_graph_ecs_component_get_attr_preserve_set_graph():
 
 
 def test_graph_ecs_component_set_attr_node():
-    entity_id, inputs, outputs = 1, {}, {}
+    entity_id, inputs, outputs = 1, OrderedDict(), OrderedDict()
     position = GraphComponent.from_def(entity_id, Position)
     position.use_input_outputs(inputs, outputs)
 
@@ -159,7 +159,7 @@ def test_graph_ecs_component_set_attr_node():
 
 
 def test_graph_ecs_component_set_attr_native_value():
-    entity_id, inputs, outputs = 1, {}, {}
+    entity_id, inputs, outputs = 1, OrderedDict(), OrderedDict()
     position = GraphComponent.from_def(entity_id, Position)
     position.use_input_outputs(inputs, outputs)
 
@@ -181,7 +181,7 @@ def test_graph_ecs_component_set_attr_native_value():
 
 
 def test_graph_ecs_component_set_attr_ignore_self_assign():
-    entity_id, inputs, outputs = 1, {}, {}
+    entity_id, inputs, outputs = 1, OrderedDict(), OrderedDict()
     position = GraphComponent.from_def(entity_id, Position)
     position.use_input_outputs(inputs, outputs)
 
@@ -190,7 +190,7 @@ def test_graph_ecs_component_set_attr_ignore_self_assign():
 
 
 def test_graph_ecs_component_aug_assign_node():
-    entity_id, inputs, outputs = 1, {}, {}
+    entity_id, inputs, outputs = 1, OrderedDict(), OrderedDict()
     position = GraphComponent.from_def(entity_id, Position)
     position.use_input_outputs(inputs, outputs)
 

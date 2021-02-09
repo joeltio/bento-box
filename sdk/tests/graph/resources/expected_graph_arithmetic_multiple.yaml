@@ -1,17 +1,17 @@
 # expected graph for test_graph_compile_arithmetic_multiple()
 inputs:
 - retrieveAttr:
-    attribute: x
-    component: position
-    entityId: 1
+    attribute: tick_ms
+    component: clock
+    entityId: 2
 - retrieveAttr:
     attribute: x
     component: velocity
     entityId: 1
 - retrieveAttr:
-    attribute: tick_ms
-    component: clock
-    entityId: 2
+    attribute: x
+    component: position
+    entityId: 1
 outputs:
 - mutateAttr:
     attribute: x

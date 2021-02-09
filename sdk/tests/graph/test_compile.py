@@ -4,24 +4,24 @@
 # Test graph compilation
 #
 
-import yaml
-import pytest
 from os import path
+from typing import Any, Callable
 from unittest.mock import Mock
-from typing import Callable, Any
-from google.protobuf.json_format import MessageToDict, ParseDict, MessageToJson
 
 from bento.client import Client
-from bento.sim import Simulation
-from bento.graph.plotter import Plotter
-from bento.graph.value import wrap_const
+from bento.ecs.spec import ComponentDef, EntityDef
+from bento.example.specs import Clock, Position, Speed, Velocity
 from bento.graph.compile import compile_graph
+from bento.graph.plotter import Plotter
 from bento.graph.spec import Graph
-from bento.protos.graph_pb2 import Node, Graph as GraphProto
-from bento.protos.sim_pb2 import SimulationDef
+from bento.graph.value import wrap_const
+from bento.protos.graph_pb2 import Graph as GraphProto, Node
 from bento.protos.references_pb2 import AttributeRef
-from bento.ecs.spec import EntityDef, ComponentDef
-from bento.example.specs import Position, Speed, Clock, Velocity
+from bento.protos.sim_pb2 import SimulationDef
+from bento.sim import Simulation
+from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
+import pytest
+import yaml
 
 ## test tools
 # path to graph test cases in test resources
