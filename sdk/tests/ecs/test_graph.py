@@ -13,28 +13,6 @@ from bento.protos.references_pb2 import AttributeRef
 from bento.example.specs import Position
 
 
-def test_graph_ecs_component_inputs_lineno():
-    entity_id = 1
-    position = GraphComponent.from_def(entity_id, Position)
-    # check that getting an attribute from a component returns a GraphNode
-    # wrapping a Retrieve node that retrieves the attribute
-    pos_x = position.x
-    assert len(position.inputs_linenos) == 1
-    _, lineno = position.inputs_linenos[0]
-    assert lineno == 21
-
-
-def test_graph_ecs_component_outputs_lineno():
-    entity_id = 1
-    position = GraphComponent.from_def(entity_id, Position)
-    # check that getting an attribute from a component returns a GraphNode
-    # wrapping a Retrieve node that retrieves the attribute
-    position.x = 1
-    assert len(position.output_linenos) == 1
-    _, lineno = position.output_linenos[0]
-    assert lineno == 32
-
-
 def test_graph_ecs_entity():
     components = [GraphComponent.from_def(entity_id=1, component_def=Position)]
     entity = GraphEntity(components=components, entity_id=1)
