@@ -4,9 +4,10 @@
 # Graph based ECS
 #
 
+from collections import OrderedDict
 from copy import deepcopy
 from binascii import crc32
-from typing import Any, Iterable, List, Union, FrozenSet, OrderedDict, Dict
+from typing import Any, Iterable, List, Union, FrozenSet, Dict
 from bento.types import Type
 from bento.utils import to_str_attr
 from bento.ecs.base import Component, Entity
@@ -201,7 +202,9 @@ class GraphComponent(Component):
         )
 
     def use_input_outputs(
-        self, inputs: OrderedDict[str, GraphNode], outputs: OrderedDict[str, GraphNode]
+        self,
+        inputs: "OrderedDict[str, GraphNode]",
+        outputs: "OrderedDict[str, GraphNode]",
     ):
         """Use the given inputs and output dicts to record attribute operations.
         Useful for implementing a shared inputs and outputs between multiple GraphComponents.
@@ -300,7 +303,9 @@ class GraphEntity(Entity):
         )
 
     def use_input_outputs(
-        self, inputs: OrderedDict[str, GraphNode], outputs: OrderedDict[str, GraphNode]
+        self,
+        inputs: "OrderedDict[str, GraphNode]",
+        outputs: "OrderedDict[str, GraphNode]",
     ):
         """Use the given inputs and output dicts to record attribute operations.
         Useful for implementing a shared inputs and outputs between multiple GraphEntities.

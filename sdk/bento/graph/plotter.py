@@ -4,7 +4,8 @@
 # Graph Plotter
 #
 
-from typing import Any, Iterable, OrderedDict, Union
+from collections import OrderedDict
+from typing import Any, Iterable, Union
 
 from bento.ecs.graph import GraphComponent, GraphEntity, GraphNode
 from bento.ecs.spec import ComponentDef, EntityDef

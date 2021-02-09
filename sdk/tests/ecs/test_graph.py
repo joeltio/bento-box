@@ -4,7 +4,8 @@
 # Graph ECS
 #
 
-from typing import OrderedDict, Set
+from collections import OrderedDict
+from typing import Set
 
 from bento.ecs.graph import (
     GraphComponent,
