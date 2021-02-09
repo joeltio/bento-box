@@ -8,6 +8,7 @@
 import os
 import pytest
 from git import Repo
+from math import cos, sin
 from testcontainers.core.container import DockerContainer
 
 from bento import types
@@ -33,7 +34,7 @@ Movement = ComponentDef(
 Keyboard = ComponentDef(
     name="keyboard",
     schema={
-        "top": types.boolean,
+        "up": types.boolean,
         "down": types.boolean,
         "left": types.boolean,
         "right": types.boolean,
@@ -47,7 +48,7 @@ def engine_docker():
     # would be created for each e2e test.
     # setup bentobox-sim container and expose engine port
     engine = DockerContainer(os.environ["BENTOBOX_SIM_DOCKER"])
-    engine.with_env("BENTOBOX_SIM_PORT", SIM_PORT)
+    engine.with_env("BENTOBOX_SIM_PORT", str(SIM_PORT))
     engine.with_env("BENTOBOX_SIM_HOST", "0.0.0.0")
     engine.with_exposed_ports(SIM_PORT)
     engine.start()
@@ -85,6 +86,22 @@ def sim(client):
         client=client,
     )
 
+    @sim.init
+    def init_sim(g: Plotter):
+        controls = g.entity(components=[Keyboard])
+        controls[Keyboard].left = False
+        controls[Keyboard].right = False
+        controls[Keyboard].up = False
+        controls[Keyboard].down = False
+
+        car = g.entity(components=[Movement, Velocity, Position])
+        car[Movement].speed = 0
+        car[Movement].rotation = 90
+        car[Velocity].x = 0
+        car[Velocity].y = 0
+        car[Position].x = 0
+        car[Position].y = 0
+
     @sim.system
     def control_sys(g: Plotter):
         controls = g.entity(components=[Keyboard])
@@ -94,26 +111,26 @@ def sim(client):
         if controls[Keyboard].left:
             car[Movement].rotation -= steer_rate
             controls[Keyboard].left = False
-
         elif controls[Keyboard].right:
             car[Movement].rotation += steer_rate
             controls[Keyboard].right = False
 
-        elif controls[Keyboard].up:
-            car[Movement].speed += acceleration
+        if controls[Keyboard].up:
+            car[Movement].speed = g.min(car[Movement].speed + acceleration, max_speed)
             controls[Keyboard].up = False
-
         elif controls[Keyboard].down:
-            car[Movement].speed -= acceleration
+            car[Movement].speed = g.max(car[Movement].speed - acceleration, 0)
             controls[Keyboard].down = False
 
     @sim.system
     def physics_sys(g: Plotter):
         # compute velocity from car's rotation and speed
         car = g.entity(components=[Movement, Velocity, Position])
+        # rotation
         heading_x, heading_y = g.cos(car[Movement].rotation), -g.sin(
             car[Movement].rotation
         )
+        # speed
         car[Velocity].x = car[Movement].speed * heading_x
         car[Velocity].y = car[Movement].speed * heading_y
 
@@ -136,12 +153,12 @@ def test_e2e_engine_apply_sim(sim):
     assert len([e.id for e in sim.entities if e.id != 0]) == len(sim.entities)
 
 
-def test_e2e_engine_client_list_sims(sim, client):
+def test_e2e_engine_list_sims(sim, client):
     # check that sim is listed
     assert client.list_sims()[0] == sim.name
 
 
-def test_e2e_engine_client_get_sim(sim, client):
+def test_e2e_engine_get_sim(sim, client):
     # check that sim's can be retrieved by name
     applied_proto = client.get_sim(sim.name)
     assert to_yaml_proto(applied_proto) == to_yaml_proto(sim.proto)
@@ -155,11 +172,7 @@ def test_e2e_engine_client_get_sim(sim, client):
     assert has_error
 
 
-def test_e2e_engine_client_remove(sim, client):
+def test_e2e_engine_remove(sim, client):
+    # test removing simulations
     client.remove_sim(sim.name)
     assert len(client.list_sims()) == 0
-
-
-# TODO(mrzzy): run sim
-
-# TODO(mrzzy): get set attrs
