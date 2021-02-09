@@ -40,7 +40,7 @@ class GenProtos(Command):
         if self.verbose: # type: ignore
             print(f"compling python protobuf bindings to {GenProtos.binds_dir}")
         # generate python proto bindings with protoc
-        protoc.main(
+        exit_code = protoc.main(
             [
                 __file__,
                 f"-I{GenProtos.protos_dir}",
@@ -51,6 +51,9 @@ class GenProtos(Command):
             ]
             + proto_paths
         )
+        if exit_code != 0:
+            raise RuntimeError(f"Failed to generate python protobuf bindings to {GenProtos.binds_dir}")
+
         # create a __init__.py to to tell python to treat it as a package
         (GenProtos.binds_dir / "__init__.py").touch()
 
