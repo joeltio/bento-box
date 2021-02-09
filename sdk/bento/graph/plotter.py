@@ -4,13 +4,14 @@
 # Graph Plotter
 #
 
-from typing import Any, Iterable, Union
+from typing import Any, Iterable, OrderedDict, Union
 
-from bento.graph.value import wrap_const
+from bento.ecs.graph import GraphComponent, GraphEntity, GraphNode
+from bento.ecs.spec import ComponentDef, EntityDef
 from bento.graph.spec import Graph
+from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
-from bento.ecs.spec import EntityDef, ComponentDef
-from bento.ecs.graph import GraphEntity, GraphComponent, GraphNode
+from bento.utils import to_str_attr
 
 
 class Plotter:
@@ -35,6 +36,11 @@ class Plotter:
         # map name to component def
         component_map = {c.name: c for c in component_defs}
 
+        # collects the graph nodes from operations performed on GraphComponent
+        # use OrderedDict to preserve order of operations recorded.
+        # key: str attribute ref => value: graph node
+        self.inputs, self.outputs = OrderedDict(), OrderedDict()
+
         # map component name set to entity
         self.entity_map = {}
         for entity_def in entity_defs:
@@ -43,6 +49,7 @@ class Plotter:
                 entity_def=entity_def,
                 component_defs=[component_map[name] for name in entity_def.components],
             )
+            graph_entity.use_input_outputs(self.inputs, self.outputs)
             self.entity_map[frozenset(entity_def.components)] = graph_entity
 
     def entity(self, components: Iterable[Union[str, ComponentDef]]) -> GraphEntity:
@@ -62,7 +69,7 @@ class Plotter:
         """
         comp_set = frozenset(str(c) for c in components)
         # check for duplicates in given components
-        if len(comp_set) != len(components):
+        if len(comp_set) != len(list(components)):
             raise ValueError("Given component names should not contain duplicates")
         # retrieve entity for components, create if not does not yet exist
         if comp_set not in self.entity_map:
@@ -80,17 +87,14 @@ class Plotter:
         Returns:
             The computation graph plotted by this Plotter as a `Graph`
         """
-        # Extract graph inputs and outputs nodes from GraphComponent's GraphNodes
-        inputs, outputs = [], []
-        for entity in self.entity_map.values():
-            for component in entity.components:
-                inputs.extend([i.node.retrieve_op for i in component.inputs])
-                outputs.extend([o.node.mutate_op for o in component.outputs])
-
+        # Extract graph inputs and outputs nodes from inputs and outputs dict
+        inputs = [i.node.retrieve_op for i in self.inputs.values()]
+        outputs = [o.node.mutate_op for o in self.outputs.values()]
+        # build graph with extracted graph input and output nodes
         return Graph(inputs=inputs, outputs=outputs)
 
     # section: shims - ECS shims records access/assignments to ECS
-    def const(self, value: Any) -> Node.Const:
+    def const(self, value: Any) -> Node:
         """Creates a Constant Node that evaluates to the given value
 
         Args:
@@ -137,7 +141,7 @@ class Plotter:
         return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
 
     def abs(self, x: Any) -> GraphNode:
-        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
+        x = GraphNode.wrap(x)
         return GraphNode(node=Node(abs_op=Node.Abs(x=x)))
 
     def floor(self, x: Any) -> GraphNode:

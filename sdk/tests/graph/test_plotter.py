@@ -4,14 +4,14 @@
 # Test graph compilation @graph.compile
 
 
-from bento.value import wrap
-from bento.ecs.spec import EntityDef, ComponentDef
-from bento.ecs.graph import GraphEntity, GraphComponent
+from bento.ecs.graph import GraphComponent, GraphEntity
+from bento.ecs.spec import ComponentDef, EntityDef
+from bento.example.specs import Keyboard, Position, Velocity
+from bento.graph.plotter import Plotter
+from bento.graph.spec import Graph
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
-from bento.graph.spec import Graph
-from bento.graph.plotter import Plotter
-from bento.example.specs import Position, Keyboard
+from bento.value import wrap
 
 # sanity check empty plotter gives empty graph
 def test_graph_plotter_empty():
@@ -24,7 +24,7 @@ def test_graph_plotter_retrieve_mutate_op():
     entity_id = 1
     g = Plotter(
         entity_defs=[
-            EntityDef(components=[Position.name], entity_id=1),
+            EntityDef(components=[Position], entity_id=1),
         ],
         component_defs=[Position],
     )
@@ -101,4 +101,64 @@ def test_graph_plotter_conditional_boolean():
                 to_node=car_pos_x.node,
             ),
         ],
+    )
+
+
+# test graph plotter produces graphs with inputs and outputs sorted by order appearance in code
+def test_graph_plotter_preserve_code_order():
+    g = Plotter(
+        entity_defs=[
+            EntityDef(components=[Position, Velocity], entity_id=1),
+        ],
+        component_defs=[Position, Velocity],
+    )
+
+    car = g.entity(components=[Position, Velocity])
+    # since Velocity.x is used first, it should appear in inputs before Position.x
+    car[Velocity].x += 2
+    car[Position].x += car[Velocity].x
+    # since Velocity.x is modified last, it should appear in outputs after Position.x
+    car[Velocity].x -= 2
+
+    velocity_x = car[Velocity].x
+    position_x = car[Position].x
+
+    assert (
+        g.graph().yaml
+        == Graph(
+            inputs=[
+                Node.Retrieve(
+                    retrieve_attr=AttributeRef(
+                        entity_id=car.id,
+                        component=Velocity.name,
+                        attribute="x",
+                    )
+                ),
+                Node.Retrieve(
+                    retrieve_attr=AttributeRef(
+                        entity_id=car.id,
+                        component=Position.name,
+                        attribute="x",
+                    )
+                ),
+            ],
+            outputs=[
+                Node.Mutate(
+                    mutate_attr=AttributeRef(
+                        entity_id=car.id,
+                        component=Position.name,
+                        attribute="x",
+                    ),
+                    to_node=position_x.node,
+                ),
+                Node.Mutate(
+                    mutate_attr=AttributeRef(
+                        entity_id=car.id,
+                        component=Velocity.name,
+                        attribute="x",
+                    ),
+                    to_node=velocity_x.node,
+                ),
+            ],
+        ).yaml
     )
