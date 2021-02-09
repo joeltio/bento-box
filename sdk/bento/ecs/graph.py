@@ -4,6 +4,8 @@
 # Graph based ECS
 #
 
+from inspect import currentframe
+from collections import OrderedDict
 from copy import deepcopy
 from binascii import crc32
 from typing import Any, Iterable, Set, List, Dict
@@ -170,7 +172,7 @@ class GraphComponent(Component):
     """Shim that represents an ECS Component when plotting computation graph.
 
     Provides access to component's attributes during graph plotting.
-    Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively.
+    Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively,
 
         Example:
         # Record operations on component
@@ -213,12 +215,15 @@ class GraphComponent(Component):
         # check if attribute has been defined in earlier set_attr()
         # if so return that definition to preserve the graph already built for that attribute
         if to_str_attr(attr_ref) in self._outputs:
-            built_graph = self._outputs[to_str_attr(attr_ref)].node.mutate_op.to_node
+            built_graph = self._outputs[to_str_attr(attr_ref)][0].node.mutate_op.to_node
             return GraphNode(built_graph)
 
         # record the attribute retrieve operation as input graph node
+        # with the line of code the operation occured
         get_op = GraphNode(node=Node(retrieve_op=Node.Retrieve(retrieve_attr=attr_ref)))
-        self._inputs[to_str_attr(attr_ref)] = get_op
+        # f_back to backtrack frames twice as get_attr() is wrapped by __getattr__()
+        lineno = currentframe().f_back.f_back.f_lineno
+        self._inputs[to_str_attr(attr_ref)] = (get_op, lineno)
         return get_op
 
     def set_attr(self, name: str, value: Any):
@@ -236,6 +241,7 @@ class GraphComponent(Component):
         ):
             return
         # record the attribute set/mutate operation as output graph node
+        # with the line of code the operation occured
         set_op = GraphNode(
             node=Node(
                 mutate_op=Node.Mutate(
@@ -244,17 +250,29 @@ class GraphComponent(Component):
                 )
             )
         )
-        self._outputs[to_str_attr(attr_ref)] = set_op
+        # f_back to backtrack frames twice as set_attr() is wrapped by __setattr__()
+        lineno = currentframe().f_back.f_back.f_lineno
+        self._outputs[to_str_attr(attr_ref)] = (set_op, lineno)
 
     @property
     def inputs(self) -> List[GraphNode]:
-        """Get the graph unique input nodes recorded by this Graph component"""
-        return list(self._inputs.values())
+        """Get the graph input nodes recorded by this Graph component"""
+        return [i[0] for i in self._inputs.values()]
+
+    @property
+    def inputs_linenos(self) -> List[GraphNode]:
+        """Get the graph input nodes and line of code recorded by this Graph component"""
+        return [i for i in self._inputs.values()]
 
     @property
     def outputs(self) -> List[GraphNode]:
-        """Get the graph unique output nodes recorded by this Graph component"""
-        return list(self._outputs.values())
+        """Get the graph output nodes recorded by this Graph component"""
+        return [o[0] for o in self._outputs.values()]
+
+    @property
+    def output_linenos(self) -> List[GraphNode]:
+        """Get the graph output nodes and line of code recorded by this Graph component"""
+        return [o for o in self._outputs.values()]
 
     @property
     def component_name(self):
