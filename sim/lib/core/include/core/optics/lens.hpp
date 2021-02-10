@@ -148,11 +148,29 @@ class Lens {
             ]<class... PArgs>(PArgs && ... args)
                 ->NewReturn& {
             return otherGetter(
-                std::forward<Return>(getter(std::forward<PArgs>(args)...)));
+                static_cast<Return&&>(getter(std::forward<PArgs>(args)...)));
         };
 
-        std::function<void(NewReturn&, NewReturn &&)> set = otherLens.setter;
-        return Lens<NewReturn, Args...>(get, set);
+        return Lens<NewReturn, Args...>(get, otherLens.setter);
+    }
+
+    template <class FirstArg, class... NewArgs>
+        requires(sizeof...(Args) == 1) &&
+        std::is_same_v<
+            std::tuple_element_t<0, std::tuple<Args...>>,
+            FirstArg> Lens<Return, NewArgs...> precompose(const Lens<FirstArg,
+                                                                     NewArgs...>
+                                                              otherLens) const {
+        std::function<Return&(NewArgs && ...)> get =
+            [
+                getter = this->getter, otherGetter = otherLens.getter
+            ]<class... PArgs>(PArgs && ... args)
+                ->Return& {
+            return getter(static_cast<FirstArg&&>(
+                otherGetter(std::forward<PArgs>(args)...)));
+        };
+
+        return Lens<Return, NewArgs...>(get, this->setter);
     }
 };
 

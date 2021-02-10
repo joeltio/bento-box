@@ -90,6 +90,24 @@ TEST(TEST_SUITE, ComposeLens) {
     ASSERT_EQ(composedLens.get(storedVal), 20);
 }
 
+TEST(TEST_SUITE, PrecomposeLens) {
+    auto storedVal = A{B{10}};
+    auto getter = [](A&& a) -> B& { return a.b; };
+    auto setter = [](B& b, B&& newB) { b = newB; };
+    auto lens = Lens<B, A>(getter, setter);
+
+    ASSERT_EQ(lens.get(storedVal).height, 10);
+
+    auto getterComp = [](B&& b) -> int& { return b.height; };
+    auto setterComp = [](int& height, int&& newHeight) { height = newHeight; };
+    auto lensComp = Lens<int, B>(getterComp, setterComp);
+
+    auto composedLens = lensComp.precompose(lens);
+    ASSERT_EQ(composedLens.get(storedVal), 10);
+    composedLens.set(20, storedVal);
+    ASSERT_EQ(composedLens.get(storedVal), 20);
+}
+
 TEST(TEST_SUITE, CompositionCopiesLenses) {
     // Create the lenses
     auto getter = [](A&& a) -> B& { return a.b; };
