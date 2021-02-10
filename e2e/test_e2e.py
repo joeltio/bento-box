@@ -21,13 +21,21 @@ from bento.example.specs import Velocity, Position
 
 SIM_PORT = 54243
 
-
 # define test components
+Meta = ComponentDef(
+    name="meta",
+    schema={
+        "name": types.string,
+        "version": types.int32,
+    },
+)
+
 Movement = ComponentDef(
     name="movement",
     schema={
-        "rotation": types.float64,
+        "rotation": types.float32,
         "speed": types.float64,
+        "gear": types.int64,
     },
 )
 
@@ -38,6 +46,7 @@ Keyboard = ComponentDef(
         "down": types.boolean,
         "left": types.boolean,
         "right": types.boolean,
+        "key": types.char,
     },
 )
 
@@ -76,13 +85,13 @@ def client(engine_docker):
 @pytest.fixture
 def sim(client):
     """Applies the test Simulation to the Engine"""
-    controls = EntityDef(components=[Keyboard])
-    car = EntityDef(components=[Movement, Velocity, Position])
-
     sim = Simulation(
         name="driving_sim",
-        entities=[controls, car],
-        components=[Keyboard, Movement, Velocity, Position],
+        components=[Keyboard, Movement, Velocity, Position, Meta],
+        entities=[
+            EntityDef(components=[Keyboard]),
+            EntityDef(components=[Movement, Velocity, Position, Meta]),
+        ],
         client=client,
     )
 
@@ -93,8 +102,12 @@ def sim(client):
         controls[Keyboard].right = False
         controls[Keyboard].up = False
         controls[Keyboard].down = False
+        # -1 to imply no key being pressed
+        controls[Keyboard].key = -1
 
-        car = g.entity(components=[Movement, Velocity, Position])
+        car = g.entity(components=[Movement, Velocity, Position, Meta])
+        car[Meta].name = "beetle"
+        car[Meta].version = 2
         car[Movement].speed = 0.0
         car[Movement].rotation = 90.0
         car[Velocity].x = 0.0
@@ -105,16 +118,30 @@ def sim(client):
     @sim.system
     def control_sys(g: Plotter):
         controls = g.entity(components=[Keyboard])
-        car = g.entity(components=[Movement, Velocity, Position])
+        car = g.entity(components=[Movement, Velocity, Position, Meta])
         acceleration, max_speed, steer_rate = 5, 18, 10
 
+        # change gears on the car
+        if controls[Keyboard].key == ord(">"):
+            car[Movement].gear = g.max(car[Movement].gear + 1, 3)
+            controls[Keyboard].key = -1
+        elif controls[Keyboard].key == ord("<"):
+            car[Movement].gear = g.min(car[Movement].gear - 1, 1)
+            controls[Keyboard].key = -1
+
+        max_speed *= car[Movement].gear
+        acceleration /= car[Movement].gear
+
+        # steer car
         if controls[Keyboard].left:
             car[Movement].rotation -= steer_rate
+            acceleration /= car[Movement].gear
             controls[Keyboard].left = False
         elif controls[Keyboard].right:
             car[Movement].rotation += steer_rate
             controls[Keyboard].right = False
 
+        # accelerate/slow down car
         if controls[Keyboard].up:
             car[Movement].speed = g.min(car[Movement].speed + acceleration, max_speed)
             controls[Keyboard].up = False
@@ -125,7 +152,7 @@ def sim(client):
     @sim.system
     def physics_sys(g: Plotter):
         # compute velocity from car's rotation and speed
-        car = g.entity(components=[Movement, Velocity, Position])
+        car = g.entity(components=[Movement, Velocity, Position, Meta])
         # rotation
         heading_x, heading_y = g.cos(car[Movement].rotation), -g.sin(
             car[Movement].rotation
@@ -176,3 +203,62 @@ def test_e2e_engine_remove(sim, client):
     # test removing simulations
     client.remove_sim(sim.name)
     assert len(client.list_sims()) == 0
+
+
+def test_e2e_engine_get_set_attr(sim, client):
+    # test setting/setting attributes for every primitive data type
+    controls = sim.entity(components=[Keyboard])
+    controls[Keyboard].left = True
+    assert controls[Keyboard].left == True
+    controls[Keyboard].key = ord("A")
+    assert controls[Keyboard].key == ord("A")
+
+    car = sim.entity(components=[Movement, Velocity, Position, Meta])
+    car[Meta].name = "sedan"
+    assert car[Meta].name == "sedan"
+    car[Meta].version == 10
+    assert car[Meta].version == 10
+
+    car[Movement].rotation = -134.2
+    assert car[Movement].rotation == -134.2
+    car[Movement].speed = 23.5
+    assert car[Movement].speed == 23.5
+    car[Movement].gear = 2
+    assert car[Movement].gear == 2
+
+
+def test_e2e_engine_step_sim(sim, client):
+    # TODO(mrzzy): replace this temporary workaround to trigger init graph
+    # once https://github.com/joeltio/bento-box/issues/34 is fixed.
+    # test init
+    sim.step()
+
+    # check that values are set correctly by init graph
+    controls = sim.entity(components=[Keyboard])
+    assert controls[Keyboard].left == False
+    assert controls[Keyboard].right == False
+    assert controls[Keyboard].up == False
+    assert controls[Keyboard].left == False
+    assert controls[Keyboard].key == -1
+
+    car = sim.entity(components=[Movement, Velocity, Position, Meta])
+    assert car[Meta].name == "beetle"
+    assert car[Meta].version == 2
+    assert car[Movement].speed == 0
+    assert car[Movement].rotation == 90
+    assert car[Velocity].x == 0
+    assert car[Velocity].y == 0
+    assert car[Position].x == 0
+    assert car[Position].y == 0
+
+    controls[Keyboard].up = True
+    controls[Keyboard].left = True
+
+    # test running simulation for one step
+    sim.step()
+
+    # test attributes have been updated by system
+    assert controls[Keyboard].left == False
+    assert controls[Keyboard].up == False
+    assert car[Movement].speed == 5
+    assert car[Movement].rotation == 80
