@@ -52,6 +52,19 @@ Status EngineServiceImpl::ApplySimulation(
                 e));
     }
 
+    try {
+        // If no init_graph is set, the default graph given by protobuf does
+        // nothing, so no checks are needed here for the existence of init_graph
+        interpreter::runGraph(sims[name]->compStore, sims[name]->indexStore,
+                              sims[name]->simDef.init_graph());
+    } catch (const std::exception& e) {
+        return Status(
+            grpc::INTERNAL,
+            formatError("Something went wrong while running the initGraph of "
+                        "the simulation",
+                        e));
+    }
+
     response->mutable_simulation()->CopyFrom(sims[name]->simDef);
 
     return Status::OK;
@@ -117,17 +130,6 @@ Status EngineServiceImpl::StepSimulation(
     // Lock the simulation
     if (!sim->locked) {
         sim->locked = true;
-        try {
-            interpreter::runGraph(compStore, indexStore,
-                                  sim->simDef.init_graph());
-        } catch (const std::exception& e) {
-            return Status(
-                grpc::INTERNAL,
-                formatError(
-                    "Something went wrong while running the initGraph of "
-                    "the simulation",
-                    e));
-        }
     }
 
     for (size_t i = 0; i < simDef.systems_size(); i++) {
