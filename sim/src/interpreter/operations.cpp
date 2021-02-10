@@ -245,12 +245,16 @@ bento::protos::Value modOp(ics::ComponentStore& compStore,
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_int_32(xVal.primitive().int_32() %
                                                 yVal.primitive().int_32());
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_INT32);
             return val;
         }
         case Primitive::kInt64: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_int_64(xVal.primitive().int_64() %
                                                 yVal.primitive().int_64());
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_INT64);
             return val;
         }
         default:
@@ -344,12 +348,16 @@ bento::protos::Value randomOp(ics::ComponentStore& compStore,
             auto dist = std::uniform_real_distribution(
                 lowPrimitive.float_32(), highPrimitive.float_32());
             val.mutable_primitive()->set_float_32(dist(gen));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_FLOAT32);
             return val;
         }
         case Primitive::kFloat64: {
             auto dist = std::uniform_real_distribution(
                 lowPrimitive.float_64(), highPrimitive.float_64());
             val.mutable_primitive()->set_float_64(dist(gen));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_FLOAT64);
             return val;
         }
         case Primitive::VALUE_NOT_SET: {

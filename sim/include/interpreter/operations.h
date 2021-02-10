@@ -29,21 +29,29 @@ bento::protos::Value runMathFn(Fn fn, const bento::protos::Value& x) {
         case Primitive::kInt32: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_int_32(fn(x.primitive().int_32()));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_INT32);
             return val;
         }
         case Primitive::kInt64: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_int_64(fn(x.primitive().int_64()));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_INT64);
             return val;
         }
         case Primitive::kFloat32: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_float_32(fn(x.primitive().float_32()));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_FLOAT32);
             return val;
         }
         case Primitive::kFloat64: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_float_64(fn(x.primitive().float_64()));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_FLOAT64);
             return val;
         }
         case Primitive::VALUE_NOT_SET: {
@@ -69,24 +77,32 @@ bento::protos::Value runMathFn(Fn fn, const bento::protos::Value& x,
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_int_32(
                 fn(x.primitive().int_32(), y.primitive().int_32()));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_INT32);
             return val;
         }
         case Primitive::kInt64: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_int_64(
                 fn(x.primitive().int_64(), y.primitive().int_64()));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_INT64);
             return val;
         }
         case Primitive::kFloat32: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_float_32(
                 fn(x.primitive().float_32(), y.primitive().float_32()));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_FLOAT32);
             return val;
         }
         case Primitive::kFloat64: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_float_64(
                 fn(x.primitive().float_64(), y.primitive().float_64()));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_FLOAT64);
             return val;
         }
         case Primitive::VALUE_NOT_SET: {
@@ -102,35 +118,32 @@ bento::protos::Value runMathFn(Fn fn, const bento::protos::Value& x,
 
 template <class Fn>
 bento::protos::Value runBoolFn(Fn fn, const bento::protos::Value& x) {
+    auto val = bento::protos::Value();
+    val.mutable_data_type()->set_primitive(bento::protos::Type_Primitive_BOOL);
+
     typedef bento::protos::Value_Primitive Primitive;
     switch (x.primitive().value_case()) {
         case Primitive::kInt32: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(fn(x.primitive().int_32()));
             return val;
         }
         case Primitive::kInt64: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(fn(x.primitive().int_64()));
             return val;
         }
         case Primitive::kFloat32: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(fn(x.primitive().float_32()));
             return val;
         }
         case Primitive::kFloat64: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(fn(x.primitive().float_64()));
             return val;
         }
         case Primitive::kBoolean: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(fn(x.primitive().boolean()));
             return val;
         }
         case Primitive::kStrVal: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(fn(x.primitive().str_val()));
             return val;
         }
@@ -147,40 +160,37 @@ bento::protos::Value runBoolFn(Fn fn, const bento::protos::Value& x,
                                const bento::protos::Value& y) {
     validateSame(x, y);
 
+    auto val = bento::protos::Value();
+    val.mutable_data_type()->set_primitive(bento::protos::Type_Primitive_BOOL);
+
     typedef bento::protos::Value_Primitive Primitive;
     switch (x.primitive().value_case()) {
         case Primitive::kInt32: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(
                 fn(x.primitive().int_32(), y.primitive().int_32()));
             return val;
         }
         case Primitive::kInt64: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(
                 fn(x.primitive().int_64(), y.primitive().int_64()));
             return val;
         }
         case Primitive::kFloat32: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(
                 fn(x.primitive().float_32(), y.primitive().float_32()));
             return val;
         }
         case Primitive::kFloat64: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(
                 fn(x.primitive().float_64(), y.primitive().float_64()));
             return val;
         }
         case Primitive::kBoolean: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(
                 fn(x.primitive().boolean(), y.primitive().boolean()));
             return val;
         }
         case Primitive::kStrVal: {
-            auto val = bento::protos::Value();
             val.mutable_primitive()->set_boolean(
                 fn(x.primitive().str_val(), y.primitive().str_val()));
             return val;
