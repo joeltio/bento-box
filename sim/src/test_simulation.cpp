@@ -87,7 +87,7 @@ TestSimulation::TestSimulation() {
     startValNode.mutable_const_op()
         ->mutable_held_value()
         ->mutable_primitive()
-        ->set_int_64(0);
+        ->set_int_64(COMP_START_VAL);
     startValNode.mutable_const_op()
         ->mutable_held_value()
         ->mutable_data_type()

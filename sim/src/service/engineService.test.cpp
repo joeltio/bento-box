@@ -247,7 +247,7 @@ TEST_F(EngineServiceTest, StepSim) {
     s = client->GetAttribute(&getContext, getReq, &getResp);
     ASSERT_TRUE(s.ok());
 
-    ASSERT_EQ(getResp.value().primitive().int_64(), 1);
+    ASSERT_EQ(getResp.value().primitive().int_64(), testSim.COMP_START_VAL + 1);
 }
 
 TEST_F(EngineServiceTest, StepSimLocksSim) {
@@ -277,7 +277,7 @@ TEST_F(EngineServiceTest, GetAndSetAttribute) {
                                            testSim.entityDef.id(), "height");
     auto resp = getAttr(testSim.SIM_NAME, attr);
 
-    ASSERT_EQ(resp.value().primitive().int_64(), 0);
+    ASSERT_EQ(resp.value().primitive().int_64(), testSim.COMP_START_VAL);
 
     // Set the value to something else
     int newVal = 90;

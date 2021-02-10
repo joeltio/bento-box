@@ -35,6 +35,7 @@ bento::protos::SystemDef cycle100System(
 struct TestSimulation {
     const char* SIM_NAME = "Test Simulation";
     const char* COMP_TYPE_NAME = TEST_COMPONENT_NAME;
+    const int COMP_START_VAL = 30;
 
     bento::protos::EntityDef entityDef;
     const bento::protos::ComponentDef compDef = createCompDef();
