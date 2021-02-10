@@ -4,12 +4,19 @@
 # Base classes
 #
 
-from typing import List, Any
-from abc import ABC, abstractmethod
+from typing import List, Any, Set, Union
+from abc import ABC, abstractmethod, abstractproperty
+
+from bento.ecs.spec import ComponentDef
 
 
 class Component(ABC):
     """Component represents a ECS Component in the Engine. """
+
+    @abstractproperty
+    def component_name(self):
+        """Get the name of the this Component"""
+        pass
 
     @abstractmethod
     def get_attr(self, name: str) -> Any:
@@ -44,6 +51,9 @@ class Component(ABC):
         """ Alias for set_attr() """
         return self.set_attr(name, value)
 
+    def __str__(self):
+        return f"{type(self).__name__}<{self._entity_id}, {self._name}>"
+
 
 class Entity(ABC):
     """Entity represents a ECS entity in the Engine. """
@@ -60,6 +70,19 @@ class Entity(ABC):
         """
         pass
 
-    def __getitem__(self, name: str) -> Component:
+    @abstractproperty
+    def id(self) -> int:  # type: ignore
+        """Get the id of this Entity"""
+        pass
+
+    @abstractproperty
+    def components(self) -> Set[Component]:  # type: ignore
+        """Get the components attached to this Entity"""
+        pass
+
+    def __getitem__(self, name: Union[str, ComponentDef]) -> Component:
         """Alias for get_component()"""
-        return self.get_component(name)
+        return self.get_component(str(name))
+
+    def __str__(self):
+        return f"{type(self).__name__}<{self.id}>"

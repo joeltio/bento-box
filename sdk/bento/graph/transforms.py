@@ -23,6 +23,7 @@ from bento.graph.plotter import Plotter
 from bento.graph.ast import (
     parse_ast,
     name_ast,
+    import_from_ast,
     assign_ast,
     call_func_ast,
     load_ast_module,
@@ -90,8 +91,11 @@ def transform_ifelse(ast: AST) -> AST:
     """Transforms if/elif/else statements to plot Switch Nodes on computational graph.
 
     Requires the `analyze_activity()` to analyze the AST first.
-    Transforms if/elif/else statements to a function that evaluates to calls to
-    the Graph Plotter to plot a Switch Node on the computational graph.
+    Transforms if/elif/else statements to a functions that using the Graph Plotter
+    trace the operations performed on each conditional branch.
+
+    Collects operations for each conditional branch using the Graph plotter
+    and combines them into a conditional Switch node.
 
         Example:
         if a:
@@ -121,16 +125,20 @@ def transform_ifelse(ast: AST) -> AST:
                 z = 2
                 return x, z
 
-            __if_outputs = if_block(m)
-            __else_outputs = else_block(m, n)
+            from copy import deepcopy
+            __if_condition = deepcopy(b)
+            __if_outputs = if_block(m=deepcopy(m), n=deepcopy(n))
+            __else_outputs = else_block(m=deepcopy(m), n=deepcopy(n))
 
-            x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+            x, z = [g.switch(__if_condition, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
             return x, z
 
-        __if_outputs = __if_block(y)
-        __else_outputs = __else_block(b, m, n)
+        from copy import deepcopy
+        __if_condition = deepcopy(a)
+        __if_outputs = __if_block(b=deepcopy(b), m=deepcopy(m), n=deepcopy(n))
+        __else_outputs = __else_block(b=deepcopy(n), m=deepcopy(m), n=deepcopy(n))
 
-        x, z = [g.switch(b, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
+        x, z = [g.switch(__if_condition, if_out, else_out) for if_out, else_out in zip(__if_outputs, __else_outputs)]
 
         # which will evaluate to:
         x = g.switch(a, y, g.switch(b, m, n))
@@ -139,6 +147,10 @@ def transform_ifelse(ast: AST) -> AST:
     Note:
         Defining a symbol inside the if statement requires that means that
         that symbol has be defined in all conditional branches.
+
+        Since all branches of the if statement are traced, symbols used in the
+        if statement must be `deepcopy()`able. `deepcopy()` is used to ensure
+        that variables in different branches don't interfere with each other.
 
     Args:
         ast: AST to transform if else statements into the plotting of a Switch Node.
@@ -152,8 +164,10 @@ def transform_ifelse(ast: AST) -> AST:
             return ifelse_ast
 
         # convert ifelse condition branches into functions with the arguments
-        # set to the names of the input symbols and return values set to output symbols
-        args = list(ifelse_ast.input_syms.keys())
+        # set to the names of the base input symbols and return values set to output symbols.
+        # base symbols are use to generate the arguments as the full symbol might be qualified
+        # ie A.x which is not a valid argument name: https://github.com/joeltio/bento-box/issues/37
+        args = list(ifelse_ast.base_in_syms.keys())
         returns = list(ifelse_ast.output_syms.keys())
         fn_asts = [
             wrap_func_ast(
@@ -168,9 +182,29 @@ def transform_ifelse(ast: AST) -> AST:
                 ["__if_block", "__else_block"], [ifelse_ast.body, ifelse_ast.orelse]
             )
         ]
-        # call if/else block functions to trace results of evaluating each branch of the conditional
-        # if/else block functions have arguments with the same names as symbols we have to pass in.
-        call_args = {a: name_ast(a) for a in args}
+
+        # deepcopy the condition before tracing the if/else block functions to
+        # prevent side effects tracing from interfering with the condition.
+        condition_ast = name_ast("__if_condition")
+        eval_condition_ast = assign_ast(
+            targets=[condition_ast],
+            values=[call_func_ast("deepcopy", args=[ifelse_ast.test])],
+        )
+
+        # call if/else block functions to trace results of evaluating each branch
+        # of the conditional if/else block functions have arguments with the same
+        # names as symbols we have to pass in.
+        # deepcopy to prevent input symbols from being passed by reference and
+        # causing interference between branches https://github.com/joeltio/bento-box/issues/39
+        import_deepcopy_ast = import_from_ast(module="copy", names=["deepcopy"])
+
+        call_args = {
+            a: call_func_ast(
+                fn_name="deepcopy",
+                args=[name_ast(a)],
+            )
+            for a in args
+        }
         branch_outputs = [name_ast(n) for n in ["__if_outputs", "__else_outputs"]]
         call_fn_asts = [
             assign_ast(
@@ -186,14 +220,14 @@ def transform_ifelse(ast: AST) -> AST:
         call_switch_ast = call_func_ast(
             fn_name=plot_switch_fn.name,
             args={
-                "condition": ifelse_ast.test,
+                "condition": condition_ast,
                 "true": name_ast("if_out"),
                 "false": name_ast("else_out"),
             },
             attr_parent=ast.convert_fn.plotter_name,
         )
 
-        # symbols = [g.switch(...) for if_out, else_out in zip(if_outputs, else_outputs)]
+        # (symbol, ...) = [g.switch(...) for if_out, else_out in zip(if_outputs, else_outputs)]
         switch_asts = assign_ast(
             targets=[name_ast(r, ctx=Store()) for r in returns],
             values=[
@@ -218,10 +252,14 @@ def transform_ifelse(ast: AST) -> AST:
                     ],
                 )
             ],
+            force_tuple=True,
         )
         # wrap transformed code block as single AST node
         return wrap_block_ast(
-            block=fn_asts + call_fn_asts + [switch_asts],
+            block=fn_asts
+            + [import_deepcopy_ast, eval_condition_ast]
+            + call_fn_asts
+            + [switch_asts],
         )
 
     ifelse_transform = FuncASTTransform(do_transform)
