@@ -3,12 +3,12 @@ inputs:
 - retrieveAttr:
     attribute: tick_ms
     component: clock
-    entityId: 3195780754
+    entityId: 2
 outputs:
 - mutateAttr:
     attribute: x
     component: position
-    entityId: 1177347317
+    entityId: 1
   toNode:
     switchOp:
       conditionNode:
@@ -25,7 +25,7 @@ outputs:
               retrieveAttr:
                 attribute: tick_ms
                 component: clock
-                entityId: 3195780754
+                entityId: 2
       falseNode:
         constOp:
           heldValue:

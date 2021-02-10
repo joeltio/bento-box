@@ -46,7 +46,7 @@ def test_transform_build_graph():
 
         # try running the transformed function renamed to 'build_graph'
         mod = load_ast_module(trans_ast)
-        mod.build_graph(Plotter())
+        mod.build_graph(Plotter(()))
 
 
 # test transformation of ternary expressions into plotting switch nodes
@@ -74,7 +74,7 @@ def test_transform_ternary():
 
 
 # test transformations of ifelse statements into plotting switch nodes
-def test_tranform_ifelse():
+def test_transform_ifelse():
     def if_fn(g: Plotter):
         x, w = "str1", "str2"
         if True:
@@ -89,7 +89,7 @@ def test_tranform_ifelse():
             x = y
             z = 2
 
-    def ifelse_elif_fn(g: Plotter):
+    def ifelse_elif_else_fn(g: Plotter):
         y, m, n = "str1", "str2", "str3"
         if True:
             x = y
@@ -100,6 +100,23 @@ def test_tranform_ifelse():
         else:
             x = n
             z = 3
+
+    def ifelse_augassign_fn(g: Plotter):
+        x = 1
+        if True:
+            x = x + 1
+        else:
+            x = x + 2
+
+    def if_assign_condition_fn(g: Plotter):
+        class A:
+            b = True
+
+        # test that the condition is evaluated immediately => True
+        if A.b:
+            A.b = True
+        else:
+            A.b = False
 
     req_analyzers = [
         analyze_func,
@@ -128,7 +145,7 @@ def test_tranform_ifelse():
             ],
         ),
         (
-            ifelse_elif_fn,
+            ifelse_elif_else_fn,
             [
                 {
                     "condition": True,
@@ -138,6 +155,18 @@ def test_tranform_ifelse():
                 {"condition": True, "true": 1, "false": g.switch(False, 2, 3)},
                 {"condition": False, "true": "str2", "false": "str3"},
                 {"condition": False, "true": 2, "false": 3},
+            ],
+        ),
+        (
+            ifelse_augassign_fn,
+            [
+                {"condition": True, "true": 2, "false": 3},
+            ],
+        ),
+        (
+            if_assign_condition_fn,
+            [
+                {"condition": True, "true": True, "false": False},
             ],
         ),
     ]

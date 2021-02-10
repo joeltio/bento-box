@@ -94,3 +94,68 @@ def test_wrap():
     # do nothing if given an already wrapped value protobuf message
     wrapped_bool = wrap_primitive(True)
     assert wrap(wrapped_bool) == wrapped_bool
+
+
+unwrap_primitive_values = [(wrap(v), v) for v, _ in wrap_primitive_types[:-2]] + [
+    # test error handling with invalid data types
+    (Value(data_type=Type(primitive=Type.Primitive.INVALID)), None),
+    (wrap([1, 2, 3]), None),
+]
+
+
+def test_unwrap_primitive():
+    # :-2 skip the last to invalid entries
+    # (Value proto, native value)
+    for value, expected_val in unwrap_primitive_values:
+        try:
+            actual_val = unwrap_primitive(value)
+        except TypeError:
+            # check for TypeError on non primitive data type
+            assert value.data_type.WhichOneof("kind") != "primitive"
+            continue
+        except ValueError:
+            # check for ValueError on invald data type
+            assert value.data_type.primitive == Type.Primitive.INVALID
+            continue
+
+        assert actual_val == expected_val
+
+
+def test_unwrap():
+    # unwrap() should support everything unwrap_primitive() can wrap
+    # :-2 skip the last 2 invalid entiries
+    # Value proto, expected value
+    unwrap_values = [(wrap(val), val) for val, _ in wrap_primitive_types[:-2]] + [
+        (
+            wrap(np.ones((2, 1, 3), dtype=np.int32)),
+            np.ones((2, 1, 3), dtype=np.int32),
+        ),
+        (
+            wrap(np.asarray(["yes", "no"])),
+            np.asarray(["yes", "no"]),
+        ),
+        (
+            wrap(np.asarray([[True, False], [False, True]])),
+            np.asarray([[True, False], [False, True]]),
+        ),
+        (wrap(x for x in [1.2, 3.4]), np.asarray([x for x in [1.2, 3.4]])),
+        # bad: invald data type
+        (Value(data_type=Type(primitive=Type.Primitive.INVALID)), None),
+        # bad: invald data type kind
+        (Value(), None),
+    ]
+    for value, expected_val in unwrap_values:
+        try:
+            actual_val = unwrap(value)
+        except TypeError:
+            # check for TypeError on invald data type kind
+            assert value.data_type.WhichOneof("kind") is None
+            continue
+        except ValueError:
+            # check for Value on invald data type
+            assert value.data_type.primitive == Type.Primitive.INVALID
+            continue
+        if isinstance(expected_val, np.ndarray):
+            assert (actual_val == expected_val).all()
+        else:
+            assert actual_val == expected_val
