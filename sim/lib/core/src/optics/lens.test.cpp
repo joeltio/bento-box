@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <core/optics/lens.h>
+#include <core/optics/lens.hpp>
 
 #define TEST_SUITE Lenstest
 
