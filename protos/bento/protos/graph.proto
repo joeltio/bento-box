@@ -34,7 +34,7 @@ message Node {
     Node to_node = 1;
 
     // Reference to the value to mutate
-    Node.Retrieve mutate_ref = 2;
+    ValueRef mutate_ref = 2;
   }
 
   /* Control flow */
