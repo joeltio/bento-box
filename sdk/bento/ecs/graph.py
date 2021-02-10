@@ -93,6 +93,7 @@ class GraphNode:
         return type(self).wrap(Node(mul_op=Node.Mul(x=other.node, y=self.node)))
 
     def __imul__(self, other: Any):
+        other = type(self).wrap(other)
         return self.__mul__(other)
 
     def __truediv__(self, other: Any):
@@ -100,7 +101,12 @@ class GraphNode:
         return type(self).wrap(Node(div_op=Node.Div(x=self.node, y=other.node)))
 
     def __itruediv__(self, other: Any):
+        other = type(self).wrap(other)
         return self.__truediv__(other)
+
+    def __rtruediv__(self, other: Any):
+        other = type(self).wrap(other)
+        return type(self).wrap(Node(div_op=Node.Div(x=other.node, y=self.node)))
 
     def __mod__(self, other: Any):
         other = type(self).wrap(other)
