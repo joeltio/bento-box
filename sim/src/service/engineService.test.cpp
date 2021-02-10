@@ -272,20 +272,12 @@ TEST_F(EngineServiceTest, GetAndSetAttribute) {
     auto testSim = test_simulation::TestSimulation();
     applySim(testSim.simDef);
 
-    // Step the sim so that init graph is executed
-    StepSimulationReq stepReq;
-    StepSimulationResp stepResp;
-    ClientContext stepContext;
-    stepReq.set_name(testSim.SIM_NAME);
-    Status s = client->StepSimulation(&stepContext, stepReq, &stepResp);
-    ASSERT_TRUE(s.ok());
-
     // Get the height attribute
     auto attr = interpreter::createAttrRef(testSim.compDef.name().c_str(),
                                            testSim.entityDef.id(), "height");
     auto resp = getAttr(testSim.SIM_NAME, attr);
 
-    ASSERT_EQ(resp.value().primitive().int_64(), 1);
+    ASSERT_EQ(resp.value().primitive().int_64(), 0);
 
     // Set the value to something else
     int newVal = 90;
