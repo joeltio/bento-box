@@ -31,10 +31,14 @@ TEST(TEST_SUITE, SetAndGetValues) {
     TestComponent comp;
     auto height = bento::protos::Value();
     height.mutable_primitive()->set_int_64(30);
+    height.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     comp.setValue("height", height);
 
     auto width = bento::protos::Value();
     width.mutable_primitive()->set_int_64(50);
+    width.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     comp.setValue("width", width);
 
     ASSERT_EQ(height.primitive().int_64(),
@@ -43,4 +47,23 @@ TEST(TEST_SUITE, SetAndGetValues) {
               comp.getValue("width").primitive().int_64());
     // Sanity check
     ASSERT_EQ(height.primitive().int_64(), 30);
+}
+
+TEST(TEST_SUITE, SetValueRequiresCorrectDataType) {
+    TestComponent comp;
+    auto height = bento::protos::Value();
+    height.mutable_primitive()->set_int_64(30);
+
+    // No data type
+    ASSERT_ANY_THROW(comp.setValue("height", height));
+
+    // Incorrect data type
+    height.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_FLOAT32);
+    ASSERT_ANY_THROW(comp.setValue("height", height));
+
+    // Correct data type
+    height.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
+    ASSERT_NO_THROW(comp.setValue("height", height));
 }
