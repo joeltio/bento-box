@@ -11,24 +11,24 @@ from bento import types
 Position = ComponentDef(
     name="position",
     schema={
-        "x": types.int32,
-        "y": types.int32,
+        "x": types.float64,
+        "y": types.float64,
     },
 )
 
 Velocity = ComponentDef(
     name="velocity",
     schema={
-        "x": types.int32,
-        "y": types.int32,
+        "x": types.float64,
+        "y": types.float64,
     },
 )
 
 Speed = ComponentDef(
     name="speed",
     schema={
-        "max_x": types.int32,
-        "max_y": types.int32,
+        "max_x": types.float64,
+        "max_y": types.float64,
     },
 )
 
