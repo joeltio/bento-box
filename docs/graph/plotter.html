@@ -32,44 +32,79 @@
 # Graph Plotter
 #
 
-from typing import Any, Iterable, List, Set
+from collections import OrderedDict
+from typing import Any, Iterable, Union
+
+from bento.ecs.graph import GraphComponent, GraphEntity, GraphNode
+from bento.ecs.spec import ComponentDef, EntityDef
+from bento.graph.spec import Graph
 from bento.graph.value import wrap_const
-from bento.graph.ecs import GraphEntity, GraphComponent, GraphNode
-from bento.ecs.base import Component, Entity
-from bento.protos.graph_pb2 import Graph, Node
+from bento.protos.graph_pb2 import Node
+from bento.utils import to_str_attr
 
 
 class Plotter:
     &#34;&#34;&#34;Graph Plotter records operations to plot a computation `Graph`.
 
     The Graph Plotter records operations performed on a computation graph
-    which can be obtained from `graph()` as a `Graph` protobuf message.
+    which can be obtained from `graph()` as a `Graph`
     &#34;&#34;&#34;
 
-    def __init__(self):
-        self.entity_map = {}
-
-    def entity(self, components: Iterable[str]) -&gt; Entity:
+    def __init__(
+        self,
+        entity_defs: Iterable[EntityDef] = [],
+        component_defs: Iterable[ComponentDef] = [],
+    ):
         &#34;&#34;&#34;
-        Get the entity with the given components attached.
+        Construct a new Graph Plotter.
+
+        Args:
+            entity_defs: Specifies which ECS entities can be used when plotting.
+            components_defs: Specifies which ECS Components types can be used when plotting.
+        &#34;&#34;&#34;
+        # map name to component def
+        component_map = {c.name: c for c in component_defs}
+
+        # collects the graph nodes from operations performed on GraphComponent
+        # use OrderedDict to preserve order of operations recorded.
+        # key: str attribute ref =&gt; value: graph node
+        self.inputs, self.outputs = OrderedDict(), OrderedDict()
+
+        # map component name set to entity
+        self.entity_map = {}
+        for entity_def in entity_defs:
+            # construct graph entities from entity and component defs
+            graph_entity = GraphEntity.from_def(
+                entity_def=entity_def,
+                component_defs=[component_map[name] for name in entity_def.components],
+            )
+            graph_entity.use_input_outputs(self.inputs, self.outputs)
+            self.entity_map[frozenset(entity_def.components)] = graph_entity
+
+    def entity(self, components: Iterable[Union[str, ComponentDef]]) -&gt; GraphEntity:
+        &#34;&#34;&#34;
+        Get the entity with the components with the game attached.
 
         Provides access to component state when building the computation graph.
 
         Args:
-            components:
-                Set of the names of the unique components to retrieve entity by.
+            components: Set of the names or ComponentDefs of the components that
+                should be attached to the retrieved entity.
         Raises:
-            ValueError: if component names given contains duplicates
+            ValueError: If component given contains duplicates
+            KeyError: If no Entity found with the given set of components attached.
         Returns:
             The ECS entity with the given list of components.
         &#34;&#34;&#34;
-        comp_set = frozenset(components)
+        comp_set = frozenset(str(c) for c in components)
         # check for duplicates in given components
-        if len(comp_set) != len(components):
+        if len(comp_set) != len(list(components)):
             raise ValueError(&#34;Given component names should not contain duplicates&#34;)
         # retrieve entity for components, create if not does not yet exist
         if comp_set not in self.entity_map:
-            self.entity_map[comp_set] = GraphEntity(comp_set)
+            raise KeyError(
+                f&#34;No entity found with the given components attached: {&#39;, &#39;.join(comp_set)}&#34;
+            )
         return self.entity_map[comp_set]
 
     def graph(self) -&gt; Graph:
@@ -79,19 +114,16 @@ class Plotter:
         operations recorded by the Plotter.
 
         Returns:
-            The computation graph plotted by this Plotter as a `Graph` protobuf message.
+            The computation graph plotted by this Plotter as a `Graph`
         &#34;&#34;&#34;
-        # Extract graph inputs and outputs nodes from GraphComponent&#39;s GraphNodes
-        inputs, outputs = [], []
-        for entity in self.entity_map.values():
-            for component in entity.components:
-                inputs.extend([i.node.retrieve_op for i in component.inputs])
-                outputs.extend([o.node.mutate_op for o in component.outputs])
-
+        # Extract graph inputs and outputs nodes from inputs and outputs dict
+        inputs = [i.node.retrieve_op for i in self.inputs.values()]
+        outputs = [o.node.mutate_op for o in self.outputs.values()]
+        # build graph with extracted graph input and output nodes
         return Graph(inputs=inputs, outputs=outputs)
 
     # section: shims - ECS shims records access/assignments to ECS
-    def const(self, value: Any) -&gt; Node.Const:
+    def const(self, value: Any) -&gt; Node:
         &#34;&#34;&#34;Creates a Constant Node that evaluates to the given value
 
         Args:
@@ -134,10 +166,11 @@ class Plotter:
         return GraphNode(node=Node(max_op=Node.Max(x=x.node, y=y.node)))
 
     def min(self, x: Any, y: Any) -&gt; GraphNode:
+        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
 
     def abs(self, x: Any) -&gt; GraphNode:
-        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
+        x = GraphNode.wrap(x)
         return GraphNode(node=Node(abs_op=Node.Abs(x=x)))
 
     def floor(self, x: Any) -&gt; GraphNode:
@@ -207,11 +240,20 @@ class Plotter:
 <dl>
 <dt id="bento.graph.plotter.Plotter"><code class="flex name class">
 <span>class <span class="ident">Plotter</span></span>
+<span>(</span><span>entity_defs: Iterable[<a title="bento.ecs.spec.EntityDef" href="../ecs/spec.html#bento.ecs.spec.EntityDef">EntityDef</a>] = [], component_defs: Iterable[<a title="bento.ecs.spec.ComponentDef" href="../ecs/spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>] = [])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Graph Plotter records operations to plot a computation <code>Graph</code>.</p>
 <p>The Graph Plotter records operations performed on a computation graph
-which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf message.</p></div>
+which can be obtained from <code>graph()</code> as a <code>Graph</code></p>
+<p>Construct a new Graph Plotter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>entity_defs</code></strong></dt>
+<dd>Specifies which ECS entities can be used when plotting.</dd>
+<dt><strong><code>components_defs</code></strong></dt>
+<dd>Specifies which ECS Components types can be used when plotting.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -220,33 +262,64 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
     &#34;&#34;&#34;Graph Plotter records operations to plot a computation `Graph`.
 
     The Graph Plotter records operations performed on a computation graph
-    which can be obtained from `graph()` as a `Graph` protobuf message.
+    which can be obtained from `graph()` as a `Graph`
     &#34;&#34;&#34;
 
-    def __init__(self):
-        self.entity_map = {}
-
-    def entity(self, components: Iterable[str]) -&gt; Entity:
+    def __init__(
+        self,
+        entity_defs: Iterable[EntityDef] = [],
+        component_defs: Iterable[ComponentDef] = [],
+    ):
         &#34;&#34;&#34;
-        Get the entity with the given components attached.
+        Construct a new Graph Plotter.
+
+        Args:
+            entity_defs: Specifies which ECS entities can be used when plotting.
+            components_defs: Specifies which ECS Components types can be used when plotting.
+        &#34;&#34;&#34;
+        # map name to component def
+        component_map = {c.name: c for c in component_defs}
+
+        # collects the graph nodes from operations performed on GraphComponent
+        # use OrderedDict to preserve order of operations recorded.
+        # key: str attribute ref =&gt; value: graph node
+        self.inputs, self.outputs = OrderedDict(), OrderedDict()
+
+        # map component name set to entity
+        self.entity_map = {}
+        for entity_def in entity_defs:
+            # construct graph entities from entity and component defs
+            graph_entity = GraphEntity.from_def(
+                entity_def=entity_def,
+                component_defs=[component_map[name] for name in entity_def.components],
+            )
+            graph_entity.use_input_outputs(self.inputs, self.outputs)
+            self.entity_map[frozenset(entity_def.components)] = graph_entity
+
+    def entity(self, components: Iterable[Union[str, ComponentDef]]) -&gt; GraphEntity:
+        &#34;&#34;&#34;
+        Get the entity with the components with the game attached.
 
         Provides access to component state when building the computation graph.
 
         Args:
-            components:
-                Set of the names of the unique components to retrieve entity by.
+            components: Set of the names or ComponentDefs of the components that
+                should be attached to the retrieved entity.
         Raises:
-            ValueError: if component names given contains duplicates
+            ValueError: If component given contains duplicates
+            KeyError: If no Entity found with the given set of components attached.
         Returns:
             The ECS entity with the given list of components.
         &#34;&#34;&#34;
-        comp_set = frozenset(components)
+        comp_set = frozenset(str(c) for c in components)
         # check for duplicates in given components
-        if len(comp_set) != len(components):
+        if len(comp_set) != len(list(components)):
             raise ValueError(&#34;Given component names should not contain duplicates&#34;)
         # retrieve entity for components, create if not does not yet exist
         if comp_set not in self.entity_map:
-            self.entity_map[comp_set] = GraphEntity(comp_set)
+            raise KeyError(
+                f&#34;No entity found with the given components attached: {&#39;, &#39;.join(comp_set)}&#34;
+            )
         return self.entity_map[comp_set]
 
     def graph(self) -&gt; Graph:
@@ -256,19 +329,16 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
         operations recorded by the Plotter.
 
         Returns:
-            The computation graph plotted by this Plotter as a `Graph` protobuf message.
+            The computation graph plotted by this Plotter as a `Graph`
         &#34;&#34;&#34;
-        # Extract graph inputs and outputs nodes from GraphComponent&#39;s GraphNodes
-        inputs, outputs = [], []
-        for entity in self.entity_map.values():
-            for component in entity.components:
-                inputs.extend([i.node.retrieve_op for i in component.inputs])
-                outputs.extend([o.node.mutate_op for o in component.outputs])
-
+        # Extract graph inputs and outputs nodes from inputs and outputs dict
+        inputs = [i.node.retrieve_op for i in self.inputs.values()]
+        outputs = [o.node.mutate_op for o in self.outputs.values()]
+        # build graph with extracted graph input and output nodes
         return Graph(inputs=inputs, outputs=outputs)
 
     # section: shims - ECS shims records access/assignments to ECS
-    def const(self, value: Any) -&gt; Node.Const:
+    def const(self, value: Any) -&gt; Node:
         &#34;&#34;&#34;Creates a Constant Node that evaluates to the given value
 
         Args:
@@ -311,10 +381,11 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
         return GraphNode(node=Node(max_op=Node.Max(x=x.node, y=y.node)))
 
     def min(self, x: Any, y: Any) -&gt; GraphNode:
+        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
 
     def abs(self, x: Any) -&gt; GraphNode:
-        x, y = GraphNode.wrap(x), GraphNode.wrap(y)
+        x = GraphNode.wrap(x)
         return GraphNode(node=Node(abs_op=Node.Abs(x=x)))
 
     def floor(self, x: Any) -&gt; GraphNode:
@@ -375,7 +446,7 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 <h3>Methods</h3>
 <dl>
 <dt id="bento.graph.plotter.Plotter.abs"><code class="name flex">
-<span>def <span class="ident">abs</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">abs</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -384,12 +455,12 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def abs(self, x: Any) -&gt; GraphNode:
-    x, y = GraphNode.wrap(x), GraphNode.wrap(y)
+    x = GraphNode.wrap(x)
     return GraphNode(node=Node(abs_op=Node.Abs(x=x)))</code></pre>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.arccos"><code class="name flex">
-<span>def <span class="ident">arccos</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">arccos</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -403,7 +474,7 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.arcsin"><code class="name flex">
-<span>def <span class="ident">arcsin</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">arcsin</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -417,7 +488,7 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.arctan"><code class="name flex">
-<span>def <span class="ident">arctan</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">arctan</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -431,7 +502,7 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.ceil"><code class="name flex">
-<span>def <span class="ident">ceil</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">ceil</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -445,7 +516,7 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.const"><code class="name flex">
-<span>def <span class="ident">const</span></span>(<span>self, value: Any) ‑> bento.protos.graph_pb2.Const</span>
+<span>def <span class="ident">const</span></span>(<span>self, value: Any) ‑> <a title="bento.protos.graph_pb2.Node" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Node">Node</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a Constant Node that evaluates to the given value</p>
@@ -460,7 +531,7 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def const(self, value: Any) -&gt; Node.Const:
+<pre><code class="python">def const(self, value: Any) -&gt; Node:
     &#34;&#34;&#34;Creates a Constant Node that evaluates to the given value
 
     Args:
@@ -472,7 +543,7 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.cos"><code class="name flex">
-<span>def <span class="ident">cos</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">cos</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -486,18 +557,23 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code> protobuf
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.entity"><code class="name flex">
-<span>def <span class="ident">entity</span></span>(<span>self, components: Iterable[str]) ‑> <a title="bento.ecs.base.Entity" href="../ecs/base.html#bento.ecs.base.Entity">Entity</a></span>
+<span>def <span class="ident">entity</span></span>(<span>self, components: Iterable[Union[<a title="bento.ecs.spec.ComponentDef" href="../ecs/spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>, str]]) ‑> <a title="bento.ecs.graph.GraphEntity" href="../ecs/graph.html#bento.ecs.graph.GraphEntity">GraphEntity</a></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the entity with the given components attached.</p>
+<div class="desc"><p>Get the entity with the components with the game attached.</p>
 <p>Provides access to component state when building the computation graph.</p>
 <h2 id="args">Args</h2>
-<p>components:
-Set of the names of the unique components to retrieve entity by.</p>
+<dl>
+<dt><strong><code>components</code></strong></dt>
+<dd>Set of the names or ComponentDefs of the components that
+should be attached to the retrieved entity.</dd>
+</dl>
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>ValueError</code></dt>
-<dd>if component names given contains duplicates</dd>
+<dd>If component given contains duplicates</dd>
+<dt><code>KeyError</code></dt>
+<dd>If no Entity found with the given set of components attached.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>The ECS entity with the given list of components.</p></div>
@@ -505,32 +581,35 @@ Set of the names of the unique components to retrieve entity by.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def entity(self, components: Iterable[str]) -&gt; Entity:
+<pre><code class="python">def entity(self, components: Iterable[Union[str, ComponentDef]]) -&gt; GraphEntity:
     &#34;&#34;&#34;
-    Get the entity with the given components attached.
+    Get the entity with the components with the game attached.
 
     Provides access to component state when building the computation graph.
 
     Args:
-        components:
-            Set of the names of the unique components to retrieve entity by.
+        components: Set of the names or ComponentDefs of the components that
+            should be attached to the retrieved entity.
     Raises:
-        ValueError: if component names given contains duplicates
+        ValueError: If component given contains duplicates
+        KeyError: If no Entity found with the given set of components attached.
     Returns:
         The ECS entity with the given list of components.
     &#34;&#34;&#34;
-    comp_set = frozenset(components)
+    comp_set = frozenset(str(c) for c in components)
     # check for duplicates in given components
-    if len(comp_set) != len(components):
+    if len(comp_set) != len(list(components)):
         raise ValueError(&#34;Given component names should not contain duplicates&#34;)
     # retrieve entity for components, create if not does not yet exist
     if comp_set not in self.entity_map:
-        self.entity_map[comp_set] = GraphEntity(comp_set)
+        raise KeyError(
+            f&#34;No entity found with the given components attached: {&#39;, &#39;.join(comp_set)}&#34;
+        )
     return self.entity_map[comp_set]</code></pre>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.floor"><code class="name flex">
-<span>def <span class="ident">floor</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">floor</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -544,14 +623,14 @@ Set of the names of the unique components to retrieve entity by.</p>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.graph"><code class="name flex">
-<span>def <span class="ident">graph</span></span>(<span>self) ‑> <a title="bento.protos.graph_pb2.Graph" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Graph">Graph</a></span>
+<span>def <span class="ident">graph</span></span>(<span>self) ‑> <a title="bento.graph.spec.Graph" href="spec.html#bento.graph.spec.Graph">Graph</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Obtains the computation graph plotted by this Plotter.</p>
 <p>Obtains the computation graph plotted by this Plotter based on the
 operations recorded by the Plotter.</p>
 <h2 id="returns">Returns</h2>
-<p>The computation graph plotted by this Plotter as a <code>Graph</code> protobuf message.</p></div>
+<p>The computation graph plotted by this Plotter as a <code>Graph</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -563,20 +642,17 @@ operations recorded by the Plotter.</p>
     operations recorded by the Plotter.
 
     Returns:
-        The computation graph plotted by this Plotter as a `Graph` protobuf message.
+        The computation graph plotted by this Plotter as a `Graph`
     &#34;&#34;&#34;
-    # Extract graph inputs and outputs nodes from GraphComponent&#39;s GraphNodes
-    inputs, outputs = [], []
-    for entity in self.entity_map.values():
-        for component in entity.components:
-            inputs.extend([i.node.retrieve_op for i in component.inputs])
-            outputs.extend([o.node.mutate_op for o in component.outputs])
-
+    # Extract graph inputs and outputs nodes from inputs and outputs dict
+    inputs = [i.node.retrieve_op for i in self.inputs.values()]
+    outputs = [o.node.mutate_op for o in self.outputs.values()]
+    # build graph with extracted graph input and output nodes
     return Graph(inputs=inputs, outputs=outputs)</code></pre>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.max"><code class="name flex">
-<span>def <span class="ident">max</span></span>(<span>self, x: Any, y: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">max</span></span>(<span>self, x: Any, y: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -590,7 +666,7 @@ operations recorded by the Plotter.</p>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.min"><code class="name flex">
-<span>def <span class="ident">min</span></span>(<span>self, x: Any, y: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">min</span></span>(<span>self, x: Any, y: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -599,11 +675,12 @@ operations recorded by the Plotter.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def min(self, x: Any, y: Any) -&gt; GraphNode:
+    x, y = GraphNode.wrap(x), GraphNode.wrap(y)
     return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))</code></pre>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.mod"><code class="name flex">
-<span>def <span class="ident">mod</span></span>(<span>self, x: Any, y: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">mod</span></span>(<span>self, x: Any, y: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -617,7 +694,7 @@ operations recorded by the Plotter.</p>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.pow"><code class="name flex">
-<span>def <span class="ident">pow</span></span>(<span>self, x: Any, y: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">pow</span></span>(<span>self, x: Any, y: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -631,7 +708,7 @@ operations recorded by the Plotter.</p>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.random"><code class="name flex">
-<span>def <span class="ident">random</span></span>(<span>self, low: Any, high: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">random</span></span>(<span>self, low: Any, high: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a Random Node that evaluates to a random float in range [<code>low</code>,<code>high</code>]</p>
@@ -663,7 +740,7 @@ operations recorded by the Plotter.</p>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.sin"><code class="name flex">
-<span>def <span class="ident">sin</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">sin</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -677,7 +754,7 @@ operations recorded by the Plotter.</p>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.switch"><code class="name flex">
-<span>def <span class="ident">switch</span></span>(<span>self, condition: Any, true: Any, false: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">switch</span></span>(<span>self, condition: Any, true: Any, false: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a conditional Switch Node that evaluates based on condition.</p>
@@ -726,7 +803,7 @@ operations recorded by the Plotter.</p>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.tan"><code class="name flex">
-<span>def <span class="ident">tan</span></span>(<span>self, x: Any) ‑> <a title="bento.graph.ecs.GraphNode" href="ecs.html#bento.graph.ecs.GraphNode">GraphNode</a></span>
+<span>def <span class="ident">tan</span></span>(<span>self, x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>

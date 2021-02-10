@@ -32,12 +32,19 @@
 # Base classes
 #
 
-from typing import List, Any
-from abc import ABC, abstractmethod
+from typing import List, Any, Set, Union
+from abc import ABC, abstractmethod, abstractproperty
+
+from bento.ecs.spec import ComponentDef
 
 
 class Component(ABC):
     &#34;&#34;&#34;Component represents a ECS Component in the Engine. &#34;&#34;&#34;
+
+    @abstractproperty
+    def component_name(self):
+        &#34;&#34;&#34;Get the name of the this Component&#34;&#34;&#34;
+        pass
 
     @abstractmethod
     def get_attr(self, name: str) -&gt; Any:
@@ -72,6 +79,9 @@ class Component(ABC):
         &#34;&#34;&#34; Alias for set_attr() &#34;&#34;&#34;
         return self.set_attr(name, value)
 
+    def __str__(self):
+        return f&#34;{type(self).__name__}&lt;{self._entity_id}, {self._name}&gt;&#34;
+
 
 class Entity(ABC):
     &#34;&#34;&#34;Entity represents a ECS entity in the Engine. &#34;&#34;&#34;
@@ -88,9 +98,22 @@ class Entity(ABC):
         &#34;&#34;&#34;
         pass
 
-    def __getitem__(self, name: str) -&gt; Component:
+    @abstractproperty
+    def id(self) -&gt; int:  # type: ignore
+        &#34;&#34;&#34;Get the id of this Entity&#34;&#34;&#34;
+        pass
+
+    @abstractproperty
+    def components(self) -&gt; Set[Component]:  # type: ignore
+        &#34;&#34;&#34;Get the components attached to this Entity&#34;&#34;&#34;
+        pass
+
+    def __getitem__(self, name: Union[str, ComponentDef]) -&gt; Component:
         &#34;&#34;&#34;Alias for get_component()&#34;&#34;&#34;
-        return self.get_component(name)</code></pre>
+        return self.get_component(str(name))
+
+    def __str__(self):
+        return f&#34;{type(self).__name__}&lt;{self.id}&gt;&#34;</code></pre>
 </details>
 </section>
 <section>
@@ -113,6 +136,11 @@ class Entity(ABC):
 </summary>
 <pre><code class="python">class Component(ABC):
     &#34;&#34;&#34;Component represents a ECS Component in the Engine. &#34;&#34;&#34;
+
+    @abstractproperty
+    def component_name(self):
+        &#34;&#34;&#34;Get the name of the this Component&#34;&#34;&#34;
+        pass
 
     @abstractmethod
     def get_attr(self, name: str) -&gt; Any:
@@ -145,7 +173,10 @@ class Entity(ABC):
 
     def __setattr__(self, name: str, value: Any) -&gt; Any:
         &#34;&#34;&#34; Alias for set_attr() &#34;&#34;&#34;
-        return self.set_attr(name, value)</code></pre>
+        return self.set_attr(name, value)
+
+    def __str__(self):
+        return f&#34;{type(self).__name__}&lt;{self._entity_id}, {self._name}&gt;&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -153,8 +184,25 @@ class Entity(ABC):
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="bento.graph.ecs.GraphComponent" href="../graph/ecs.html#bento.graph.ecs.GraphComponent">GraphComponent</a></li>
+<li><a title="bento.ecs.graph.GraphComponent" href="graph.html#bento.ecs.graph.GraphComponent">GraphComponent</a></li>
+<li><a title="bento.ecs.grpc.Component" href="grpc.html#bento.ecs.grpc.Component">Component</a></li>
 </ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.ecs.base.Component.component_name"><code class="name">var <span class="ident">component_name</span></code></dt>
+<dd>
+<div class="desc"><p>Get the name of the this Component</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractproperty
+def component_name(self):
+    &#34;&#34;&#34;Get the name of the this Component&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="bento.ecs.base.Component.get_attr"><code class="name flex">
@@ -252,9 +300,22 @@ def set_attr(self, name: str, value: Any):
         &#34;&#34;&#34;
         pass
 
-    def __getitem__(self, name: str) -&gt; Component:
+    @abstractproperty
+    def id(self) -&gt; int:  # type: ignore
+        &#34;&#34;&#34;Get the id of this Entity&#34;&#34;&#34;
+        pass
+
+    @abstractproperty
+    def components(self) -&gt; Set[Component]:  # type: ignore
+        &#34;&#34;&#34;Get the components attached to this Entity&#34;&#34;&#34;
+        pass
+
+    def __getitem__(self, name: Union[str, ComponentDef]) -&gt; Component:
         &#34;&#34;&#34;Alias for get_component()&#34;&#34;&#34;
-        return self.get_component(name)</code></pre>
+        return self.get_component(str(name))
+
+    def __str__(self):
+        return f&#34;{type(self).__name__}&lt;{self.id}&gt;&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -262,8 +323,38 @@ def set_attr(self, name: str, value: Any):
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="bento.graph.ecs.GraphEntity" href="../graph/ecs.html#bento.graph.ecs.GraphEntity">GraphEntity</a></li>
+<li><a title="bento.ecs.graph.GraphEntity" href="graph.html#bento.ecs.graph.GraphEntity">GraphEntity</a></li>
+<li><a title="bento.ecs.grpc.Entity" href="grpc.html#bento.ecs.grpc.Entity">Entity</a></li>
 </ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.ecs.base.Entity.components"><code class="name">var <span class="ident">components</span> : Set[<a title="bento.ecs.base.Component" href="#bento.ecs.base.Component">Component</a>]</code></dt>
+<dd>
+<div class="desc"><p>Get the components attached to this Entity</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractproperty
+def components(self) -&gt; Set[Component]:  # type: ignore
+    &#34;&#34;&#34;Get the components attached to this Entity&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+</dd>
+<dt id="bento.ecs.base.Entity.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Get the id of this Entity</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractproperty
+def id(self) -&gt; int:  # type: ignore
+    &#34;&#34;&#34;Get the id of this Entity&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="bento.ecs.base.Entity.get_component"><code class="name flex">
@@ -314,6 +405,7 @@ def get_component(self, name: str) -&gt; Component:
 <li>
 <h4><code><a title="bento.ecs.base.Component" href="#bento.ecs.base.Component">Component</a></code></h4>
 <ul class="">
+<li><code><a title="bento.ecs.base.Component.component_name" href="#bento.ecs.base.Component.component_name">component_name</a></code></li>
 <li><code><a title="bento.ecs.base.Component.get_attr" href="#bento.ecs.base.Component.get_attr">get_attr</a></code></li>
 <li><code><a title="bento.ecs.base.Component.set_attr" href="#bento.ecs.base.Component.set_attr">set_attr</a></code></li>
 </ul>
@@ -321,7 +413,9 @@ def get_component(self, name: str) -&gt; Component:
 <li>
 <h4><code><a title="bento.ecs.base.Entity" href="#bento.ecs.base.Entity">Entity</a></code></h4>
 <ul class="">
+<li><code><a title="bento.ecs.base.Entity.components" href="#bento.ecs.base.Entity.components">components</a></code></li>
 <li><code><a title="bento.ecs.base.Entity.get_component" href="#bento.ecs.base.Entity.get_component">get_component</a></code></li>
+<li><code><a title="bento.ecs.base.Entity.id" href="#bento.ecs.base.Entity.id">id</a></code></li>
 </ul>
 </li>
 </ul>

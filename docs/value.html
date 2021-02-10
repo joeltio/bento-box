@@ -34,6 +34,7 @@
 import numpy as np
 from typing import Any
 from inspect import isgenerator
+from bento import types
 from bento.protos.values_pb2 import Value
 from bento.protos.types_pb2 import Type
 
@@ -53,28 +54,28 @@ def wrap_primitive(val: Any) -&gt; Value:
     is_int32 = lambda x: -(2 ** 31) &lt;= x &lt; 2 ** 31
     if type(val) in [int, np.int32] and is_int32(val):
         return Value(
-            data_type=Type(primitive=Type.Primitive.INT32),
+            data_type=types.int32,
             primitive=Value.Primitive(int_32=int(val)),
         )
     elif type(val) in [int, np.int64]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.INT64),
+            data_type=types.int64,
             primitive=Value.Primitive(int_64=int(val)),
         )
     # TODO(mrzzy): figure out how to check if value fits within 32 bits
     elif type(val) in [float, np.float64]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.FLOAT64),
+            data_type=types.float64,
             primitive=Value.Primitive(float_64=float(val)),
         )
     elif type(val) in [str, np.str_]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.STRING),
+            data_type=types.string,
             primitive=Value.Primitive(str_val=str(val)),
         )
     elif type(val) in [bool, np.bool_]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.BOOL),
+            data_type=types.boolean,
             primitive=Value.Primitive(boolean=bool(val)),
         )
     else:
@@ -133,7 +134,67 @@ def wrap(val: Any) -&gt; Value:
             )
         ),
         array=Value.Array(values=[p.primitive for p in primitives]),
-    )</code></pre>
+    )
+
+
+def unwrap_primitive(value: Value) -&gt; Any:
+    &#34;&#34;&#34;Unwrap the given Value proto into its native primitive value equivalent.
+    Args:
+        value: The Value proto to unwrap into native value.
+    Returns:
+        The unwrapped native value drived from the Value proto.
+    Raises:
+        TypeError: When given a Value does not contain a primitive.
+        ValueError: When given a invalid Value proto to unwrap.
+    &#34;&#34;&#34;
+    dtype = value.data_type
+    if not dtype.WhichOneof(&#34;kind&#34;) == &#34;primitive&#34;:
+        raise TypeError(&#34;Only supports unwraping Value containing primitives&#34;)
+    if dtype.primitive == Type.Primitive.BYTE:
+        return value.primitive.int_8
+    elif dtype.primitive == Type.Primitive.INT32:
+        return value.primitive.int_32
+    elif dtype.primitive == Type.Primitive.INT64:
+        return value.primitive.int_64
+    elif dtype.primitive == Type.Primitive.FLOAT32:
+        return value.primitive.float_32
+    elif dtype.primitive == Type.Primitive.FLOAT64:
+        return value.primitive.float_64
+    elif dtype.primitive == Type.Primitive.BOOL:
+        return value.primitive.boolean
+    elif dtype.primitive == Type.Primitive.STRING:
+        return value.primitive.str_val
+    elif dtype.primitive == Type.Primitive.INVALID:
+        raise ValueError(&#34;Unable to unwrap Value with INVALID Type&#34;)
+
+
+def unwrap(value: Value) -&gt; Any:
+    &#34;&#34;&#34;Unwrap the given Value proto into its native value equivalent.
+    Args:
+        value: The Value proto to unwrap into native value.
+    Returns:
+        The unwrapped native value drived from the Value proto.
+    Raises:
+        TypeError: When given a Value does not contain supported data type kind.
+        ValueError: When given a invalid Value proto to unwrap.
+    &#34;&#34;&#34;
+    dtype = value.data_type
+    dtype_kind = dtype.WhichOneof(&#34;kind&#34;)
+    if dtype_kind == &#34;primitive&#34;:
+        return unwrap_primitive(value)
+    elif dtype_kind != &#34;array&#34;:
+        raise TypeError(f&#34;Unable to unwrap unsupported data type kind: {dtype_kind}&#34;)
+    # extract primitive Values form Value protos
+    primitive_values = [
+        Value(
+            primitive=v,
+            data_type=Type(primitive=dtype.array.element_type),
+        )
+        for v in value.array.values
+    ]
+    # construct np array with native values and shape
+    native_vals = [unwrap_primitive(v) for v in primitive_values]
+    return np.asarray(native_vals).reshape(dtype.array.dimensions)</code></pre>
 </details>
 </section>
 <section>
@@ -148,6 +209,112 @@ def wrap(val: Any) -&gt; Value:
 </code></dt>
 <dd>
 <div class="desc"></div>
+</dd>
+<dt id="bento.value.unwrap"><code class="name flex">
+<span>def <span class="ident">unwrap</span></span>(<span>value: <a title="bento.protos.values_pb2.Value" href="protos/values_pb2.html#bento.protos.values_pb2.Value">Value</a>) ‑> Any</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Unwrap the given Value proto into its native value equivalent.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong></dt>
+<dd>The Value proto to unwrap into native value.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The unwrapped native value drived from the Value proto.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>When given a Value does not contain supported data type kind.</dd>
+<dt><code>ValueError</code></dt>
+<dd>When given a invalid Value proto to unwrap.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwrap(value: Value) -&gt; Any:
+    &#34;&#34;&#34;Unwrap the given Value proto into its native value equivalent.
+    Args:
+        value: The Value proto to unwrap into native value.
+    Returns:
+        The unwrapped native value drived from the Value proto.
+    Raises:
+        TypeError: When given a Value does not contain supported data type kind.
+        ValueError: When given a invalid Value proto to unwrap.
+    &#34;&#34;&#34;
+    dtype = value.data_type
+    dtype_kind = dtype.WhichOneof(&#34;kind&#34;)
+    if dtype_kind == &#34;primitive&#34;:
+        return unwrap_primitive(value)
+    elif dtype_kind != &#34;array&#34;:
+        raise TypeError(f&#34;Unable to unwrap unsupported data type kind: {dtype_kind}&#34;)
+    # extract primitive Values form Value protos
+    primitive_values = [
+        Value(
+            primitive=v,
+            data_type=Type(primitive=dtype.array.element_type),
+        )
+        for v in value.array.values
+    ]
+    # construct np array with native values and shape
+    native_vals = [unwrap_primitive(v) for v in primitive_values]
+    return np.asarray(native_vals).reshape(dtype.array.dimensions)</code></pre>
+</details>
+</dd>
+<dt id="bento.value.unwrap_primitive"><code class="name flex">
+<span>def <span class="ident">unwrap_primitive</span></span>(<span>value: <a title="bento.protos.values_pb2.Value" href="protos/values_pb2.html#bento.protos.values_pb2.Value">Value</a>) ‑> Any</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Unwrap the given Value proto into its native primitive value equivalent.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong></dt>
+<dd>The Value proto to unwrap into native value.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The unwrapped native value drived from the Value proto.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>When given a Value does not contain a primitive.</dd>
+<dt><code>ValueError</code></dt>
+<dd>When given a invalid Value proto to unwrap.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwrap_primitive(value: Value) -&gt; Any:
+    &#34;&#34;&#34;Unwrap the given Value proto into its native primitive value equivalent.
+    Args:
+        value: The Value proto to unwrap into native value.
+    Returns:
+        The unwrapped native value drived from the Value proto.
+    Raises:
+        TypeError: When given a Value does not contain a primitive.
+        ValueError: When given a invalid Value proto to unwrap.
+    &#34;&#34;&#34;
+    dtype = value.data_type
+    if not dtype.WhichOneof(&#34;kind&#34;) == &#34;primitive&#34;:
+        raise TypeError(&#34;Only supports unwraping Value containing primitives&#34;)
+    if dtype.primitive == Type.Primitive.BYTE:
+        return value.primitive.int_8
+    elif dtype.primitive == Type.Primitive.INT32:
+        return value.primitive.int_32
+    elif dtype.primitive == Type.Primitive.INT64:
+        return value.primitive.int_64
+    elif dtype.primitive == Type.Primitive.FLOAT32:
+        return value.primitive.float_32
+    elif dtype.primitive == Type.Primitive.FLOAT64:
+        return value.primitive.float_64
+    elif dtype.primitive == Type.Primitive.BOOL:
+        return value.primitive.boolean
+    elif dtype.primitive == Type.Primitive.STRING:
+        return value.primitive.str_val
+    elif dtype.primitive == Type.Primitive.INVALID:
+        raise ValueError(&#34;Unable to unwrap Value with INVALID Type&#34;)</code></pre>
+</details>
 </dd>
 <dt id="bento.value.wrap"><code class="name flex">
 <span>def <span class="ident">wrap</span></span>(<span>val: Any) ‑> <a title="bento.protos.values_pb2.Value" href="protos/values_pb2.html#bento.protos.values_pb2.Value">Value</a></span>
@@ -262,28 +429,28 @@ be native primitive, array of primitives.</dd>
     is_int32 = lambda x: -(2 ** 31) &lt;= x &lt; 2 ** 31
     if type(val) in [int, np.int32] and is_int32(val):
         return Value(
-            data_type=Type(primitive=Type.Primitive.INT32),
+            data_type=types.int32,
             primitive=Value.Primitive(int_32=int(val)),
         )
     elif type(val) in [int, np.int64]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.INT64),
+            data_type=types.int64,
             primitive=Value.Primitive(int_64=int(val)),
         )
     # TODO(mrzzy): figure out how to check if value fits within 32 bits
     elif type(val) in [float, np.float64]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.FLOAT64),
+            data_type=types.float64,
             primitive=Value.Primitive(float_64=float(val)),
         )
     elif type(val) in [str, np.str_]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.STRING),
+            data_type=types.string,
             primitive=Value.Primitive(str_val=str(val)),
         )
     elif type(val) in [bool, np.bool_]:
         return Value(
-            data_type=Type(primitive=Type.Primitive.BOOL),
+            data_type=types.boolean,
             primitive=Value.Primitive(boolean=bool(val)),
         )
     else:
@@ -311,6 +478,8 @@ be native primitive, array of primitives.</dd>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="bento.value.isgenerator" href="#bento.value.isgenerator">isgenerator</a></code></li>
+<li><code><a title="bento.value.unwrap" href="#bento.value.unwrap">unwrap</a></code></li>
+<li><code><a title="bento.value.unwrap_primitive" href="#bento.value.unwrap_primitive">unwrap_primitive</a></code></li>
 <li><code><a title="bento.value.wrap" href="#bento.value.wrap">wrap</a></code></li>
 <li><code><a title="bento.value.wrap_primitive" href="#bento.value.wrap_primitive">wrap_primitive</a></code></li>
 </ul>

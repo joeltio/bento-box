@@ -45,7 +45,7 @@ from gast import (
     keyword,
     arguments,
     Return,
-    Tuple,
+    Tuple as TupleAST,
     Name,
     Load,
     Store,
@@ -56,10 +56,12 @@ from gast import (
     List as ListAST,
     If,
     Constant,
+    ImportFrom,
+    alias,
 )
 from inspect import getsource, cleandoc
 from textwrap import dedent
-from typing import Any, Dict, Optional, Callable, Union, List
+from typing import Any, Dict, Optional, Callable, Union, List, Tuple
 
 
 class FuncASTTransform(gast.NodeTransformer):
@@ -100,25 +102,50 @@ def name_ast(name: str, ctx: Union[Load, Store, Del] = Load()) -&gt; Name:
     Args:
         name: Maps to the `id` parameter of the Name constructor.
         ctx: Maps to the `id` parameter of the Name constructor.
+    Returns:
+        The created name AST node.
     &#34;&#34;&#34;
     return Name(id=name, ctx=ctx, annotation=None, type_comment=&#34;&#34;)
 
 
+def import_from_ast(module: str, names: List[str]) -&gt; ImportFrom:
+    &#34;&#34;&#34;Convenience function for creating &#39;from module import names, ...&#39; as a AST node
+
+    Args:
+        module: The name of the module to import from.
+        names: List of names of symbols to import from the module.
+    Returns:
+        The created ImportFrom AST node.
+    &#34;&#34;&#34;
+    return ImportFrom(
+        module=module,
+        names=[alias(name=n, asname=None) for n in names],
+        # 0 -&gt; use absolute import
+        level=0,
+    )
+
+
 def assign_ast(
-    targets: List[AST], values: List[AST], multi_assign: bool = False
+    targets: List[AST],
+    values: List[AST],
+    multi_assign: bool = False,
+    force_tuple: bool = False,
 ) -&gt; AST:
     &#34;&#34;&#34;Convenience function for creating Assignment AST
 
     Args:
         targets: List of target AST nodes to assign to.
         values: List of values as AST nodes to assign to the target nodes.
-        multi_assign: Whether to assign multiple targets to the same value
+        multi_assign: Whether to assign multiple targets to the same value instead
+            of using tuple assignment.
+        force_tuple: Whether to always assign to tuple even when assigning to
+            a single target.
     &#34;&#34;&#34;
-    if len(targets) &gt;= 2:
-        targets = targets if multi_assign else [Tuple(elts=targets, ctx=Store())]
+    if len(targets) &gt;= 2 or force_tuple:
+        targets = targets if multi_assign else [TupleAST(elts=targets, ctx=Store())]
     return Assign(
         targets=targets,
-        value=values[0] if len(values) == 1 else Tuple(elts=values, ctx=Load()),
+        value=values[0] if len(values) == 1 else TupleAST(elts=values, ctx=Load()),
     )
 
 
@@ -187,7 +214,7 @@ def wrap_func_ast(
     if len(returns) &gt; 0:
         # convert return names to return AST node
         return_ast = Return(
-            value=[Tuple(elts=[name_ast(r) for r in returns], ctx=Load())]
+            value=[TupleAST(elts=[name_ast(r) for r in returns], ctx=Load())]
             if len(returns) &gt; 1 or return_tuple
             else name_ast(returns[0])
         )
@@ -231,8 +258,16 @@ def wrap_block_ast(
     )
 
 
-def load_ast_module(ast: AST) -&gt; Any:
-    # TODO(mrzzy): docs
+def load_ast_module(ast: AST, remove_src: bool = True) -&gt; Union[Any, Tuple[Any, str]]:
+    &#34;&#34;&#34;Loads the given AST as module
+
+    Args:
+        ast: The AST node to load as a module.
+        remove_src: Whether to remove the intermediate module source file.
+    Returns:
+        The AST loaded as a module. If remove_src is True, returns both
+        the loaded module and a path to the intermediate source file.
+    &#34;&#34;&#34;
     src = unparse(ast)
     with NamedTemporaryFile(mode=&#34;w&#34;, suffix=&#34;.py&#34;, delete=False) as f:
         f.write(src)
@@ -243,9 +278,10 @@ def load_ast_module(ast: AST) -&gt; Any:
         mod_spec.loader.exec_module(module)
     # delete the temporary file manually as NamedTemporaryFile runs into
     # permission issues trying to remove it on Windows.
-    os.remove(f.name)
-
-    return module</code></pre>
+    if remove_src:
+        os.remove(f.name)
+        return module
+    return module, f.name</code></pre>
 </details>
 </section>
 <section>
@@ -256,7 +292,7 @@ def load_ast_module(ast: AST) -&gt; Any:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="bento.graph.ast.assign_ast"><code class="name flex">
-<span>def <span class="ident">assign_ast</span></span>(<span>targets: List[_ast.AST], values: List[_ast.AST], multi_assign: bool = False) ‑> _ast.AST</span>
+<span>def <span class="ident">assign_ast</span></span>(<span>targets: List[_ast.AST], values: List[_ast.AST], multi_assign: bool = False, force_tuple: bool = False) ‑> _ast.AST</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Convenience function for creating Assignment AST</p>
@@ -267,27 +303,37 @@ def load_ast_module(ast: AST) -&gt; Any:
 <dt><strong><code>values</code></strong></dt>
 <dd>List of values as AST nodes to assign to the target nodes.</dd>
 <dt><strong><code>multi_assign</code></strong></dt>
-<dd>Whether to assign multiple targets to the same value</dd>
+<dd>Whether to assign multiple targets to the same value instead
+of using tuple assignment.</dd>
+<dt><strong><code>force_tuple</code></strong></dt>
+<dd>Whether to always assign to tuple even when assigning to
+a single target.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def assign_ast(
-    targets: List[AST], values: List[AST], multi_assign: bool = False
+    targets: List[AST],
+    values: List[AST],
+    multi_assign: bool = False,
+    force_tuple: bool = False,
 ) -&gt; AST:
     &#34;&#34;&#34;Convenience function for creating Assignment AST
 
     Args:
         targets: List of target AST nodes to assign to.
         values: List of values as AST nodes to assign to the target nodes.
-        multi_assign: Whether to assign multiple targets to the same value
+        multi_assign: Whether to assign multiple targets to the same value instead
+            of using tuple assignment.
+        force_tuple: Whether to always assign to tuple even when assigning to
+            a single target.
     &#34;&#34;&#34;
-    if len(targets) &gt;= 2:
-        targets = targets if multi_assign else [Tuple(elts=targets, ctx=Store())]
+    if len(targets) &gt;= 2 or force_tuple:
+        targets = targets if multi_assign else [TupleAST(elts=targets, ctx=Store())]
     return Assign(
         targets=targets,
-        value=values[0] if len(values) == 1 else Tuple(elts=values, ctx=Load()),
+        value=values[0] if len(values) == 1 else TupleAST(elts=values, ctx=Load()),
     )</code></pre>
 </details>
 </dd>
@@ -359,17 +405,70 @@ to reference the given <code>fn</code>. Genrates a call with <code>attr_parent.f
     return Call(args=args, func=func_ref, keywords=[])</code></pre>
 </details>
 </dd>
-<dt id="bento.graph.ast.load_ast_module"><code class="name flex">
-<span>def <span class="ident">load_ast_module</span></span>(<span>ast: _ast.AST) ‑> Any</span>
+<dt id="bento.graph.ast.import_from_ast"><code class="name flex">
+<span>def <span class="ident">import_from_ast</span></span>(<span>module: str, names: List[str]) ‑> gast.gast.ImportFrom</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Convenience function for creating 'from module import names, &hellip;' as a AST node</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>module</code></strong></dt>
+<dd>The name of the module to import from.</dd>
+<dt><strong><code>names</code></strong></dt>
+<dd>List of names of symbols to import from the module.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The created ImportFrom AST node.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def load_ast_module(ast: AST) -&gt; Any:
-    # TODO(mrzzy): docs
+<pre><code class="python">def import_from_ast(module: str, names: List[str]) -&gt; ImportFrom:
+    &#34;&#34;&#34;Convenience function for creating &#39;from module import names, ...&#39; as a AST node
+
+    Args:
+        module: The name of the module to import from.
+        names: List of names of symbols to import from the module.
+    Returns:
+        The created ImportFrom AST node.
+    &#34;&#34;&#34;
+    return ImportFrom(
+        module=module,
+        names=[alias(name=n, asname=None) for n in names],
+        # 0 -&gt; use absolute import
+        level=0,
+    )</code></pre>
+</details>
+</dd>
+<dt id="bento.graph.ast.load_ast_module"><code class="name flex">
+<span>def <span class="ident">load_ast_module</span></span>(<span>ast: _ast.AST, remove_src: bool = True) ‑> Union[Any, Tuple[Any, str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Loads the given AST as module</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ast</code></strong></dt>
+<dd>The AST node to load as a module.</dd>
+<dt><strong><code>remove_src</code></strong></dt>
+<dd>Whether to remove the intermediate module source file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The AST loaded as a module. If remove_src is True, returns both
+the loaded module and a path to the intermediate source file.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_ast_module(ast: AST, remove_src: bool = True) -&gt; Union[Any, Tuple[Any, str]]:
+    &#34;&#34;&#34;Loads the given AST as module
+
+    Args:
+        ast: The AST node to load as a module.
+        remove_src: Whether to remove the intermediate module source file.
+    Returns:
+        The AST loaded as a module. If remove_src is True, returns both
+        the loaded module and a path to the intermediate source file.
+    &#34;&#34;&#34;
     src = unparse(ast)
     with NamedTemporaryFile(mode=&#34;w&#34;, suffix=&#34;.py&#34;, delete=False) as f:
         f.write(src)
@@ -380,9 +479,10 @@ to reference the given <code>fn</code>. Genrates a call with <code>attr_parent.f
         mod_spec.loader.exec_module(module)
     # delete the temporary file manually as NamedTemporaryFile runs into
     # permission issues trying to remove it on Windows.
-    os.remove(f.name)
-
-    return module</code></pre>
+    if remove_src:
+        os.remove(f.name)
+        return module
+    return module, f.name</code></pre>
 </details>
 </dd>
 <dt id="bento.graph.ast.name_ast"><code class="name flex">
@@ -396,7 +496,9 @@ to reference the given <code>fn</code>. Genrates a call with <code>attr_parent.f
 <dd>Maps to the <code>id</code> parameter of the Name constructor.</dd>
 <dt><strong><code>ctx</code></strong></dt>
 <dd>Maps to the <code>id</code> parameter of the Name constructor.</dd>
-</dl></div>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The created name AST node.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -407,6 +509,8 @@ to reference the given <code>fn</code>. Genrates a call with <code>attr_parent.f
     Args:
         name: Maps to the `id` parameter of the Name constructor.
         ctx: Maps to the `id` parameter of the Name constructor.
+    Returns:
+        The created name AST node.
     &#34;&#34;&#34;
     return Name(id=name, ctx=ctx, annotation=None, type_comment=&#34;&#34;)</code></pre>
 </details>
@@ -531,7 +635,7 @@ irregardless of whether multiple values are actually returned.</dd>
     if len(returns) &gt; 0:
         # convert return names to return AST node
         return_ast = Return(
-            value=[Tuple(elts=[name_ast(r) for r in returns], ctx=Load())]
+            value=[TupleAST(elts=[name_ast(r) for r in returns], ctx=Load())]
             if len(returns) &gt; 1 or return_tuple
             else name_ast(returns[0])
         )
@@ -632,6 +736,7 @@ irregardless of whether multiple values are actually returned.</dd>
 <ul class="two-column">
 <li><code><a title="bento.graph.ast.assign_ast" href="#bento.graph.ast.assign_ast">assign_ast</a></code></li>
 <li><code><a title="bento.graph.ast.call_func_ast" href="#bento.graph.ast.call_func_ast">call_func_ast</a></code></li>
+<li><code><a title="bento.graph.ast.import_from_ast" href="#bento.graph.ast.import_from_ast">import_from_ast</a></code></li>
 <li><code><a title="bento.graph.ast.load_ast_module" href="#bento.graph.ast.load_ast_module">load_ast_module</a></code></li>
 <li><code><a title="bento.graph.ast.name_ast" href="#bento.graph.ast.name_ast">name_ast</a></code></li>
 <li><code><a title="bento.graph.ast.parse_ast" href="#bento.graph.ast.parse_ast">parse_ast</a></code></li>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>bento.graph.ecs API documentation</title>
+<title>bento.ecs.graph API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bento.graph.ecs</code></h1>
+<h1 class="title">Module <code>bento.ecs.graph</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -29,20 +29,21 @@
 <pre><code class="python">#
 # Bentobox
 # SDK - Graph
-# Graph ECS
+# Graph based ECS
 #
 
+from collections import OrderedDict
+from copy import deepcopy
 from binascii import crc32
-from typing import Any, Iterable, Set, List
+from typing import Any, Iterable, List, Union, FrozenSet, Dict
+from bento.types import Type
+from bento.utils import to_str_attr
 from bento.ecs.base import Component, Entity
+from bento.ecs.spec import ComponentDef, EntityDef
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
 from bento.protos.values_pb2 import Value
-
-
-def to_str_attr(attr: AttributeRef):
-    return f&#34;{attr.entity_id}/{attr.component}/{attr.attribute}&#34;
 
 
 class GraphNode:
@@ -71,8 +72,10 @@ class GraphNode:
             )
         )
 
+    # use string as return type for compatiblity with python 3.6
+    # https://stackoverflow.com/a/33533514
     @classmethod
-    def wrap(cls, val: Any):
+    def wrap(cls, val: Any) -&gt; &#34;GraphNode&#34;:
         &#34;&#34;&#34;Wraps the given value val as a Graph, performing type conversions if necessary.
         Args:
             val: Native Value, Node proto to wrap as GraphNode
@@ -118,18 +121,20 @@ class GraphNode:
         return type(self).wrap(Node(mul_op=Node.Mul(x=other.node, y=self.node)))
 
     def __imul__(self, other: Any):
+        other = type(self).wrap(other)
         return self.__mul__(other)
 
     def __truediv__(self, other: Any):
         other = type(self).wrap(other)
         return type(self).wrap(Node(div_op=Node.Div(x=self.node, y=other.node)))
 
-    def __truediv__(self, other: Any):
+    def __itruediv__(self, other: Any):
+        other = type(self).wrap(other)
+        return self.__truediv__(other)
+
+    def __rtruediv__(self, other: Any):
         other = type(self).wrap(other)
         return type(self).wrap(Node(div_op=Node.Div(x=other.node, y=self.node)))
-
-    def __itruediv__(self, other: Any):
-        return self.__truediv__(other)
 
     def __mod__(self, other: Any):
         other = type(self).wrap(other)
@@ -185,7 +190,7 @@ class GraphNode:
         )
 
     def __str__(self):
-        return f&#34;{type(self).__name___}&lt;{self.node}&gt;&#34;
+        return f&#34;{type(self).__name__}&lt;{self.node}&gt;&#34;
 
     def __hash__(self):
         return hash(self.node)
@@ -195,7 +200,7 @@ class GraphComponent(Component):
     &#34;&#34;&#34;Shim that represents an ECS Component when plotting computation graph.
 
     Provides access to component&#39;s attributes during graph plotting.
-    Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively.
+    Records operations on attributes which inputs and outputs dictionaries.
 
         Example:
         # Record operations on component
@@ -206,35 +211,77 @@ class GraphComponent(Component):
         graph_ins, graph_outputs = component.inputs, component.outputs
     &#34;&#34;&#34;
 
-    def __init__(self, entity_id: int, name: str):
+    # TODO(mrzzy): add schema validation
+    def __init__(self, entity_id: int, name: str, schema: Dict[str, Type]):
         # use __dict__ assignment to prevent triggering __setattr__()
         self.__dict__[&#34;_entity_id&#34;] = entity_id
         self.__dict__[&#34;_name&#34;] = name
+        self.__dict__[&#34;_schema&#34;] = schema
         # _inputs/_outputs are dict with AttributeRef as key and Retrieve/Mutate nodes as value
-        # ensuring that we record unique input and output nodes
-        self.__dict__[&#34;_inputs&#34;] = {}
-        self.__dict__[&#34;_outputs&#34;] = {}
+        self.__dict__[&#34;_inputs&#34;] = OrderedDict()
+        self.__dict__[&#34;_outputs&#34;] = OrderedDict()
 
-    def get_attr(self, name: str) -&gt; Node:
-        # Record the attribute retrieve operation as input graph node
+    @classmethod
+    def from_def(cls, entity_id: int, component_def: ComponentDef):
+        &#34;&#34;&#34;Construct a GraphComponent from a ComponentDef&#34;&#34;&#34;
+        # check that ComponentDef&#39;s id is set and not protobuf default
+        if component_def.name == &#34;&#34;:
+            raise ValueError(
+                &#34;Cannot construct GraphComponent from ComponentDef with unset name&#34;
+            )
+        return cls(
+            entity_id=entity_id,
+            name=component_def.name,
+            schema=component_def.schema,
+        )
+
+    def use_input_outputs(
+        self,
+        inputs: &#34;OrderedDict[str, GraphNode]&#34;,
+        outputs: &#34;OrderedDict[str, GraphNode]&#34;,
+    ):
+        &#34;&#34;&#34;Use the given inputs and output dicts to record attribute operations.
+        Useful for implementing a shared inputs and outputs between multiple GraphComponents.
+
+        Args:
+            inputs:  Dict to record on when attributes are retrieved with get_attr().
+            outputs:  Dict to record on when attributes are set with set_attr().
+        &#34;&#34;&#34;
+        self.__dict__[&#34;_inputs&#34;] = inputs
+        self.__dict__[&#34;_outputs&#34;] = outputs
+
+    def get_attr(self, name: str) -&gt; GraphNode:
         attr_ref = AttributeRef(
             entity_id=self._entity_id,
             component=self._name,
-            attribute=name,
+            attribute=str(name),
         )
+        # check if attribute has been defined in earlier set_attr()
+        # if so return that definition to preserve the graph already built for that attribute
+        if to_str_attr(attr_ref) in self._outputs:
+            built_graph = self._outputs[to_str_attr(attr_ref)].node.mutate_op.to_node
+            return GraphNode(built_graph)
+
+        # record the attribute retrieve operation as input graph node
         get_op = GraphNode(node=Node(retrieve_op=Node.Retrieve(retrieve_attr=attr_ref)))
-        # print(get_op)
         self._inputs[to_str_attr(attr_ref)] = get_op
         return get_op
 
     def set_attr(self, name: str, value: Any):
         value = GraphNode.wrap(value)
-        # Record the attribute set/mutate operation as output graph node
         attr_ref = AttributeRef(
             entity_id=self._entity_id,
             component=self._name,
             attribute=name,
         )
+        # ignore attribute self assignments (ie component.attr = component.attr)
+        if (
+            value.node.WhichOneof(&#34;op&#34;) == &#34;retrieve_op&#34;
+            and value.node.retrieve_op.retrieve_attr.SerializeToString()
+            == attr_ref.SerializeToString()
+        ):
+            return
+        # record the attribute set/mutate operation as output graph node
         set_op = GraphNode(
             node=Node(
                 mutate_op=Node.Mutate(
@@ -244,19 +291,23 @@ class GraphComponent(Component):
             )
         )
         self._outputs[to_str_attr(attr_ref)] = set_op
+        # preserve order of execution in _outputs by moving set operation record to end
+        self._outputs.move_to_end(to_str_attr(attr_ref))
 
     @property
-    def inputs(self) -&gt; List[GraphNode]:
-        &#34;&#34;&#34;Get the graph unique input nodes recorded by this Graph component&#34;&#34;&#34;
-        return list(self._inputs.values())
+    def component_name(self):
+        return self._name
 
-    @property
-    def outputs(self) -&gt; List[GraphNode]:
-        &#34;&#34;&#34;Get the graph unique output nodes recorded by this Graph component&#34;&#34;&#34;
-        return list(self._outputs.values())
+    def __deepcopy__(self, memo):
+        # override deepcopy as default implementaion unintentionally
+        # triggers get_attr()/set_attr().
+        copy = type(self)(self._entity_id, self._name, self._schema)
+        # don&#39;t deepcopy inputs as collected globally for the entire graph.
+        copy.__dict__[&#34;_inputs&#34;] = self._inputs
+        # deepcopy outputs as they should be scoped with deepcopy()
+        copy.__dict__[&#34;_outputs&#34;] = deepcopy(self._outputs, memo)
 
-    def __str__(self):
-        return f&#34;{type(self).__name__}&lt;{self._name}, {self._name}&gt;&#34;
+        return copy
 
 
 class GraphEntity(Entity):
@@ -266,15 +317,44 @@ class GraphEntity(Entity):
     The GraphEntity&#39;s GraphComponents can be accessed via `.components`.
     &#34;&#34;&#34;
 
-    def __init__(self, components: Iterable[str]):
-        # TODO(zzy): obtain id from actual entity in engine
-        # compute entity id from hash of components to make entity id deterministic
-        self.id = crc32(&#34;,&#34;.join(sorted(components)).encode())
-        self.component_map = {
-            name: GraphComponent(self.id, name) for name in components
-        }
+    def __init__(self, components: Iterable[GraphComponent], entity_id: int):
+        self.entity_id = entity_id
+        self.component_map = {c.component_name: c for c in components}
+
+    @classmethod
+    def from_def(cls, entity_def: EntityDef, component_defs: Iterable[ComponentDef]):
+        &#34;&#34;&#34;Construct a GraphEntity from a EntityDef&#34;&#34;&#34;
+        # check that EntityDef&#39;s id is set and not protobuf default
+        if entity_def.id == 0:
+            raise ValueError(&#34;Cannot construct GraphEntity from Entity with unset id&#34;)
+        return cls(
+            components=[
+                GraphComponent.from_def(entity_id=entity_def.id, component_def=c)
+                for c in component_defs
+                if c.name in entity_def.components
+            ],
+            entity_id=entity_def.id,
+        )
+
+    def use_input_outputs(
+        self,
+        inputs: &#34;OrderedDict[str, GraphNode]&#34;,
+        outputs: &#34;OrderedDict[str, GraphNode]&#34;,
+    ):
+        &#34;&#34;&#34;Use the given inputs and output dicts to record attribute operations.
+        Useful for implementing a shared inputs and outputs between multiple GraphEntities.
+
+        Args:
+            inputs: Dict to record on when this Entity&#39;s GraphComponent attributes are retrieved.
+            outputs: Dict to record on when this Entity&#39;s GraphComponent attributes are set.
+        &#34;&#34;&#34;
+        # configure conmponents to use given inputs/outputs dicts
+        for component in self.component_map.values():
+            component.use_input_outputs(inputs, outputs)
 
     def get_component(self, name: str) -&gt; GraphComponent:
+        # allow users to specify component class as name
+        name = str(name)
         try:
             return self.component_map[name]
         except KeyError:
@@ -283,12 +363,14 @@ class GraphEntity(Entity):
             )
 
     @property
-    def components(self) -&gt; Set[str]:
-        &#34;&#34;&#34;Get the GraphComponents attached to this GraphEntity&#34;&#34;&#34;
-        return set(self.component_map.values())
+    def id(self):
+        &#34;&#34;&#34;Get the id held by this GraphEntity&#34;&#34;&#34;
+        return self.entity_id
 
-    def __str__(self):
-        return f&#34;{type(self).__name__}&lt;{self.id}&gt;&#34;</code></pre>
+    @property
+    def components(self) -&gt; FrozenSet[GraphComponent]:
+        &#34;&#34;&#34;Get the GraphComponent attached to this GraphEntity&#34;&#34;&#34;
+        return frozenset(self.component_map.values())</code></pre>
 </details>
 </section>
 <section>
@@ -296,34 +378,18 @@ class GraphEntity(Entity):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="bento.graph.ecs.to_str_attr"><code class="name flex">
-<span>def <span class="ident">to_str_attr</span></span>(<span>attr: <a title="bento.protos.references_pb2.AttributeRef" href="../protos/references_pb2.html#bento.protos.references_pb2.AttributeRef">AttributeRef</a>)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def to_str_attr(attr: AttributeRef):
-    return f&#34;{attr.entity_id}/{attr.component}/{attr.attribute}&#34;</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="bento.graph.ecs.GraphComponent"><code class="flex name class">
+<dt id="bento.ecs.graph.GraphComponent"><code class="flex name class">
 <span>class <span class="ident">GraphComponent</span></span>
-<span>(</span><span>entity_id: int, name: str)</span>
+<span>(</span><span>entity_id: int, name: str, schema: Dict[str, <a title="bento.protos.types_pb2.Type" href="../protos/types_pb2.html#bento.protos.types_pb2.Type">Type</a>])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shim that represents an ECS Component when plotting computation graph.</p>
 <p>Provides access to component's attributes during graph plotting.
-Records operations on attributes which can be accessed via <code>.inputs</code> and <code>.outputs</code> respectively.</p>
+Records operations on attributes which inputs and outputs dictionaries.</p>
 <pre><code>Example:
 # Record operations on component
 component = GraphComponent(...)
@@ -340,7 +406,7 @@ graph_ins, graph_outputs = component.inputs, component.outputs
     &#34;&#34;&#34;Shim that represents an ECS Component when plotting computation graph.
 
     Provides access to component&#39;s attributes during graph plotting.
-    Records operations on attributes which can be accessed via `.inputs` and `.outputs` respectively.
+    Records operations on attributes which inputs and outputs dictionaries.
 
         Example:
         # Record operations on component
@@ -351,35 +417,77 @@ graph_ins, graph_outputs = component.inputs, component.outputs
         graph_ins, graph_outputs = component.inputs, component.outputs
     &#34;&#34;&#34;
 
-    def __init__(self, entity_id: int, name: str):
+    # TODO(mrzzy): add schema validation
+    def __init__(self, entity_id: int, name: str, schema: Dict[str, Type]):
         # use __dict__ assignment to prevent triggering __setattr__()
         self.__dict__[&#34;_entity_id&#34;] = entity_id
         self.__dict__[&#34;_name&#34;] = name
+        self.__dict__[&#34;_schema&#34;] = schema
         # _inputs/_outputs are dict with AttributeRef as key and Retrieve/Mutate nodes as value
-        # ensuring that we record unique input and output nodes
-        self.__dict__[&#34;_inputs&#34;] = {}
-        self.__dict__[&#34;_outputs&#34;] = {}
+        self.__dict__[&#34;_inputs&#34;] = OrderedDict()
+        self.__dict__[&#34;_outputs&#34;] = OrderedDict()
 
-    def get_attr(self, name: str) -&gt; Node:
-        # Record the attribute retrieve operation as input graph node
+    @classmethod
+    def from_def(cls, entity_id: int, component_def: ComponentDef):
+        &#34;&#34;&#34;Construct a GraphComponent from a ComponentDef&#34;&#34;&#34;
+        # check that ComponentDef&#39;s id is set and not protobuf default
+        if component_def.name == &#34;&#34;:
+            raise ValueError(
+                &#34;Cannot construct GraphComponent from ComponentDef with unset name&#34;
+            )
+        return cls(
+            entity_id=entity_id,
+            name=component_def.name,
+            schema=component_def.schema,
+        )
+
+    def use_input_outputs(
+        self,
+        inputs: &#34;OrderedDict[str, GraphNode]&#34;,
+        outputs: &#34;OrderedDict[str, GraphNode]&#34;,
+    ):
+        &#34;&#34;&#34;Use the given inputs and output dicts to record attribute operations.
+        Useful for implementing a shared inputs and outputs between multiple GraphComponents.
+
+        Args:
+            inputs:  Dict to record on when attributes are retrieved with get_attr().
+            outputs:  Dict to record on when attributes are set with set_attr().
+        &#34;&#34;&#34;
+        self.__dict__[&#34;_inputs&#34;] = inputs
+        self.__dict__[&#34;_outputs&#34;] = outputs
+
+    def get_attr(self, name: str) -&gt; GraphNode:
         attr_ref = AttributeRef(
             entity_id=self._entity_id,
             component=self._name,
-            attribute=name,
+            attribute=str(name),
         )
+        # check if attribute has been defined in earlier set_attr()
+        # if so return that definition to preserve the graph already built for that attribute
+        if to_str_attr(attr_ref) in self._outputs:
+            built_graph = self._outputs[to_str_attr(attr_ref)].node.mutate_op.to_node
+            return GraphNode(built_graph)
+
+        # record the attribute retrieve operation as input graph node
         get_op = GraphNode(node=Node(retrieve_op=Node.Retrieve(retrieve_attr=attr_ref)))
-        # print(get_op)
         self._inputs[to_str_attr(attr_ref)] = get_op
         return get_op
 
     def set_attr(self, name: str, value: Any):
         value = GraphNode.wrap(value)
-        # Record the attribute set/mutate operation as output graph node
         attr_ref = AttributeRef(
             entity_id=self._entity_id,
             component=self._name,
             attribute=name,
         )
+        # ignore attribute self assignments (ie component.attr = component.attr)
+        if (
+            value.node.WhichOneof(&#34;op&#34;) == &#34;retrieve_op&#34;
+            and value.node.retrieve_op.retrieve_attr.SerializeToString()
+            == attr_ref.SerializeToString()
+        ):
+            return
+        # record the attribute set/mutate operation as output graph node
         set_op = GraphNode(
             node=Node(
                 mutate_op=Node.Mutate(
@@ -389,67 +497,106 @@ graph_ins, graph_outputs = component.inputs, component.outputs
             )
         )
         self._outputs[to_str_attr(attr_ref)] = set_op
+        # preserve order of execution in _outputs by moving set operation record to end
+        self._outputs.move_to_end(to_str_attr(attr_ref))
 
     @property
-    def inputs(self) -&gt; List[GraphNode]:
-        &#34;&#34;&#34;Get the graph unique input nodes recorded by this Graph component&#34;&#34;&#34;
-        return list(self._inputs.values())
+    def component_name(self):
+        return self._name
 
-    @property
-    def outputs(self) -&gt; List[GraphNode]:
-        &#34;&#34;&#34;Get the graph unique output nodes recorded by this Graph component&#34;&#34;&#34;
-        return list(self._outputs.values())
+    def __deepcopy__(self, memo):
+        # override deepcopy as default implementaion unintentionally
+        # triggers get_attr()/set_attr().
+        copy = type(self)(self._entity_id, self._name, self._schema)
+        # don&#39;t deepcopy inputs as collected globally for the entire graph.
+        copy.__dict__[&#34;_inputs&#34;] = self._inputs
+        # deepcopy outputs as they should be scoped with deepcopy()
+        copy.__dict__[&#34;_outputs&#34;] = deepcopy(self._outputs, memo)
 
-    def __str__(self):
-        return f&#34;{type(self).__name__}&lt;{self._name}, {self._name}&gt;&#34;</code></pre>
+        return copy</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="bento.ecs.base.Component" href="../ecs/base.html#bento.ecs.base.Component">Component</a></li>
+<li><a title="bento.ecs.base.Component" href="base.html#bento.ecs.base.Component">Component</a></li>
 <li>abc.ABC</li>
 </ul>
-<h3>Instance variables</h3>
+<h3>Static methods</h3>
 <dl>
-<dt id="bento.graph.ecs.GraphComponent.inputs"><code class="name">var <span class="ident">inputs</span> : List[<a title="bento.graph.ecs.GraphNode" href="#bento.graph.ecs.GraphNode">GraphNode</a>]</code></dt>
+<dt id="bento.ecs.graph.GraphComponent.from_def"><code class="name flex">
+<span>def <span class="ident">from_def</span></span>(<span>entity_id: int, component_def: <a title="bento.ecs.spec.ComponentDef" href="spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Get the graph unique input nodes recorded by this Graph component</p></div>
+<div class="desc"><p>Construct a GraphComponent from a ComponentDef</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@property
-def inputs(self) -&gt; List[GraphNode]:
-    &#34;&#34;&#34;Get the graph unique input nodes recorded by this Graph component&#34;&#34;&#34;
-    return list(self._inputs.values())</code></pre>
+<pre><code class="python">@classmethod
+def from_def(cls, entity_id: int, component_def: ComponentDef):
+    &#34;&#34;&#34;Construct a GraphComponent from a ComponentDef&#34;&#34;&#34;
+    # check that ComponentDef&#39;s id is set and not protobuf default
+    if component_def.name == &#34;&#34;:
+        raise ValueError(
+            &#34;Cannot construct GraphComponent from ComponentDef with unset name&#34;
+        )
+    return cls(
+        entity_id=entity_id,
+        name=component_def.name,
+        schema=component_def.schema,
+    )</code></pre>
 </details>
 </dd>
-<dt id="bento.graph.ecs.GraphComponent.outputs"><code class="name">var <span class="ident">outputs</span> : List[<a title="bento.graph.ecs.GraphNode" href="#bento.graph.ecs.GraphNode">GraphNode</a>]</code></dt>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="bento.ecs.graph.GraphComponent.use_input_outputs"><code class="name flex">
+<span>def <span class="ident">use_input_outputs</span></span>(<span>self, inputs: OrderedDict[str, <a title="bento.ecs.graph.GraphNode" href="#bento.ecs.graph.GraphNode">GraphNode</a>], outputs: OrderedDict[str, <a title="bento.ecs.graph.GraphNode" href="#bento.ecs.graph.GraphNode">GraphNode</a>])</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Get the graph unique output nodes recorded by this Graph component</p></div>
+<div class="desc"><p>Use the given inputs and output dicts to record attribute operations.
+Useful for implementing a shared inputs and outputs between multiple GraphComponents.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>Dict to record on when attributes are retrieved with get_attr().</dd>
+<dt><strong><code>outputs</code></strong></dt>
+<dd>Dict to record on when attributes are set with set_attr().</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@property
-def outputs(self) -&gt; List[GraphNode]:
-    &#34;&#34;&#34;Get the graph unique output nodes recorded by this Graph component&#34;&#34;&#34;
-    return list(self._outputs.values())</code></pre>
+<pre><code class="python">def use_input_outputs(
+    self,
+    inputs: &#34;OrderedDict[str, GraphNode]&#34;,
+    outputs: &#34;OrderedDict[str, GraphNode]&#34;,
+):
+    &#34;&#34;&#34;Use the given inputs and output dicts to record attribute operations.
+    Useful for implementing a shared inputs and outputs between multiple GraphComponents.
+
+    Args:
+        inputs:  Dict to record on when attributes are retrieved with get_attr().
+        outputs:  Dict to record on when attributes are set with set_attr().
+    &#34;&#34;&#34;
+    self.__dict__[&#34;_inputs&#34;] = inputs
+    self.__dict__[&#34;_outputs&#34;] = outputs</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="bento.ecs.base.Component" href="../ecs/base.html#bento.ecs.base.Component">Component</a></b></code>:
+<li><code><b><a title="bento.ecs.base.Component" href="base.html#bento.ecs.base.Component">Component</a></b></code>:
 <ul class="hlist">
-<li><code><a title="bento.ecs.base.Component.get_attr" href="../ecs/base.html#bento.ecs.base.Component.get_attr">get_attr</a></code></li>
-<li><code><a title="bento.ecs.base.Component.set_attr" href="../ecs/base.html#bento.ecs.base.Component.set_attr">set_attr</a></code></li>
+<li><code><a title="bento.ecs.base.Component.component_name" href="base.html#bento.ecs.base.Component.component_name">component_name</a></code></li>
+<li><code><a title="bento.ecs.base.Component.get_attr" href="base.html#bento.ecs.base.Component.get_attr">get_attr</a></code></li>
+<li><code><a title="bento.ecs.base.Component.set_attr" href="base.html#bento.ecs.base.Component.set_attr">set_attr</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="bento.graph.ecs.GraphEntity"><code class="flex name class">
+<dt id="bento.ecs.graph.GraphEntity"><code class="flex name class">
 <span>class <span class="ident">GraphEntity</span></span>
-<span>(</span><span>components: Iterable[str])</span>
+<span>(</span><span>components: Iterable[<a title="bento.ecs.graph.GraphComponent" href="#bento.ecs.graph.GraphComponent">GraphComponent</a>], entity_id: int)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shim that represnets an ECS Entity when plotting computation graph.</p>
@@ -466,15 +613,44 @@ The GraphEntity's GraphComponents can be accessed via <code>.components</code>.<
     The GraphEntity&#39;s GraphComponents can be accessed via `.components`.
     &#34;&#34;&#34;
 
-    def __init__(self, components: Iterable[str]):
-        # TODO(zzy): obtain id from actual entity in engine
-        # compute entity id from hash of components to make entity id deterministic
-        self.id = crc32(&#34;,&#34;.join(sorted(components)).encode())
-        self.component_map = {
-            name: GraphComponent(self.id, name) for name in components
-        }
+    def __init__(self, components: Iterable[GraphComponent], entity_id: int):
+        self.entity_id = entity_id
+        self.component_map = {c.component_name: c for c in components}
+
+    @classmethod
+    def from_def(cls, entity_def: EntityDef, component_defs: Iterable[ComponentDef]):
+        &#34;&#34;&#34;Construct a GraphEntity from a EntityDef&#34;&#34;&#34;
+        # check that EntityDef&#39;s id is set and not protobuf default
+        if entity_def.id == 0:
+            raise ValueError(&#34;Cannot construct GraphEntity from Entity with unset id&#34;)
+        return cls(
+            components=[
+                GraphComponent.from_def(entity_id=entity_def.id, component_def=c)
+                for c in component_defs
+                if c.name in entity_def.components
+            ],
+            entity_id=entity_def.id,
+        )
+
+    def use_input_outputs(
+        self,
+        inputs: &#34;OrderedDict[str, GraphNode]&#34;,
+        outputs: &#34;OrderedDict[str, GraphNode]&#34;,
+    ):
+        &#34;&#34;&#34;Use the given inputs and output dicts to record attribute operations.
+        Useful for implementing a shared inputs and outputs between multiple GraphEntities.
+
+        Args:
+            inputs: Dict to record on when this Entity&#39;s GraphComponent attributes are retrieved.
+            outputs: Dict to record on when this Entity&#39;s GraphComponent attributes are set.
+        &#34;&#34;&#34;
+        # configure conmponents to use given inputs/outputs dicts
+        for component in self.component_map.values():
+            component.use_input_outputs(inputs, outputs)
 
     def get_component(self, name: str) -&gt; GraphComponent:
+        # allow users to specify component class as name
+        name = str(name)
         try:
             return self.component_map[name]
         except KeyError:
@@ -483,44 +659,124 @@ The GraphEntity's GraphComponents can be accessed via <code>.components</code>.<
             )
 
     @property
-    def components(self) -&gt; Set[str]:
-        &#34;&#34;&#34;Get the GraphComponents attached to this GraphEntity&#34;&#34;&#34;
-        return set(self.component_map.values())
+    def id(self):
+        &#34;&#34;&#34;Get the id held by this GraphEntity&#34;&#34;&#34;
+        return self.entity_id
 
-    def __str__(self):
-        return f&#34;{type(self).__name__}&lt;{self.id}&gt;&#34;</code></pre>
+    @property
+    def components(self) -&gt; FrozenSet[GraphComponent]:
+        &#34;&#34;&#34;Get the GraphComponent attached to this GraphEntity&#34;&#34;&#34;
+        return frozenset(self.component_map.values())</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="bento.ecs.base.Entity" href="../ecs/base.html#bento.ecs.base.Entity">Entity</a></li>
+<li><a title="bento.ecs.base.Entity" href="base.html#bento.ecs.base.Entity">Entity</a></li>
 <li>abc.ABC</li>
 </ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="bento.ecs.graph.GraphEntity.from_def"><code class="name flex">
+<span>def <span class="ident">from_def</span></span>(<span>entity_def: <a title="bento.ecs.spec.EntityDef" href="spec.html#bento.ecs.spec.EntityDef">EntityDef</a>, component_defs: Iterable[<a title="bento.ecs.spec.ComponentDef" href="spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Construct a GraphEntity from a EntityDef</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_def(cls, entity_def: EntityDef, component_defs: Iterable[ComponentDef]):
+    &#34;&#34;&#34;Construct a GraphEntity from a EntityDef&#34;&#34;&#34;
+    # check that EntityDef&#39;s id is set and not protobuf default
+    if entity_def.id == 0:
+        raise ValueError(&#34;Cannot construct GraphEntity from Entity with unset id&#34;)
+    return cls(
+        components=[
+            GraphComponent.from_def(entity_id=entity_def.id, component_def=c)
+            for c in component_defs
+            if c.name in entity_def.components
+        ],
+        entity_id=entity_def.id,
+    )</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="bento.graph.ecs.GraphEntity.components"><code class="name">var <span class="ident">components</span> : Set[str]</code></dt>
+<dt id="bento.ecs.graph.GraphEntity.components"><code class="name">var <span class="ident">components</span> : FrozenSet[<a title="bento.ecs.graph.GraphComponent" href="#bento.ecs.graph.GraphComponent">GraphComponent</a>]</code></dt>
 <dd>
-<div class="desc"><p>Get the GraphComponents attached to this GraphEntity</p></div>
+<div class="desc"><p>Get the GraphComponent attached to this GraphEntity</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def components(self) -&gt; Set[str]:
-    &#34;&#34;&#34;Get the GraphComponents attached to this GraphEntity&#34;&#34;&#34;
-    return set(self.component_map.values())</code></pre>
+def components(self) -&gt; FrozenSet[GraphComponent]:
+    &#34;&#34;&#34;Get the GraphComponent attached to this GraphEntity&#34;&#34;&#34;
+    return frozenset(self.component_map.values())</code></pre>
+</details>
+</dd>
+<dt id="bento.ecs.graph.GraphEntity.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"><p>Get the id held by this GraphEntity</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def id(self):
+    &#34;&#34;&#34;Get the id held by this GraphEntity&#34;&#34;&#34;
+    return self.entity_id</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="bento.ecs.graph.GraphEntity.use_input_outputs"><code class="name flex">
+<span>def <span class="ident">use_input_outputs</span></span>(<span>self, inputs: OrderedDict[str, <a title="bento.ecs.graph.GraphNode" href="#bento.ecs.graph.GraphNode">GraphNode</a>], outputs: OrderedDict[str, <a title="bento.ecs.graph.GraphNode" href="#bento.ecs.graph.GraphNode">GraphNode</a>])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Use the given inputs and output dicts to record attribute operations.
+Useful for implementing a shared inputs and outputs between multiple GraphEntities.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>Dict to record on when this Entity's GraphComponent attributes are retrieved.</dd>
+<dt><strong><code>outputs</code></strong></dt>
+<dd>Dict to record on when this Entity's GraphComponent attributes are set.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def use_input_outputs(
+    self,
+    inputs: &#34;OrderedDict[str, GraphNode]&#34;,
+    outputs: &#34;OrderedDict[str, GraphNode]&#34;,
+):
+    &#34;&#34;&#34;Use the given inputs and output dicts to record attribute operations.
+    Useful for implementing a shared inputs and outputs between multiple GraphEntities.
+
+    Args:
+        inputs: Dict to record on when this Entity&#39;s GraphComponent attributes are retrieved.
+        outputs: Dict to record on when this Entity&#39;s GraphComponent attributes are set.
+    &#34;&#34;&#34;
+    # configure conmponents to use given inputs/outputs dicts
+    for component in self.component_map.values():
+        component.use_input_outputs(inputs, outputs)</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="bento.ecs.base.Entity" href="../ecs/base.html#bento.ecs.base.Entity">Entity</a></b></code>:
+<li><code><b><a title="bento.ecs.base.Entity" href="base.html#bento.ecs.base.Entity">Entity</a></b></code>:
 <ul class="hlist">
-<li><code><a title="bento.ecs.base.Entity.get_component" href="../ecs/base.html#bento.ecs.base.Entity.get_component">get_component</a></code></li>
+<li><code><a title="bento.ecs.base.Entity.get_component" href="base.html#bento.ecs.base.Entity.get_component">get_component</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="bento.graph.ecs.GraphNode"><code class="flex name class">
+<dt id="bento.ecs.graph.GraphNode"><code class="flex name class">
 <span>class <span class="ident">GraphNode</span></span>
 <span>(</span><span>node: <a title="bento.protos.graph_pb2.Node" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Node">Node</a>)</span>
 </code></dt>
@@ -559,8 +815,10 @@ computational graph constructions. Records the operations performed on the Node 
             )
         )
 
+    # use string as return type for compatiblity with python 3.6
+    # https://stackoverflow.com/a/33533514
     @classmethod
-    def wrap(cls, val: Any):
+    def wrap(cls, val: Any) -&gt; &#34;GraphNode&#34;:
         &#34;&#34;&#34;Wraps the given value val as a Graph, performing type conversions if necessary.
         Args:
             val: Native Value, Node proto to wrap as GraphNode
@@ -606,18 +864,20 @@ computational graph constructions. Records the operations performed on the Node 
         return type(self).wrap(Node(mul_op=Node.Mul(x=other.node, y=self.node)))
 
     def __imul__(self, other: Any):
+        other = type(self).wrap(other)
         return self.__mul__(other)
 
     def __truediv__(self, other: Any):
         other = type(self).wrap(other)
         return type(self).wrap(Node(div_op=Node.Div(x=self.node, y=other.node)))
 
-    def __truediv__(self, other: Any):
+    def __itruediv__(self, other: Any):
+        other = type(self).wrap(other)
+        return self.__truediv__(other)
+
+    def __rtruediv__(self, other: Any):
         other = type(self).wrap(other)
         return type(self).wrap(Node(div_op=Node.Div(x=other.node, y=self.node)))
-
-    def __itruediv__(self, other: Any):
-        return self.__truediv__(other)
 
     def __mod__(self, other: Any):
         other = type(self).wrap(other)
@@ -673,14 +933,14 @@ computational graph constructions. Records the operations performed on the Node 
         )
 
     def __str__(self):
-        return f&#34;{type(self).__name___}&lt;{self.node}&gt;&#34;
+        return f&#34;{type(self).__name__}&lt;{self.node}&gt;&#34;
 
     def __hash__(self):
         return hash(self.node)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="bento.graph.ecs.GraphNode.from_attr"><code class="name flex">
+<dt id="bento.ecs.graph.GraphNode.from_attr"><code class="name flex">
 <span>def <span class="ident">from_attr</span></span>(<span>entity_id: int, component: str, name: str)</span>
 </code></dt>
 <dd>
@@ -703,8 +963,8 @@ def from_attr(cls, entity_id: int, component: str, name: str):
     )</code></pre>
 </details>
 </dd>
-<dt id="bento.graph.ecs.GraphNode.wrap"><code class="name flex">
-<span>def <span class="ident">wrap</span></span>(<span>val: Any)</span>
+<dt id="bento.ecs.graph.GraphNode.wrap"><code class="name flex">
+<span>def <span class="ident">wrap</span></span>(<span>val: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="#bento.ecs.graph.GraphNode">GraphNode</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Wraps the given value val as a Graph, performing type conversions if necessary.</p>
@@ -720,7 +980,7 @@ def from_attr(cls, entity_id: int, component: str, name: str):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def wrap(cls, val: Any):
+def wrap(cls, val: Any) -&gt; &#34;GraphNode&#34;:
     &#34;&#34;&#34;Wraps the given value val as a Graph, performing type conversions if necessary.
     Args:
         val: Native Value, Node proto to wrap as GraphNode
@@ -748,34 +1008,32 @@ def wrap(cls, val: Any):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="bento.graph" href="index.html">bento.graph</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="bento.graph.ecs.to_str_attr" href="#bento.graph.ecs.to_str_attr">to_str_attr</a></code></li>
+<li><code><a title="bento.ecs" href="index.html">bento.ecs</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="bento.graph.ecs.GraphComponent" href="#bento.graph.ecs.GraphComponent">GraphComponent</a></code></h4>
+<h4><code><a title="bento.ecs.graph.GraphComponent" href="#bento.ecs.graph.GraphComponent">GraphComponent</a></code></h4>
 <ul class="">
-<li><code><a title="bento.graph.ecs.GraphComponent.inputs" href="#bento.graph.ecs.GraphComponent.inputs">inputs</a></code></li>
-<li><code><a title="bento.graph.ecs.GraphComponent.outputs" href="#bento.graph.ecs.GraphComponent.outputs">outputs</a></code></li>
+<li><code><a title="bento.ecs.graph.GraphComponent.from_def" href="#bento.ecs.graph.GraphComponent.from_def">from_def</a></code></li>
+<li><code><a title="bento.ecs.graph.GraphComponent.use_input_outputs" href="#bento.ecs.graph.GraphComponent.use_input_outputs">use_input_outputs</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="bento.graph.ecs.GraphEntity" href="#bento.graph.ecs.GraphEntity">GraphEntity</a></code></h4>
+<h4><code><a title="bento.ecs.graph.GraphEntity" href="#bento.ecs.graph.GraphEntity">GraphEntity</a></code></h4>
 <ul class="">
-<li><code><a title="bento.graph.ecs.GraphEntity.components" href="#bento.graph.ecs.GraphEntity.components">components</a></code></li>
+<li><code><a title="bento.ecs.graph.GraphEntity.components" href="#bento.ecs.graph.GraphEntity.components">components</a></code></li>
+<li><code><a title="bento.ecs.graph.GraphEntity.from_def" href="#bento.ecs.graph.GraphEntity.from_def">from_def</a></code></li>
+<li><code><a title="bento.ecs.graph.GraphEntity.id" href="#bento.ecs.graph.GraphEntity.id">id</a></code></li>
+<li><code><a title="bento.ecs.graph.GraphEntity.use_input_outputs" href="#bento.ecs.graph.GraphEntity.use_input_outputs">use_input_outputs</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="bento.graph.ecs.GraphNode" href="#bento.graph.ecs.GraphNode">GraphNode</a></code></h4>
+<h4><code><a title="bento.ecs.graph.GraphNode" href="#bento.ecs.graph.GraphNode">GraphNode</a></code></h4>
 <ul class="">
-<li><code><a title="bento.graph.ecs.GraphNode.from_attr" href="#bento.graph.ecs.GraphNode.from_attr">from_attr</a></code></li>
-<li><code><a title="bento.graph.ecs.GraphNode.wrap" href="#bento.graph.ecs.GraphNode.wrap">wrap</a></code></li>
+<li><code><a title="bento.ecs.graph.GraphNode.from_attr" href="#bento.ecs.graph.GraphNode.from_attr">from_attr</a></code></li>
+<li><code><a title="bento.ecs.graph.GraphNode.wrap" href="#bento.ecs.graph.GraphNode.wrap">wrap</a></code></li>
 </ul>
 </li>
 </ul>

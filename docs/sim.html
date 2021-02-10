@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>bento.sim API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>bento.sim</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#
+# Bentobox
+# SDK - Simulation
+# Simulation
+#
+
+from typing import Iterable, Set, List
+
+from bento.client import Client
+from bento.ecs.grpc import Entity, Component
+from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
+from bento.graph.compile import compile_graph, ConvertFn
+from bento.graph.spec import Graph
+from bento.protos.sim_pb2 import SimulationDef
+
+
+class Simulation:
+    # TODO(mrzzy): Add a more complete usage example into docs.
+    &#34;&#34;&#34;Represents a Simulation in running in the Bentobox Engine.
+
+    Example:
+    # define simulation with entities and components
+    sim = Simulation(name=&#34;sim&#34;, entities=[ ... ], components=[ ... ], client=client)
+
+    # use an init graph to initalize attribute values
+    @sim.init
+    def init_fn():
+        # initialize values with:  entity[Component].attribute = value
+
+    # implement systems running in the simulation
+    @sim.system
+    def system_fn():
+        # ...
+
+    # start-end the simulation using with block
+    with sim:
+        # simulation is running now ....
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        name: str,
+        entities: Iterable[EntityDef],
+        components: Iterable[ComponentDef],
+        client: Client,
+    ):
+        &#34;&#34;&#34;Create a new simulation with the given entities and component
+        Args:
+            name: Name of the simulation. Must be unique for all simulations in the Engine.
+            entities: List of entities in use jn the simulation.
+            component: List of component types in use in the simulation.
+            client: Client to use to communicate with the Engine.
+        &#34;&#34;&#34;
+        self.name = name
+        self.client = client
+        self.started = False
+        self.component_defs = list(components)
+        self.entity_defs = list(entities)
+        self.system_defs = []
+        self.init_graph = Graph()
+
+        # register sim on engine
+        applied_proto = self.client.apply_sim(self.proto)
+
+        # obtain autogen ids for entities and the engine by recreating from applied proto
+        self.entity_defs = [EntityDef.from_proto(e) for e in applied_proto.entities]
+
+        # unpack entity and components from proto
+        # unpack Entity protos into grpc backed entities (set(components) -&gt; grpc entity)
+        self.entity_map = {
+            frozenset(e.components): Entity(
+                sim_name=self.name,
+                entity_id=e.id,
+                components=e.components,
+                client=self.client,
+            )
+            for e in self.entity_defs
+        }
+
+    @property
+    def proto(self) -&gt; SimulationDef:
+        &#34;&#34;&#34;
+        Get a Protobuf representation of this simulation.
+        &#34;&#34;&#34;
+        proto = SimulationDef(
+            name=self.name,
+            entities=[e.proto for e in self.entity_defs],
+            components=[c.proto for c in self.component_defs],
+            systems=[s.proto for s in self.system_defs],
+            init_graph=self.init_graph.proto,
+        )
+        return proto
+
+    def start(self):
+        &#34;&#34;&#34;Starts this Simulation on the Engine.
+
+        If already started, calling `start()` again does nothing.
+        &#34;&#34;&#34;
+        # do nothing if already started
+        if self.started:
+            return
+        # commit all changes made (ie systems added) to engine
+        applied_proto = self.client.apply_sim(self.proto)
+        # obtain autogen ids for systems from the engine by recreating the applied proto
+        self.system_defs = [SystemDef.from_proto(s) for s in applied_proto.systems]
+        self.started = True
+
+    def stop(self):
+        &#34;&#34;&#34;Stops and removes this Simulation from the Engine.
+        Raises:
+            RuntimeError: If stop() is called on a simulation that has not started yet.
+        &#34;&#34;&#34;
+        if not self.started:
+            raise RuntimeError(&#34;Cannot stop a Simulation that has not started yet.&#34;)
+        # cleanup by remove simulation from engine
+        self.client.remove_sim(self.name)
+        self.started = False
+
+    def entity(self, components: Iterable[str]) -&gt; Entity:
+        &#34;&#34;&#34;Lookup the gRPC entity with the components with the game attached.
+
+        Provides access to ECS entity on the Bentobox Engine via gRPC.
+
+        Args:
+            components: Set of the names of the component attached that
+                should be attached to the retrieved component.
+        Raises:
+            ValueError: if component names given contains duplicates
+            RuntimeError: If Simulation has not yet stated.
+        Returns:
+            The gRPC entity with the given list of components attached.
+        &#34;&#34;&#34;
+        if not self.started:
+            raise RuntimeError(
+                &#34;Cannot obtain a gRPC Entity from a Simulation that has not started yet.&#34;
+            )
+        comp_set = frozenset([str(c) for c in components])
+        # check for duplicates in given components
+        if len(comp_set) != len(components):
+            raise ValueError(&#34;Given component names should not contain duplicates&#34;)
+        return self.entity_map[comp_set]
+
+    @property
+    def entities(self) -&gt; List[Entity]:
+        &#34;&#34;&#34;Get gRPC entities to this Simulation.
+        Returns:
+            List of entities belonging to this Simulation
+        &#34;&#34;&#34;
+        return list(self.entity_map.values())
+
+    def init(self, init_fn: ConvertFn):
+        &#34;&#34;&#34;Register given init_fn as the init graph for this simulation.
+
+        The init graph allows for the initization of attribute&#39;s values,
+        running on the simulation first step() call, before any systems run.
+
+        Compiles the `init_fn` into a computational graph and registers the
+        result as a init graph for this Simulation.
+
+            Example:
+            @sim.system
+            def system_fn(g):
+                # ... implementation of the system ..
+
+        Args:
+            system_fn: Function that contains the implementation of the system.
+                Must be compilable by `compile_graph()`.
+        &#34;&#34;&#34;
+        self.init_graph = compile_graph(init_fn, self.entity_defs, self.component_defs)
+
+    def system(self, system_fn: ConvertFn):
+        &#34;&#34;&#34;Register ECS system with the given system_fn implementation on this Simulation.
+
+        ECS Systems are run every step of simulation and encapsulate the logic of the simulation.
+
+        Compiles the `system_fn` into a computational graph and registers the
+        result as a ECS system to run on this Simulation.
+
+            Example:
+            @sim.system
+            def system_fn(g):
+                # ... implementation of the system ..
+
+        Args:
+            system_fn: Function that contains the implementation of the system.
+                Must be compilable by `compile_graph()`.
+        &#34;&#34;&#34;
+        graph = compile_graph(system_fn, self.entity_defs, self.component_defs)
+        self.system_defs.append(SystemDef(graph))
+
+    def step(self):
+        &#34;&#34;&#34;Run this simulation for one step
+
+        Runs this simulation&#39;s systems in the order they are registered.
+        Blocks until all systems of that simulation have finished running.
+
+        The Simulation must have already started before running the simulation with step()`
+
+        Args:
+            RuntimeError: If step() is called on a simulation that has not started yet
+                or has already been stopped.
+        &#34;&#34;&#34;
+        if not self.started:
+            raise RuntimeError(
+                &#34;Cannot step a simulation that has not started or already stopped.&#34;
+            )
+        self.client.step_sim(self.name)
+
+    def __enter__(self):
+        self.start()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.stop()
+        # never suppress exceptions inside with statement
+        return False</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="bento.sim.Simulation"><code class="flex name class">
+<span>class <span class="ident">Simulation</span></span>
+<span>(</span><span>name: str, entities: Iterable[<a title="bento.ecs.spec.EntityDef" href="ecs/spec.html#bento.ecs.spec.EntityDef">EntityDef</a>], components: Iterable[<a title="bento.ecs.spec.ComponentDef" href="ecs/spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>], client: <a title="bento.client.Client" href="client.html#bento.client.Client">Client</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a Simulation in running in the Bentobox Engine.</p>
+<p>Example:</p>
+<h1 id="define-simulation-with-entities-and-components">define simulation with entities and components</h1>
+<p>sim = Simulation(name="sim", entities=[ &hellip; ], components=[ &hellip; ], client=client)</p>
+<h1 id="use-an-init-graph-to-initalize-attribute-values">use an init graph to initalize attribute values</h1>
+<p>@sim.init
+def init_fn():
+# initialize values with:
+entity[Component].attribute = value</p>
+<h1 id="implement-systems-running-in-the-simulation">implement systems running in the simulation</h1>
+<p>@sim.system
+def system_fn():
+# &hellip;</p>
+<h1 id="start-end-the-simulation-using-with-block">start-end the simulation using with block</h1>
+<p>with sim:
+# simulation is running now ....</p>
+<p>Create a new simulation with the given entities and component</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of the simulation. Must be unique for all simulations in the Engine.</dd>
+<dt><strong><code>entities</code></strong></dt>
+<dd>List of entities in use jn the simulation.</dd>
+<dt><strong><code>component</code></strong></dt>
+<dd>List of component types in use in the simulation.</dd>
+<dt><strong><code>client</code></strong></dt>
+<dd>Client to use to communicate with the Engine.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Simulation:
+    # TODO(mrzzy): Add a more complete usage example into docs.
+    &#34;&#34;&#34;Represents a Simulation in running in the Bentobox Engine.
+
+    Example:
+    # define simulation with entities and components
+    sim = Simulation(name=&#34;sim&#34;, entities=[ ... ], components=[ ... ], client=client)
+
+    # use an init graph to initalize attribute values
+    @sim.init
+    def init_fn():
+        # initialize values with:  entity[Component].attribute = value
+
+    # implement systems running in the simulation
+    @sim.system
+    def system_fn():
+        # ...
+
+    # start-end the simulation using with block
+    with sim:
+        # simulation is running now ....
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        name: str,
+        entities: Iterable[EntityDef],
+        components: Iterable[ComponentDef],
+        client: Client,
+    ):
+        &#34;&#34;&#34;Create a new simulation with the given entities and component
+        Args:
+            name: Name of the simulation. Must be unique for all simulations in the Engine.
+            entities: List of entities in use jn the simulation.
+            component: List of component types in use in the simulation.
+            client: Client to use to communicate with the Engine.
+        &#34;&#34;&#34;
+        self.name = name
+        self.client = client
+        self.started = False
+        self.component_defs = list(components)
+        self.entity_defs = list(entities)
+        self.system_defs = []
+        self.init_graph = Graph()
+
+        # register sim on engine
+        applied_proto = self.client.apply_sim(self.proto)
+
+        # obtain autogen ids for entities and the engine by recreating from applied proto
+        self.entity_defs = [EntityDef.from_proto(e) for e in applied_proto.entities]
+
+        # unpack entity and components from proto
+        # unpack Entity protos into grpc backed entities (set(components) -&gt; grpc entity)
+        self.entity_map = {
+            frozenset(e.components): Entity(
+                sim_name=self.name,
+                entity_id=e.id,
+                components=e.components,
+                client=self.client,
+            )
+            for e in self.entity_defs
+        }
+
+    @property
+    def proto(self) -&gt; SimulationDef:
+        &#34;&#34;&#34;
+        Get a Protobuf representation of this simulation.
+        &#34;&#34;&#34;
+        proto = SimulationDef(
+            name=self.name,
+            entities=[e.proto for e in self.entity_defs],
+            components=[c.proto for c in self.component_defs],
+            systems=[s.proto for s in self.system_defs],
+            init_graph=self.init_graph.proto,
+        )
+        return proto
+
+    def start(self):
+        &#34;&#34;&#34;Starts this Simulation on the Engine.
+
+        If already started, calling `start()` again does nothing.
+        &#34;&#34;&#34;
+        # do nothing if already started
+        if self.started:
+            return
+        # commit all changes made (ie systems added) to engine
+        applied_proto = self.client.apply_sim(self.proto)
+        # obtain autogen ids for systems from the engine by recreating the applied proto
+        self.system_defs = [SystemDef.from_proto(s) for s in applied_proto.systems]
+        self.started = True
+
+    def stop(self):
+        &#34;&#34;&#34;Stops and removes this Simulation from the Engine.
+        Raises:
+            RuntimeError: If stop() is called on a simulation that has not started yet.
+        &#34;&#34;&#34;
+        if not self.started:
+            raise RuntimeError(&#34;Cannot stop a Simulation that has not started yet.&#34;)
+        # cleanup by remove simulation from engine
+        self.client.remove_sim(self.name)
+        self.started = False
+
+    def entity(self, components: Iterable[str]) -&gt; Entity:
+        &#34;&#34;&#34;Lookup the gRPC entity with the components with the game attached.
+
+        Provides access to ECS entity on the Bentobox Engine via gRPC.
+
+        Args:
+            components: Set of the names of the component attached that
+                should be attached to the retrieved component.
+        Raises:
+            ValueError: if component names given contains duplicates
+            RuntimeError: If Simulation has not yet stated.
+        Returns:
+            The gRPC entity with the given list of components attached.
+        &#34;&#34;&#34;
+        if not self.started:
+            raise RuntimeError(
+                &#34;Cannot obtain a gRPC Entity from a Simulation that has not started yet.&#34;
+            )
+        comp_set = frozenset([str(c) for c in components])
+        # check for duplicates in given components
+        if len(comp_set) != len(components):
+            raise ValueError(&#34;Given component names should not contain duplicates&#34;)
+        return self.entity_map[comp_set]
+
+    @property
+    def entities(self) -&gt; List[Entity]:
+        &#34;&#34;&#34;Get gRPC entities to this Simulation.
+        Returns:
+            List of entities belonging to this Simulation
+        &#34;&#34;&#34;
+        return list(self.entity_map.values())
+
+    def init(self, init_fn: ConvertFn):
+        &#34;&#34;&#34;Register given init_fn as the init graph for this simulation.
+
+        The init graph allows for the initization of attribute&#39;s values,
+        running on the simulation first step() call, before any systems run.
+
+        Compiles the `init_fn` into a computational graph and registers the
+        result as a init graph for this Simulation.
+
+            Example:
+            @sim.system
+            def system_fn(g):
+                # ... implementation of the system ..
+
+        Args:
+            system_fn: Function that contains the implementation of the system.
+                Must be compilable by `compile_graph()`.
+        &#34;&#34;&#34;
+        self.init_graph = compile_graph(init_fn, self.entity_defs, self.component_defs)
+
+    def system(self, system_fn: ConvertFn):
+        &#34;&#34;&#34;Register ECS system with the given system_fn implementation on this Simulation.
+
+        ECS Systems are run every step of simulation and encapsulate the logic of the simulation.
+
+        Compiles the `system_fn` into a computational graph and registers the
+        result as a ECS system to run on this Simulation.
+
+            Example:
+            @sim.system
+            def system_fn(g):
+                # ... implementation of the system ..
+
+        Args:
+            system_fn: Function that contains the implementation of the system.
+                Must be compilable by `compile_graph()`.
+        &#34;&#34;&#34;
+        graph = compile_graph(system_fn, self.entity_defs, self.component_defs)
+        self.system_defs.append(SystemDef(graph))
+
+    def step(self):
+        &#34;&#34;&#34;Run this simulation for one step
+
+        Runs this simulation&#39;s systems in the order they are registered.
+        Blocks until all systems of that simulation have finished running.
+
+        The Simulation must have already started before running the simulation with step()`
+
+        Args:
+            RuntimeError: If step() is called on a simulation that has not started yet
+                or has already been stopped.
+        &#34;&#34;&#34;
+        if not self.started:
+            raise RuntimeError(
+                &#34;Cannot step a simulation that has not started or already stopped.&#34;
+            )
+        self.client.step_sim(self.name)
+
+    def __enter__(self):
+        self.start()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.stop()
+        # never suppress exceptions inside with statement
+        return False</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="bento.sim.Simulation.entities"><code class="name">var <span class="ident">entities</span> : List[<a title="bento.ecs.grpc.Entity" href="ecs/grpc.html#bento.ecs.grpc.Entity">Entity</a>]</code></dt>
+<dd>
+<div class="desc"><p>Get gRPC entities to this Simulation.</p>
+<h2 id="returns">Returns</h2>
+<p>List of entities belonging to this Simulation</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def entities(self) -&gt; List[Entity]:
+    &#34;&#34;&#34;Get gRPC entities to this Simulation.
+    Returns:
+        List of entities belonging to this Simulation
+    &#34;&#34;&#34;
+    return list(self.entity_map.values())</code></pre>
+</details>
+</dd>
+<dt id="bento.sim.Simulation.proto"><code class="name">var <span class="ident">proto</span> : <a title="bento.protos.sim_pb2.SimulationDef" href="protos/sim_pb2.html#bento.protos.sim_pb2.SimulationDef">SimulationDef</a></code></dt>
+<dd>
+<div class="desc"><p>Get a Protobuf representation of this simulation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def proto(self) -&gt; SimulationDef:
+    &#34;&#34;&#34;
+    Get a Protobuf representation of this simulation.
+    &#34;&#34;&#34;
+    proto = SimulationDef(
+        name=self.name,
+        entities=[e.proto for e in self.entity_defs],
+        components=[c.proto for c in self.component_defs],
+        systems=[s.proto for s in self.system_defs],
+        init_graph=self.init_graph.proto,
+    )
+    return proto</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="bento.sim.Simulation.entity"><code class="name flex">
+<span>def <span class="ident">entity</span></span>(<span>self, components: Iterable[str]) ‑> <a title="bento.ecs.grpc.Entity" href="ecs/grpc.html#bento.ecs.grpc.Entity">Entity</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Lookup the gRPC entity with the components with the game attached.</p>
+<p>Provides access to ECS entity on the Bentobox Engine via gRPC.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>components</code></strong></dt>
+<dd>Set of the names of the component attached that
+should be attached to the retrieved component.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>if component names given contains duplicates</dd>
+<dt><code>RuntimeError</code></dt>
+<dd>If Simulation has not yet stated.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The gRPC entity with the given list of components attached.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def entity(self, components: Iterable[str]) -&gt; Entity:
+    &#34;&#34;&#34;Lookup the gRPC entity with the components with the game attached.
+
+    Provides access to ECS entity on the Bentobox Engine via gRPC.
+
+    Args:
+        components: Set of the names of the component attached that
+            should be attached to the retrieved component.
+    Raises:
+        ValueError: if component names given contains duplicates
+        RuntimeError: If Simulation has not yet stated.
+    Returns:
+        The gRPC entity with the given list of components attached.
+    &#34;&#34;&#34;
+    if not self.started:
+        raise RuntimeError(
+            &#34;Cannot obtain a gRPC Entity from a Simulation that has not started yet.&#34;
+        )
+    comp_set = frozenset([str(c) for c in components])
+    # check for duplicates in given components
+    if len(comp_set) != len(components):
+        raise ValueError(&#34;Given component names should not contain duplicates&#34;)
+    return self.entity_map[comp_set]</code></pre>
+</details>
+</dd>
+<dt id="bento.sim.Simulation.init"><code class="name flex">
+<span>def <span class="ident">init</span></span>(<span>self, init_fn: Callable[[<a title="bento.graph.plotter.Plotter" href="graph/plotter.html#bento.graph.plotter.Plotter">Plotter</a>], NoneType])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register given init_fn as the init graph for this simulation.</p>
+<p>The init graph allows for the initization of attribute's values,
+running on the simulation first step() call, before any systems run.</p>
+<p>Compiles the <code>init_fn</code> into a computational graph and registers the
+result as a init graph for this Simulation.</p>
+<pre><code>Example:
+@sim.system
+def system_fn(g):
+    # ... implementation of the system ..
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>system_fn</code></strong></dt>
+<dd>Function that contains the implementation of the system.
+Must be compilable by <code>compile_graph()</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def init(self, init_fn: ConvertFn):
+    &#34;&#34;&#34;Register given init_fn as the init graph for this simulation.
+
+    The init graph allows for the initization of attribute&#39;s values,
+    running on the simulation first step() call, before any systems run.
+
+    Compiles the `init_fn` into a computational graph and registers the
+    result as a init graph for this Simulation.
+
+        Example:
+        @sim.system
+        def system_fn(g):
+            # ... implementation of the system ..
+
+    Args:
+        system_fn: Function that contains the implementation of the system.
+            Must be compilable by `compile_graph()`.
+    &#34;&#34;&#34;
+    self.init_graph = compile_graph(init_fn, self.entity_defs, self.component_defs)</code></pre>
+</details>
+</dd>
+<dt id="bento.sim.Simulation.start"><code class="name flex">
+<span>def <span class="ident">start</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Starts this Simulation on the Engine.</p>
+<p>If already started, calling <code>start()</code> again does nothing.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start(self):
+    &#34;&#34;&#34;Starts this Simulation on the Engine.
+
+    If already started, calling `start()` again does nothing.
+    &#34;&#34;&#34;
+    # do nothing if already started
+    if self.started:
+        return
+    # commit all changes made (ie systems added) to engine
+    applied_proto = self.client.apply_sim(self.proto)
+    # obtain autogen ids for systems from the engine by recreating the applied proto
+    self.system_defs = [SystemDef.from_proto(s) for s in applied_proto.systems]
+    self.started = True</code></pre>
+</details>
+</dd>
+<dt id="bento.sim.Simulation.step"><code class="name flex">
+<span>def <span class="ident">step</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run this simulation for one step</p>
+<p>Runs this simulation's systems in the order they are registered.
+Blocks until all systems of that simulation have finished running.</p>
+<p>The Simulation must have already started before running the simulation with step()`</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>RuntimeError</code></strong></dt>
+<dd>If step() is called on a simulation that has not started yet
+or has already been stopped.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def step(self):
+    &#34;&#34;&#34;Run this simulation for one step
+
+    Runs this simulation&#39;s systems in the order they are registered.
+    Blocks until all systems of that simulation have finished running.
+
+    The Simulation must have already started before running the simulation with step()`
+
+    Args:
+        RuntimeError: If step() is called on a simulation that has not started yet
+            or has already been stopped.
+    &#34;&#34;&#34;
+    if not self.started:
+        raise RuntimeError(
+            &#34;Cannot step a simulation that has not started or already stopped.&#34;
+        )
+    self.client.step_sim(self.name)</code></pre>
+</details>
+</dd>
+<dt id="bento.sim.Simulation.stop"><code class="name flex">
+<span>def <span class="ident">stop</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Stops and removes this Simulation from the Engine.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>RuntimeError</code></dt>
+<dd>If stop() is called on a simulation that has not started yet.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stop(self):
+    &#34;&#34;&#34;Stops and removes this Simulation from the Engine.
+    Raises:
+        RuntimeError: If stop() is called on a simulation that has not started yet.
+    &#34;&#34;&#34;
+    if not self.started:
+        raise RuntimeError(&#34;Cannot stop a Simulation that has not started yet.&#34;)
+    # cleanup by remove simulation from engine
+    self.client.remove_sim(self.name)
+    self.started = False</code></pre>
+</details>
+</dd>
+<dt id="bento.sim.Simulation.system"><code class="name flex">
+<span>def <span class="ident">system</span></span>(<span>self, system_fn: Callable[[<a title="bento.graph.plotter.Plotter" href="graph/plotter.html#bento.graph.plotter.Plotter">Plotter</a>], NoneType])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register ECS system with the given system_fn implementation on this Simulation.</p>
+<p>ECS Systems are run every step of simulation and encapsulate the logic of the simulation.</p>
+<p>Compiles the <code>system_fn</code> into a computational graph and registers the
+result as a ECS system to run on this Simulation.</p>
+<pre><code>Example:
+@sim.system
+def system_fn(g):
+    # ... implementation of the system ..
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>system_fn</code></strong></dt>
+<dd>Function that contains the implementation of the system.
+Must be compilable by <code>compile_graph()</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def system(self, system_fn: ConvertFn):
+    &#34;&#34;&#34;Register ECS system with the given system_fn implementation on this Simulation.
+
+    ECS Systems are run every step of simulation and encapsulate the logic of the simulation.
+
+    Compiles the `system_fn` into a computational graph and registers the
+    result as a ECS system to run on this Simulation.
+
+        Example:
+        @sim.system
+        def system_fn(g):
+            # ... implementation of the system ..
+
+    Args:
+        system_fn: Function that contains the implementation of the system.
+            Must be compilable by `compile_graph()`.
+    &#34;&#34;&#34;
+    graph = compile_graph(system_fn, self.entity_defs, self.component_defs)
+    self.system_defs.append(SystemDef(graph))</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="bento" href="index.html">bento</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="bento.sim.Simulation" href="#bento.sim.Simulation">Simulation</a></code></h4>
+<ul class="two-column">
+<li><code><a title="bento.sim.Simulation.entities" href="#bento.sim.Simulation.entities">entities</a></code></li>
+<li><code><a title="bento.sim.Simulation.entity" href="#bento.sim.Simulation.entity">entity</a></code></li>
+<li><code><a title="bento.sim.Simulation.init" href="#bento.sim.Simulation.init">init</a></code></li>
+<li><code><a title="bento.sim.Simulation.proto" href="#bento.sim.Simulation.proto">proto</a></code></li>
+<li><code><a title="bento.sim.Simulation.start" href="#bento.sim.Simulation.start">start</a></code></li>
+<li><code><a title="bento.sim.Simulation.step" href="#bento.sim.Simulation.step">step</a></code></li>
+<li><code><a title="bento.sim.Simulation.stop" href="#bento.sim.Simulation.stop">stop</a></code></li>
+<li><code><a title="bento.sim.Simulation.system" href="#bento.sim.Simulation.system">system</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>
