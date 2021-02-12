@@ -107,6 +107,40 @@ TEST(TEST_SUITE, IsValueOfTypes) {
     ASSERT_FALSE(isValid);
 }
 
+TEST(TEST_SUITE, RunFnWithValRunsFunction) {
+    {
+        auto val = bento::protos::Value();
+        val.mutable_primitive()->set_int_32(10);
+
+        auto newVal =
+            runFnWithVal<proto_INT32>(val, []<class X>(X x) { return x + 3; });
+        ASSERT_EQ(newVal.primitive().int_32(), 13);
+    }
+    {
+        auto valX = bento::protos::Value();
+        valX.mutable_primitive()->set_float_32(10.0f);
+        auto valY = bento::protos::Value();
+        valY.mutable_primitive()->set_float_32(20.0f);
+
+        auto newVal = runFnWithVal<proto_FLOAT32>(
+            valX, valY, []<class X, class Y>(X x, Y y) { return x + y; });
+        ASSERT_FLOAT_EQ(newVal.primitive().float_32(), 30.0f);
+    }
+}
+
+TEST(TEST_SUITE, RunFnWithValDetectsTypes) {
+    auto valFloat = bento::protos::Value();
+    valFloat.mutable_primitive()->set_float_32(10.0f);
+
+    auto valInt = bento::protos::Value();
+    valInt.mutable_primitive()->set_int_32(20);
+
+    auto newVal = runFnWithVal<proto_FLOAT32, proto_INT32>(
+        valFloat, valInt, []<class X, class Y>(X x, Y y) { return x + y; });
+    // The addition of float and int is float
+    ASSERT_FLOAT_EQ(newVal.primitive().float_32(), 30.0);
+}
+
 TEST(TEST_SUITE, ConvertTypeFromLambda) {
     auto add = []<class X, class Y>(X x, Y y) { return x + y; };
 

@@ -45,32 +45,32 @@ void setVal(bento::protos::Value& protoVal, proto_BOOL boolVal) {
 }
 
 template <>
-proto_INT32 getVal(bento::protos::Value& protoVal) {
+proto_INT32 getVal(const bento::protos::Value& protoVal) {
     return protoVal.primitive().int_32();
 }
 
 template <>
-proto_INT64 getVal(bento::protos::Value& protoVal) {
+proto_INT64 getVal(const bento::protos::Value& protoVal) {
     return protoVal.primitive().int_64();
 }
 
 template <>
-proto_FLOAT32 getVal(bento::protos::Value& protoVal) {
+proto_FLOAT32 getVal(const bento::protos::Value& protoVal) {
     return protoVal.primitive().float_32();
 }
 
 template <>
-proto_FLOAT64 getVal(bento::protos::Value& protoVal) {
+proto_FLOAT64 getVal(const bento::protos::Value& protoVal) {
     return protoVal.primitive().float_64();
 }
 
 template <>
-proto_STR getVal(bento::protos::Value& protoVal) {
+proto_STR getVal(const bento::protos::Value& protoVal) {
     return protoVal.primitive().str_val();
 }
 
 template <>
-proto_BOOL getVal(bento::protos::Value& protoVal) {
+proto_BOOL getVal(const bento::protos::Value& protoVal) {
     return protoVal.primitive().boolean();
 }
 
