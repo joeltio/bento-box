@@ -43,8 +43,42 @@ requires ProtobufType<T> T getVal(bento::protos::Value& protoVal) {
 // Check value type
 template <class T>
 // Ensure that the values are protobuf values
-requires ProtobufType<T> bool isValOfType(bento::protos::Value& protoVal) {
+requires ProtobufType<T> bool isValOfType(
+    const bento::protos::Value& protoVal) {
     throw std::runtime_error("Invalid protobuf type.");
+}
+
+namespace {
+// Do not export this function. Only isValOfTypes should be used.
+// isValOfTypes does not have the additional N non-type template parameter
+// making invocation simpler.
+template <size_t N = 0, class... AllowedTypes>
+requires(interpreter::ProtobufType<AllowedTypes>&&...) bool _isValOfTypes(
+    const bento::protos::Value& val) {
+    if constexpr (N == sizeof...(AllowedTypes)) {
+        // Finished looping and no valid types were found
+        return false;
+    } else {
+        // This else statement is required because the compiler seems to
+        // evaluate this typedef first, which will cause an index error
+        // on the iteration where the N == sizeof...(AllowedTypes)
+        typedef std::tuple_element_t<N, std::tuple<AllowedTypes...>>
+            CurrentType;
+        // It matches one of the types
+        if (interpreter::isValOfType<CurrentType>(val)) {
+            return true;
+        }
+
+        // It doesn't match any type, recurse and get the next type
+        return _isValOfTypes<N + 1, AllowedTypes...>(val);
+    }
+};
+}  // namespace
+
+template <class... AllowedTypes>
+requires(interpreter::ProtobufType<AllowedTypes>&&...) bool isValOfTypes(
+    const bento::protos::Value& val) {
+    return _isValOfTypes<0, AllowedTypes...>(val);
 }
 
 }  // namespace interpreter

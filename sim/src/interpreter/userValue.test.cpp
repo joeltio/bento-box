@@ -89,6 +89,24 @@ TEST(TEST_SUITE, IsValueOfType) {
     ASSERT_FALSE(isValOfType<proto_FLOAT32>(val));
 }
 
+TEST(TEST_SUITE, IsValueOfTypes) {
+    auto val = bento::protos::Value();
+
+    val.mutable_primitive()->set_int_32(10);
+    bool isValid = isValOfTypes<proto_INT32, proto_FLOAT64>(val);
+    // For some reason, putting the literal into the ASSERT_TRUE macro fails to
+    // compile
+    ASSERT_TRUE(isValid);
+    isValid = isValOfTypes<proto_FLOAT64, proto_STR, proto_BOOL>(val);
+    ASSERT_FALSE(isValid);
+
+    val.mutable_primitive()->set_boolean(true);
+    isValid = isValOfTypes<proto_STR, proto_FLOAT64, proto_BOOL>(val);
+    ASSERT_TRUE(isValid);
+    isValid = isValOfTypes<proto_FLOAT64, proto_STR, proto_INT32>(val);
+    ASSERT_FALSE(isValid);
+}
+
 TEST(TEST_SUITE, ConvertTypeFromLambda) {
     auto add = []<class X, class Y>(X x, Y y) { return x + y; };
 

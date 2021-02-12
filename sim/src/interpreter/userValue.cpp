@@ -75,37 +75,37 @@ proto_BOOL getVal(bento::protos::Value& protoVal) {
 }
 
 template <>
-bool isValOfType<proto_INT32>(bento::protos::Value& protoVal) {
+bool isValOfType<proto_INT32>(const bento::protos::Value& protoVal) {
     return protoVal.primitive().value_case() ==
            bento::protos::Value_Primitive::kInt32;
 }
 
 template <>
-bool isValOfType<proto_INT64>(bento::protos::Value& protoVal) {
+bool isValOfType<proto_INT64>(const bento::protos::Value& protoVal) {
     return protoVal.primitive().value_case() ==
            bento::protos::Value_Primitive::kInt64;
 }
 
 template <>
-bool isValOfType<proto_FLOAT32>(bento::protos::Value& protoVal) {
+bool isValOfType<proto_FLOAT32>(const bento::protos::Value& protoVal) {
     return protoVal.primitive().value_case() ==
            bento::protos::Value_Primitive::kFloat32;
 }
 
 template <>
-bool isValOfType<proto_FLOAT64>(bento::protos::Value& protoVal) {
+bool isValOfType<proto_FLOAT64>(const bento::protos::Value& protoVal) {
     return protoVal.primitive().value_case() ==
            bento::protos::Value_Primitive::kFloat64;
 }
 
 template <>
-bool isValOfType<proto_STR>(bento::protos::Value& protoVal) {
+bool isValOfType<proto_STR>(const bento::protos::Value& protoVal) {
     return protoVal.primitive().value_case() ==
            bento::protos::Value_Primitive::kStrVal;
 }
 
 template <>
-bool isValOfType<proto_BOOL>(bento::protos::Value& protoVal) {
+bool isValOfType<proto_BOOL>(const bento::protos::Value& protoVal) {
     return protoVal.primitive().value_case() ==
            bento::protos::Value_Primitive::kBoolean;
 }
