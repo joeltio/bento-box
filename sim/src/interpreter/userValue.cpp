@@ -74,4 +74,40 @@ proto_BOOL getVal(bento::protos::Value& protoVal) {
     return protoVal.primitive().boolean();
 }
 
+template <>
+bool isValOfType<proto_INT32>(bento::protos::Value& protoVal) {
+    return protoVal.primitive().value_case() ==
+           bento::protos::Value_Primitive::kInt32;
+}
+
+template <>
+bool isValOfType<proto_INT64>(bento::protos::Value& protoVal) {
+    return protoVal.primitive().value_case() ==
+           bento::protos::Value_Primitive::kInt64;
+}
+
+template <>
+bool isValOfType<proto_FLOAT32>(bento::protos::Value& protoVal) {
+    return protoVal.primitive().value_case() ==
+           bento::protos::Value_Primitive::kFloat32;
+}
+
+template <>
+bool isValOfType<proto_FLOAT64>(bento::protos::Value& protoVal) {
+    return protoVal.primitive().value_case() ==
+           bento::protos::Value_Primitive::kFloat64;
+}
+
+template <>
+bool isValOfType<proto_STR>(bento::protos::Value& protoVal) {
+    return protoVal.primitive().value_case() ==
+           bento::protos::Value_Primitive::kStrVal;
+}
+
+template <>
+bool isValOfType<proto_BOOL>(bento::protos::Value& protoVal) {
+    return protoVal.primitive().value_case() ==
+           bento::protos::Value_Primitive::kBoolean;
+}
+
 }  // namespace interpreter

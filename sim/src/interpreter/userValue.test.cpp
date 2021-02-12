@@ -58,6 +58,37 @@ TEST(TEST_SUITE, GetValue) {
     ASSERT_EQ(getVal<proto_BOOL>(val), true);
 }
 
+TEST(TEST_SUITE, IsValueOfType) {
+    auto val = bento::protos::Value();
+    // Test all the true cases
+    val.mutable_primitive()->set_int_32(10);
+    ASSERT_TRUE(isValOfType<proto_INT32>(val));
+    val.mutable_primitive()->set_int_64(20);
+    ASSERT_TRUE(isValOfType<proto_INT64>(val));
+
+    val.mutable_primitive()->set_float_32(30.0f);
+    ASSERT_TRUE(isValOfType<proto_FLOAT32>(val));
+    val.mutable_primitive()->set_float_64(40.0);
+    ASSERT_TRUE(isValOfType<proto_FLOAT64>(val));
+
+    val.mutable_primitive()->set_str_val("hello");
+    ASSERT_TRUE(isValOfType<proto_STR>(val));
+    val.mutable_primitive()->set_boolean(true);
+    ASSERT_TRUE(isValOfType<proto_BOOL>(val));
+
+    // Test some false cases
+    ASSERT_FALSE(isValOfType<proto_INT32>(val));
+    ASSERT_FALSE(isValOfType<proto_INT64>(val));
+
+    val.mutable_primitive()->set_float_32(30.0f);
+    ASSERT_FALSE(isValOfType<proto_STR>(val));
+    ASSERT_FALSE(isValOfType<proto_FLOAT64>(val));
+
+    val.mutable_primitive()->set_int_32(30);
+    ASSERT_FALSE(isValOfType<proto_BOOL>(val));
+    ASSERT_FALSE(isValOfType<proto_FLOAT32>(val));
+}
+
 TEST(TEST_SUITE, ConvertTypeFromLambda) {
     auto add = []<class X, class Y>(X x, Y y) { return x + y; };
 

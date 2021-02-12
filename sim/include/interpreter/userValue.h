@@ -40,6 +40,13 @@ requires ProtobufType<T> T getVal(bento::protos::Value& protoVal) {
     throw std::runtime_error("Invalid protobuf type.");
 }
 
+// Check value type
+template <class T>
+// Ensure that the values are protobuf values
+requires ProtobufType<T> bool isValOfType(bento::protos::Value& protoVal) {
+    throw std::runtime_error("Invalid protobuf type.");
+}
+
 }  // namespace interpreter
 
 #endif  // BENTOBOX_USERVALUE_H
