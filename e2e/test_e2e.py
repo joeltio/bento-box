@@ -33,9 +33,8 @@ Meta = ComponentDef(
 Movement = ComponentDef(
     name="movement",
     schema={
-        "rotation": types.float32,
+        "rotation": types.float64,
         "speed": types.float64,
-        "gear": types.int64,
     },
 )
 
@@ -46,7 +45,6 @@ Keyboard = ComponentDef(
         "down": types.boolean,
         "left": types.boolean,
         "right": types.boolean,
-        "key": types.char,
     },
 )
 
@@ -61,13 +59,14 @@ def engine_docker():
     engine.with_env("BENTOBOX_SIM_HOST", "0.0.0.0")
     engine.with_exposed_ports(SIM_PORT)
     engine.start()
-    try:
-        # do e2e test
-        yield engine
-    finally:
-        # cleanup by stopping sim container at end of test
-        # kill the container instead of waiting for cleanup
-        engine.stop(force=True)
+    # do e2e test
+    yield engine
+    # print the engine's logs
+    print("=" * 40, "[Engine Logs]", "=" * 40)
+    print(engine._container.logs().decode())
+    # cleanup by stopping sim container at end of test
+    # kill the container instead of waiting for cleanup
+    engine.stop(force=True)
 
 
 @pytest.fixture
@@ -102,8 +101,6 @@ def sim(client):
         controls[Keyboard].right = False
         controls[Keyboard].up = False
         controls[Keyboard].down = False
-        # -1 to imply no key being pressed
-        controls[Keyboard].key = -1
 
         car = g.entity(components=[Movement, Velocity, Position, Meta])
         car[Meta].name = "beetle"
@@ -119,23 +116,11 @@ def sim(client):
     def control_sys(g: Plotter):
         controls = g.entity(components=[Keyboard])
         car = g.entity(components=[Movement, Velocity, Position, Meta])
-        acceleration, max_speed, steer_rate = 5, 18, 10
-
-        # change gears on the car
-        if controls[Keyboard].key == ord(">"):
-            car[Movement].gear = g.max(car[Movement].gear + 1, 3)
-            controls[Keyboard].key = -1
-        elif controls[Keyboard].key == ord("<"):
-            car[Movement].gear = g.min(car[Movement].gear - 1, 1)
-            controls[Keyboard].key = -1
-
-        max_speed *= car[Movement].gear
-        acceleration /= car[Movement].gear
+        acceleration, max_speed, steer_rate = 5.0, 18.0, 10.0
 
         # steer car
         if controls[Keyboard].left:
             car[Movement].rotation -= steer_rate
-            acceleration /= car[Movement].gear
             controls[Keyboard].left = False
         elif controls[Keyboard].right:
             car[Movement].rotation += steer_rate
@@ -146,7 +131,7 @@ def sim(client):
             car[Movement].speed = g.min(car[Movement].speed + acceleration, max_speed)
             controls[Keyboard].up = False
         elif controls[Keyboard].down:
-            car[Movement].speed = g.max(car[Movement].speed - acceleration, 0)
+            car[Movement].speed = g.max(car[Movement].speed - acceleration, 0.0)
             controls[Keyboard].down = False
 
     @sim.system
@@ -210,21 +195,17 @@ def test_e2e_engine_get_set_attr(sim, client):
     controls = sim.entity(components=[Keyboard])
     controls[Keyboard].left = True
     assert controls[Keyboard].left == True
-    controls[Keyboard].key = ord("A")
-    assert controls[Keyboard].key == ord("A")
 
     car = sim.entity(components=[Movement, Velocity, Position, Meta])
     car[Meta].name = "sedan"
     assert car[Meta].name == "sedan"
-    car[Meta].version == 10
+    car[Meta].version = 10
     assert car[Meta].version == 10
 
     car[Movement].rotation = -134.2
     assert car[Movement].rotation == -134.2
     car[Movement].speed = 23.5
     assert car[Movement].speed == 23.5
-    car[Movement].gear = 2
-    assert car[Movement].gear == 2
 
 
 def test_e2e_engine_step_sim(sim, client):
@@ -239,17 +220,16 @@ def test_e2e_engine_step_sim(sim, client):
     assert controls[Keyboard].right == False
     assert controls[Keyboard].up == False
     assert controls[Keyboard].left == False
-    assert controls[Keyboard].key == -1
 
     car = sim.entity(components=[Movement, Velocity, Position, Meta])
     assert car[Meta].name == "beetle"
     assert car[Meta].version == 2
-    assert car[Movement].speed == 0
-    assert car[Movement].rotation == 90
-    assert car[Velocity].x == 0
-    assert car[Velocity].y == 0
-    assert car[Position].x == 0
-    assert car[Position].y == 0
+    assert car[Movement].speed == 0.0
+    assert car[Movement].rotation == 90.0
+    assert car[Velocity].x == 0.0
+    assert car[Velocity].y == 0.0
+    assert car[Position].x == 0.0
+    assert car[Position].y == 0.0
 
     controls[Keyboard].up = True
     controls[Keyboard].left = True
