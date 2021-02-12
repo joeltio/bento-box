@@ -485,8 +485,8 @@ TEST_F(StoresFixture, GtNode) {
 }
 
 TEST_F(StoresFixture, ImplicitTypeConversion) {
-    // There are a lot of operations to check, this test tests only one operation
-    // for the type conversion
+    // There are a lot of operations to check, this test tests only one
+    // operation for the type conversion
     auto node = bento::protos::Node();
     auto addOpNode = node.mutable_add_op();
     // Set values to add
@@ -504,6 +504,7 @@ TEST_F(StoresFixture, ImplicitTypeConversion) {
         ->mutable_primitive()
         ->set_int_64(y);
 
-    ASSERT_FLOAT_EQ(evaluateNode(compStore, indexStore, node).primitive().float_32(),
-              x + y);
+    ASSERT_FLOAT_EQ(
+        evaluateNode(compStore, indexStore, node).primitive().float_32(),
+        x + y);
 }
