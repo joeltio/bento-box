@@ -19,7 +19,7 @@ from bento.graph.plotter import Plotter
 from bento.ecs.spec import EntityDef, ComponentDef
 from bento.example.specs import Velocity, Position
 
-SIM_PORT = 54243
+SIM_PORT = 54242
 
 # define test components
 Meta = ComponentDef(
