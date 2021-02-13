@@ -17,7 +17,7 @@ from gast import (
     keyword,
     arguments,
     Return,
-    Tuple,
+    Tuple as TupleAST,
     Name,
     Load,
     Store,
@@ -28,10 +28,12 @@ from gast import (
     List as ListAST,
     If,
     Constant,
+    ImportFrom,
+    alias,
 )
 from inspect import getsource, cleandoc
 from textwrap import dedent
-from typing import Any, Dict, Optional, Callable, Union, List
+from typing import Any, Dict, Optional, Callable, Union, List, Tuple
 
 
 class FuncASTTransform(gast.NodeTransformer):
@@ -72,25 +74,50 @@ def name_ast(name: str, ctx: Union[Load, Store, Del] = Load()) -> Name:
     Args:
         name: Maps to the `id` parameter of the Name constructor.
         ctx: Maps to the `id` parameter of the Name constructor.
+    Returns:
+        The created name AST node.
     """
     return Name(id=name, ctx=ctx, annotation=None, type_comment="")
 
 
+def import_from_ast(module: str, names: List[str]) -> ImportFrom:
+    """Convenience function for creating 'from module import names, ...' as a AST node
+
+    Args:
+        module: The name of the module to import from.
+        names: List of names of symbols to import from the module.
+    Returns:
+        The created ImportFrom AST node.
+    """
+    return ImportFrom(
+        module=module,
+        names=[alias(name=n, asname=None) for n in names],
+        # 0 -> use absolute import
+        level=0,
+    )
+
+
 def assign_ast(
-    targets: List[AST], values: List[AST], multi_assign: bool = False
+    targets: List[AST],
+    values: List[AST],
+    multi_assign: bool = False,
+    force_tuple: bool = False,
 ) -> AST:
     """Convenience function for creating Assignment AST
 
     Args:
         targets: List of target AST nodes to assign to.
         values: List of values as AST nodes to assign to the target nodes.
-        multi_assign: Whether to assign multiple targets to the same value
+        multi_assign: Whether to assign multiple targets to the same value instead
+            of using tuple assignment.
+        force_tuple: Whether to always assign to tuple even when assigning to
+            a single target.
     """
-    if len(targets) >= 2:
-        targets = targets if multi_assign else [Tuple(elts=targets, ctx=Store())]
+    if len(targets) >= 2 or force_tuple:
+        targets = targets if multi_assign else [TupleAST(elts=targets, ctx=Store())]
     return Assign(
         targets=targets,
-        value=values[0] if len(values) == 1 else Tuple(elts=values, ctx=Load()),
+        value=values[0] if len(values) == 1 else TupleAST(elts=values, ctx=Load()),
     )
 
 
@@ -159,7 +186,7 @@ def wrap_func_ast(
     if len(returns) > 0:
         # convert return names to return AST node
         return_ast = Return(
-            value=[Tuple(elts=[name_ast(r) for r in returns], ctx=Load())]
+            value=[TupleAST(elts=[name_ast(r) for r in returns], ctx=Load())]
             if len(returns) > 1 or return_tuple
             else name_ast(returns[0])
         )
@@ -203,8 +230,16 @@ def wrap_block_ast(
     )
 
 
-def load_ast_module(ast: AST) -> Any:
-    # TODO(mrzzy): docs
+def load_ast_module(ast: AST, remove_src: bool = True) -> Union[Any, Tuple[Any, str]]:
+    """Loads the given AST as module
+
+    Args:
+        ast: The AST node to load as a module.
+        remove_src: Whether to remove the intermediate module source file.
+    Returns:
+        The AST loaded as a module. If remove_src is True, returns both
+        the loaded module and a path to the intermediate source file.
+    """
     src = unparse(ast)
     with NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(src)
@@ -215,6 +250,7 @@ def load_ast_module(ast: AST) -> Any:
         mod_spec.loader.exec_module(module)
     # delete the temporary file manually as NamedTemporaryFile runs into
     # permission issues trying to remove it on Windows.
-    os.remove(f.name)
-
-    return module
+    if remove_src:
+        os.remove(f.name)
+        return module
+    return module, f.name

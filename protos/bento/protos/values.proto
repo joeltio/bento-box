@@ -17,12 +17,13 @@ message Value {
   message Primitive {
     oneof value {
       // primitive values
-      int32 int_32 = 1;
-      int64 int_64 = 2;
-      float float_32 = 3;
-      double float_64 = 4;
-      string str_val = 5;
-      bool boolean = 6;
+      int32 int_8 = 1;
+      int32 int_32 = 2;
+      int64 int_64 = 3;
+      float float_32 = 4;
+      double float_64 = 5;
+      string str_val = 6;
+      bool boolean = 7;
     }
   }
   // Defines a value of the array kind

@@ -3,12 +3,12 @@ inputs:
 - retrieveAttr:
     attribute: x
     component: position
-    entityId: 1177347317
+    entityId: 1
 outputs:
 - mutateAttr:
     attribute: x
     component: position
-    entityId: 1177347317
+    entityId: 1
   toNode:
     addOp:
       x:
@@ -16,7 +16,7 @@ outputs:
           retrieveAttr:
             attribute: x
             component: position
-            entityId: 1177347317
+            entityId: 1
       y:
         constOp:
           heldValue:

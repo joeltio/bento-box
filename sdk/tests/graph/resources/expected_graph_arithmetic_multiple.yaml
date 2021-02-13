@@ -1,22 +1,22 @@
 # expected graph for test_graph_compile_arithmetic_multiple()
 inputs:
 - retrieveAttr:
-    attribute: x
-    component: position
-    entityId: 240149828
-- retrieveAttr:
-    attribute: x_neg
-    component: speed
-    entityId: 240149828
-- retrieveAttr:
     attribute: tick_ms
     component: clock
-    entityId: 3195780754
+    entityId: 2
+- retrieveAttr:
+    attribute: x
+    component: velocity
+    entityId: 1
+- retrieveAttr:
+    attribute: x
+    component: position
+    entityId: 1
 outputs:
 - mutateAttr:
     attribute: x
     component: position
-    entityId: 240149828
+    entityId: 1
   toNode:
     addOp:
       x:
@@ -33,9 +33,9 @@ outputs:
               y:
                 retrieveOp:
                   retrieveAttr:
-                    attribute: x_neg
-                    component: speed
-                    entityId: 240149828
+                    attribute: x
+                    component: velocity
+                    entityId: 1
           y:
             mulOp:
               x:
@@ -43,7 +43,7 @@ outputs:
                   retrieveAttr:
                     attribute: tick_ms
                     component: clock
-                    entityId: 3195780754
+                    entityId: 2
               y:
                 constOp:
                   heldValue:
@@ -56,4 +56,4 @@ outputs:
           retrieveAttr:
             attribute: x
             component: position
-            entityId: 240149828
+            entityId: 1
