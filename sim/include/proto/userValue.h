@@ -5,33 +5,36 @@
 #include <string>
 #include <bento/protos/values.pb.h>
 
-namespace interpreter {
+// Macros for template parameter packs
+#define proto_NUMERIC ::proto::INT32, ::proto::INT64, ::proto::FLOAT32, ::proto::FLOAT64
+
+namespace proto {
 
 // Type aliases for all the protobuf types
-typedef int32_t proto_INT32;
-typedef int64_t proto_INT64;
+typedef int32_t INT32;
+typedef int64_t INT64;
 static_assert(CHAR_BIT * sizeof(float) == 32);
-typedef float proto_FLOAT32;
+typedef float FLOAT32;
 static_assert(CHAR_BIT * sizeof(double) == 64);
-typedef double proto_FLOAT64;
-typedef std::string proto_STR;
-typedef bool proto_BOOL;
+typedef double FLOAT64;
+typedef std::string STR;
+typedef bool BOOL;
 
 // Concept to assert that the given type is a protobuf type
 template <class T>
 concept ProtobufType =
-    std::is_same_v<T, proto_INT32> || std::is_same_v<T, proto_INT64> ||
-    std::is_same_v<T, proto_FLOAT32> || std::is_same_v<T, proto_FLOAT64> ||
-    std::is_same_v<T, proto_STR> || std::is_same_v<T, proto_BOOL>;
+    std::is_same_v<T, INT32> || std::is_same_v<T, INT64> ||
+    std::is_same_v<T, FLOAT32> || std::is_same_v<T, FLOAT64> ||
+    std::is_same_v<T, STR> || std::is_same_v<T, BOOL>;
 
 // Overloads for setting a value
-void setVal(bento::protos::Value& protoVal, proto_INT32 int32Val);
-void setVal(bento::protos::Value& protoVal, proto_INT64 int64Val);
-void setVal(bento::protos::Value& protoVal, proto_FLOAT32 float32Val);
-void setVal(bento::protos::Value& protoVal, proto_FLOAT64 float64Val);
+void setVal(bento::protos::Value& protoVal, INT32 int32Val);
+void setVal(bento::protos::Value& protoVal, INT64 int64Val);
+void setVal(bento::protos::Value& protoVal, FLOAT32 float32Val);
+void setVal(bento::protos::Value& protoVal, FLOAT64 float64Val);
 void setVal(bento::protos::Value& protoVal, const std::string& strVal);
 void setVal(bento::protos::Value& protoVal, const char* strVal);
-void setVal(bento::protos::Value& protoVal, proto_BOOL boolVal);
+void setVal(bento::protos::Value& protoVal, BOOL boolVal);
 
 // Get value
 template <class T>
@@ -53,7 +56,7 @@ namespace {
 // isValOfTypes does not have the additional N non-type template parameter
 // making invocation simpler.
 template <size_t N = 0, class... AllowedTypes>
-requires(interpreter::ProtobufType<AllowedTypes>&&...) bool _isValOfTypes(
+requires(proto::ProtobufType<AllowedTypes>&&...) bool _isValOfTypes(
     const bento::protos::Value& val) {
     if constexpr (N == sizeof...(AllowedTypes)) {
         // Finished looping and no valid types were found
@@ -65,7 +68,7 @@ requires(interpreter::ProtobufType<AllowedTypes>&&...) bool _isValOfTypes(
         typedef std::tuple_element_t<N, std::tuple<AllowedTypes...>>
             CurrentType;
         // It matches one of the types
-        if (interpreter::isValOfType<CurrentType>(val)) {
+        if (proto::isValOfType<CurrentType>(val)) {
             return true;
         }
 
@@ -76,7 +79,7 @@ requires(interpreter::ProtobufType<AllowedTypes>&&...) bool _isValOfTypes(
 }  // namespace
 
 template <class... AllowedTypes>
-requires(interpreter::ProtobufType<AllowedTypes>&&...) bool isValOfTypes(
+requires(proto::ProtobufType<AllowedTypes>&&...) bool isValOfTypes(
     const bento::protos::Value& val) {
     return _isValOfTypes<0, AllowedTypes...>(val);
 }
@@ -110,39 +113,39 @@ bento::protos::Value runFnWithVal(const bento::protos::Value& x, Fn fn) {
 
     auto val = bento::protos::Value();
     bool valSet = false;
-    if constexpr (typeInTypes<proto_INT32, AllowedTypes...>()) {
-        if (isValOfType<proto_INT32>(x)) {
-            setVal(val, fn(getVal<proto_INT32>(x)));
+    if constexpr (typeInTypes<INT32, AllowedTypes...>()) {
+        if (isValOfType<INT32>(x)) {
+            setVal(val, fn(getVal<INT32>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<proto_INT64, AllowedTypes...>()) {
-        if (isValOfType<proto_INT64>(x)) {
-            setVal(val, fn(getVal<proto_INT64>(x)));
+    if constexpr (typeInTypes<INT64, AllowedTypes...>()) {
+        if (isValOfType<INT64>(x)) {
+            setVal(val, fn(getVal<INT64>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<proto_FLOAT32, AllowedTypes...>()) {
-        if (isValOfType<proto_FLOAT32>(x)) {
-            setVal(val, fn(getVal<proto_FLOAT32>(x)));
+    if constexpr (typeInTypes<FLOAT32, AllowedTypes...>()) {
+        if (isValOfType<FLOAT32>(x)) {
+            setVal(val, fn(getVal<FLOAT32>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<proto_FLOAT64, AllowedTypes...>()) {
-        if (isValOfType<proto_FLOAT64>(x)) {
-            setVal(val, fn(getVal<proto_FLOAT64>(x)));
+    if constexpr (typeInTypes<FLOAT64, AllowedTypes...>()) {
+        if (isValOfType<FLOAT64>(x)) {
+            setVal(val, fn(getVal<FLOAT64>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<proto_STR, AllowedTypes...>()) {
-        if (isValOfType<proto_STR>(x)) {
-            setVal(val, fn(getVal<proto_STR>(x)));
+    if constexpr (typeInTypes<STR, AllowedTypes...>()) {
+        if (isValOfType<STR>(x)) {
+            setVal(val, fn(getVal<STR>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<proto_BOOL, AllowedTypes...>()) {
-        if (isValOfType<proto_BOOL>(x)) {
-            setVal(val, fn(getVal<proto_BOOL>(x)));
+    if constexpr (typeInTypes<BOOL, AllowedTypes...>()) {
+        if (isValOfType<BOOL>(x)) {
+            setVal(val, fn(getVal<BOOL>(x)));
             valSet = true;
         }
     }

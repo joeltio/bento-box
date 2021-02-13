@@ -64,8 +64,7 @@ bento::protos::Value addOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
     auto op = []<class X, class Y>(X x, Y y) { return x + y; };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value subOp(ics::ComponentStore& compStore,
@@ -74,8 +73,7 @@ bento::protos::Value subOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
     auto op = []<class X, class Y>(X x, Y y) { return x - y; };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value mulOp(ics::ComponentStore& compStore,
@@ -84,8 +82,7 @@ bento::protos::Value mulOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
     auto op = []<class X, class Y>(X x, Y y) { return x * y; };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value divOp(ics::ComponentStore& compStore,
@@ -94,8 +91,7 @@ bento::protos::Value divOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
     auto op = []<class X, class Y>(X x, Y y) { return x / y; };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value maxOp(ics::ComponentStore& compStore,
@@ -111,8 +107,7 @@ bento::protos::Value maxOp(ics::ComponentStore& compStore,
             return (RetType)y;
         }
     };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value minOp(ics::ComponentStore& compStore,
@@ -128,8 +123,7 @@ bento::protos::Value minOp(ics::ComponentStore& compStore,
             return (RetType)y;
         }
     };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value absOp(ics::ComponentStore& compStore,
@@ -137,8 +131,7 @@ bento::protos::Value absOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Abs& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return abs(x); };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value floorOp(ics::ComponentStore& compStore,
@@ -146,8 +139,7 @@ bento::protos::Value floorOp(ics::ComponentStore& compStore,
                              const bento::protos::Node_Floor& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return floor(x); };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value ceilOp(ics::ComponentStore& compStore,
@@ -155,8 +147,7 @@ bento::protos::Value ceilOp(ics::ComponentStore& compStore,
                             const bento::protos::Node_Ceil& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return ceil(x); };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value powOp(ics::ComponentStore& compStore,
@@ -165,8 +156,7 @@ bento::protos::Value powOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
     auto op = []<class X, class Y>(X x, Y y) { return pow(x, y); };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value modOp(ics::ComponentStore& compStore,
@@ -176,7 +166,7 @@ bento::protos::Value modOp(ics::ComponentStore& compStore,
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
     auto op = []<class X, class Y>(X x, Y y) { return x % y; };
-    return runFnWithVal<proto_INT32, proto_INT64>(xVal, yVal, op);
+    return proto::runFnWithVal<proto::INT32, proto::INT64>(xVal, yVal, op);
 }
 
 bento::protos::Value sinOp(ics::ComponentStore& compStore,
@@ -184,8 +174,7 @@ bento::protos::Value sinOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Sin& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return sin(x); };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value arcSinOp(ics::ComponentStore& compStore,
@@ -198,8 +187,7 @@ bento::protos::Value arcSinOp(ics::ComponentStore& compStore,
         }
         return asin(x);
     };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value cosOp(ics::ComponentStore& compStore,
@@ -207,8 +195,7 @@ bento::protos::Value cosOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Cos& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return cos(x); };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value arcCosOp(ics::ComponentStore& compStore,
@@ -221,8 +208,7 @@ bento::protos::Value arcCosOp(ics::ComponentStore& compStore,
         }
         return acos(x);
     };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value tanOp(ics::ComponentStore& compStore,
@@ -230,8 +216,7 @@ bento::protos::Value tanOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Tan& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return tan(x); };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value arcTanOp(ics::ComponentStore& compStore,
@@ -239,8 +224,7 @@ bento::protos::Value arcTanOp(ics::ComponentStore& compStore,
                               const bento::protos::Node_ArcTan& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return atan(x); };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 // Generate random number
@@ -260,7 +244,8 @@ bento::protos::Value randomOp(ics::ComponentStore& compStore,
             static_cast<CombinedType>(low), static_cast<CombinedType>(high));
         return dist(gen);
     };
-    return runFnWithVal<proto_FLOAT32, proto_FLOAT64>(lowVal, highVal, op);
+    return proto::runFnWithVal<proto::FLOAT32, proto::FLOAT64>(lowVal, highVal,
+                                                               op);
 }
 
 bento::protos::Value andOp(ics::ComponentStore& compStore,
@@ -269,7 +254,8 @@ bento::protos::Value andOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    if (!isValOfType<proto_BOOL>(xVal) || !isValOfType<proto_BOOL>(yVal)) {
+    if (!proto::isValOfType<proto::BOOL>(xVal) ||
+        !proto::isValOfType<proto::BOOL>(yVal)) {
         throw std::domain_error(
             "Cannot run AND operation on non-boolean values.");
     }
@@ -288,7 +274,8 @@ bento::protos::Value orOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    if (!isValOfType<proto_BOOL>(xVal) || !isValOfType<proto_BOOL>(yVal)) {
+    if (!proto::isValOfType<proto::BOOL>(xVal) ||
+        !proto::isValOfType<proto::BOOL>(yVal)) {
         throw std::domain_error(
             "Cannot run OR operation on non-boolean values.");
     }
@@ -306,7 +293,7 @@ bento::protos::Value notOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Not& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
 
-    if (!isValOfType<proto_BOOL>(xVal)) {
+    if (!proto::isValOfType<proto::BOOL>(xVal)) {
         throw std::domain_error(
             "Cannot run NOT operation on non-boolean values.");
     }
@@ -325,16 +312,14 @@ bento::protos::Value eqOp(ics::ComponentStore& compStore,
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
     auto op = []<class X, class Y>(X x, Y y) { return x == y; };
-    if (isValOfTypes<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-            xVal)) {
+    if (proto::isValOfTypes<proto_NUMERIC>(xVal)) {
         // Run the function with other possible numeric comparisons
-        return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32,
-                            proto_FLOAT64>(xVal, yVal, op);
-    } else if (isValOfType<proto_STR>(xVal)) {
+        return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
+    } else if (proto::isValOfType<proto::STR>(xVal)) {
         // Run the function with only string values allowed
-        return runFnWithVal<proto_STR>(xVal, yVal, op);
-    } else if (isValOfType<proto_BOOL>(xVal)) {
-        return runFnWithVal<proto_BOOL>(xVal, yVal, op);
+        return proto::runFnWithVal<proto::STR>(xVal, yVal, op);
+    } else if (proto::isValOfType<proto::BOOL>(xVal)) {
+        return proto::runFnWithVal<proto::BOOL>(xVal, yVal, op);
     } else {
         throw std::domain_error(
             "Checking equivalence between given values is not possible.");
@@ -348,8 +333,7 @@ bento::protos::Value gtOp(ics::ComponentStore& compStore,
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
     auto op = []<class X, class Y>(X x, Y y) { return x > y; };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value ltOp(ics::ComponentStore& compStore,
@@ -359,8 +343,7 @@ bento::protos::Value ltOp(ics::ComponentStore& compStore,
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
     auto op = []<class X, class Y>(X x, Y y) { return x < y; };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value geOp(ics::ComponentStore& compStore,
@@ -370,8 +353,7 @@ bento::protos::Value geOp(ics::ComponentStore& compStore,
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
     auto op = []<class X, class Y>(X x, Y y) { return x >= y; };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value leOp(ics::ComponentStore& compStore,
@@ -381,8 +363,7 @@ bento::protos::Value leOp(ics::ComponentStore& compStore,
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
     auto op = []<class X, class Y>(X x, Y y) { return x <= y; };
-    return runFnWithVal<proto_INT32, proto_INT64, proto_FLOAT32, proto_FLOAT64>(
-        xVal, yVal, op);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 }  // namespace interpreter

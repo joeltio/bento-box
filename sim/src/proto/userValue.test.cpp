@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include <interpreter/userValue.h>
+#include <proto/userValue.h>
 
 #include <utility>
 
 #define TEST_SUITE UserValueTest
 
-using namespace interpreter;
+using namespace proto;
 
 TEST(TEST_SUITE, SetValue) {
     auto val = bento::protos::Value();
@@ -43,67 +43,67 @@ TEST(TEST_SUITE, SetValue) {
 TEST(TEST_SUITE, GetValue) {
     auto val = bento::protos::Value();
     val.mutable_primitive()->set_int_32(10);
-    ASSERT_EQ(getVal<proto_INT32>(val), 10);
+    ASSERT_EQ(getVal<INT32>(val), 10);
     val.mutable_primitive()->set_int_64(20);
-    ASSERT_EQ(getVal<proto_INT64>(val), 20);
+    ASSERT_EQ(getVal<INT64>(val), 20);
 
     val.mutable_primitive()->set_float_32(30.0f);
-    ASSERT_FLOAT_EQ(getVal<proto_FLOAT32>(val), 30.0f);
+    ASSERT_FLOAT_EQ(getVal<FLOAT32>(val), 30.0f);
     val.mutable_primitive()->set_float_64(40.0);
-    ASSERT_FLOAT_EQ(getVal<proto_FLOAT64>(val), 40.0f);
+    ASSERT_FLOAT_EQ(getVal<FLOAT64>(val), 40.0f);
 
     val.mutable_primitive()->set_str_val("hello");
-    ASSERT_EQ(getVal<proto_STR>(val), "hello");
+    ASSERT_EQ(getVal<STR>(val), "hello");
     val.mutable_primitive()->set_boolean(true);
-    ASSERT_EQ(getVal<proto_BOOL>(val), true);
+    ASSERT_EQ(getVal<BOOL>(val), true);
 }
 
 TEST(TEST_SUITE, IsValueOfType) {
     auto val = bento::protos::Value();
     // Test all the true cases
     val.mutable_primitive()->set_int_32(10);
-    ASSERT_TRUE(isValOfType<proto_INT32>(val));
+    ASSERT_TRUE(isValOfType<INT32>(val));
     val.mutable_primitive()->set_int_64(20);
-    ASSERT_TRUE(isValOfType<proto_INT64>(val));
+    ASSERT_TRUE(isValOfType<INT64>(val));
 
     val.mutable_primitive()->set_float_32(30.0f);
-    ASSERT_TRUE(isValOfType<proto_FLOAT32>(val));
+    ASSERT_TRUE(isValOfType<FLOAT32>(val));
     val.mutable_primitive()->set_float_64(40.0);
-    ASSERT_TRUE(isValOfType<proto_FLOAT64>(val));
+    ASSERT_TRUE(isValOfType<FLOAT64>(val));
 
     val.mutable_primitive()->set_str_val("hello");
-    ASSERT_TRUE(isValOfType<proto_STR>(val));
+    ASSERT_TRUE(isValOfType<STR>(val));
     val.mutable_primitive()->set_boolean(true);
-    ASSERT_TRUE(isValOfType<proto_BOOL>(val));
+    ASSERT_TRUE(isValOfType<BOOL>(val));
 
     // Test some false cases
-    ASSERT_FALSE(isValOfType<proto_INT32>(val));
-    ASSERT_FALSE(isValOfType<proto_INT64>(val));
+    ASSERT_FALSE(isValOfType<INT32>(val));
+    ASSERT_FALSE(isValOfType<INT64>(val));
 
     val.mutable_primitive()->set_float_32(30.0f);
-    ASSERT_FALSE(isValOfType<proto_STR>(val));
-    ASSERT_FALSE(isValOfType<proto_FLOAT64>(val));
+    ASSERT_FALSE(isValOfType<STR>(val));
+    ASSERT_FALSE(isValOfType<FLOAT64>(val));
 
     val.mutable_primitive()->set_int_32(30);
-    ASSERT_FALSE(isValOfType<proto_BOOL>(val));
-    ASSERT_FALSE(isValOfType<proto_FLOAT32>(val));
+    ASSERT_FALSE(isValOfType<BOOL>(val));
+    ASSERT_FALSE(isValOfType<FLOAT32>(val));
 }
 
 TEST(TEST_SUITE, IsValueOfTypes) {
     auto val = bento::protos::Value();
 
     val.mutable_primitive()->set_int_32(10);
-    bool isValid = isValOfTypes<proto_INT32, proto_FLOAT64>(val);
+    bool isValid = isValOfTypes<INT32, FLOAT64>(val);
     // For some reason, putting the literal into the ASSERT_TRUE macro fails to
     // compile
     ASSERT_TRUE(isValid);
-    isValid = isValOfTypes<proto_FLOAT64, proto_STR, proto_BOOL>(val);
+    isValid = isValOfTypes<FLOAT64, STR, BOOL>(val);
     ASSERT_FALSE(isValid);
 
     val.mutable_primitive()->set_boolean(true);
-    isValid = isValOfTypes<proto_STR, proto_FLOAT64, proto_BOOL>(val);
+    isValid = isValOfTypes<STR, FLOAT64, BOOL>(val);
     ASSERT_TRUE(isValid);
-    isValid = isValOfTypes<proto_FLOAT64, proto_STR, proto_INT32>(val);
+    isValid = isValOfTypes<FLOAT64, STR, INT32>(val);
     ASSERT_FALSE(isValid);
 }
 
@@ -113,7 +113,7 @@ TEST(TEST_SUITE, RunFnWithValRunsFunction) {
         val.mutable_primitive()->set_int_32(10);
 
         auto newVal =
-            runFnWithVal<proto_INT32>(val, []<class X>(X x) { return x + 3; });
+            runFnWithVal<INT32>(val, []<class X>(X x) { return x + 3; });
         ASSERT_EQ(newVal.primitive().int_32(), 13);
     }
     {
@@ -122,7 +122,7 @@ TEST(TEST_SUITE, RunFnWithValRunsFunction) {
         auto valY = bento::protos::Value();
         valY.mutable_primitive()->set_float_32(20.0f);
 
-        auto newVal = runFnWithVal<proto_FLOAT32>(
+        auto newVal = runFnWithVal<FLOAT32>(
             valX, valY, []<class X, class Y>(X x, Y y) { return x + y; });
         ASSERT_FLOAT_EQ(newVal.primitive().float_32(), 30.0f);
     }
@@ -135,7 +135,7 @@ TEST(TEST_SUITE, RunFnWithValDetectsTypes) {
     auto valInt = bento::protos::Value();
     valInt.mutable_primitive()->set_int_32(20);
 
-    auto newVal = runFnWithVal<proto_FLOAT32, proto_INT32>(
+    auto newVal = runFnWithVal<FLOAT32, INT32>(
         valFloat, valInt, []<class X, class Y>(X x, Y y) { return x + y; });
     // The addition of float and int is float
     ASSERT_FLOAT_EQ(newVal.primitive().float_32(), 30.0);
@@ -146,8 +146,8 @@ TEST(TEST_SUITE, ConvertTypeFromLambda) {
 
     // Int32 with int64
     {
-        proto_INT32 x = 3;
-        proto_INT64 y = 20;
+        INT32 x = 3;
+        INT64 y = 20;
 
         auto val = bento::protos::Value();
         setVal(val, add(x, y));
@@ -157,8 +157,8 @@ TEST(TEST_SUITE, ConvertTypeFromLambda) {
 
     // float32 with int32
     {
-        proto_FLOAT32 x = 3.0;
-        proto_INT32 y = 20;
+        FLOAT32 x = 3.0;
+        INT32 y = 20;
 
         auto val = bento::protos::Value();
         setVal(val, add(x, y));
@@ -168,8 +168,8 @@ TEST(TEST_SUITE, ConvertTypeFromLambda) {
 
     // float64 with int32
     {
-        proto_FLOAT64 x = 3.0;
-        proto_INT32 y = 20;
+        FLOAT64 x = 3.0;
+        INT32 y = 20;
 
         auto val = bento::protos::Value();
         setVal(val, add(x, y));
@@ -190,8 +190,8 @@ TEST(TEST_SUITE, RetTypeFromAdditionType) {
 
     // float64 with int32
     {
-        proto_FLOAT64 x = 3.0;
-        proto_INT32 y = 20;
+        FLOAT64 x = 3.0;
+        INT32 y = 20;
 
         auto val = bento::protos::Value();
         setVal(val, max(x, y));

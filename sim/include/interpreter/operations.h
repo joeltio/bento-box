@@ -5,7 +5,7 @@
 #include <bento/protos/values.pb.h>
 #include <core/ics/componentStore.h>
 #include <index/indexStore.h>
-#include <interpreter/userValue.h>
+#include <proto/userValue.h>
 
 namespace interpreter {
 

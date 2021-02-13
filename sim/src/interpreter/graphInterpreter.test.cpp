@@ -490,8 +490,8 @@ TEST_F(StoresFixture, ImplicitTypeConversion) {
     auto node = bento::protos::Node();
     auto addOpNode = node.mutable_add_op();
     // Set values to add
-    proto_FLOAT32 x = 12.5f;
-    proto_INT64 y = 30;
+    proto::FLOAT32 x = 12.5f;
+    proto::INT64 y = 30;
 
     addOpNode->mutable_x()
         ->mutable_const_op()
