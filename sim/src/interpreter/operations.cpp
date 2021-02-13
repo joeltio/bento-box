@@ -1,5 +1,6 @@
 #include <interpreter/operations.h>
 #include <interpreter/graphInterpreter.h>
+#include <userValue.h>
 #include <ics.h>
 #include <cmath>
 #include <random>
@@ -9,14 +10,19 @@ namespace {
 void validateSame(const bento::protos::Value_Primitive& x,
                   const bento::protos::Value_Primitive& y) {
     if (x.value_case() != y.value_case()) {
-        throw std::runtime_error("Primitive values must be the same type.");
+        throw std::runtime_error(
+            "Primitive values must be the same type. Stored values " +
+            valStoredTypeName(x) + " and " + valStoredTypeName(y) +
+            " do not match.");
     }
 }
 
 void validateSame(const bento::protos::Value_Array& x,
                   const bento::protos::Value_Array& y) {
     if (x.values_size() != y.values_size()) {
-        throw std::runtime_error("Arrays must have the same size.");
+        throw std::runtime_error("Arrays must have the same size. Dimensions " +
+                                 valStoredTypeName(x) + " and " +
+                                 valStoredTypeName(y) + " do not match.");
     }
 
     for (size_t i = 0; i < x.values_size(); i++) {
@@ -30,7 +36,10 @@ void validateSame(const bento::protos::Value_Array& x,
 void validateSame(const bento::protos::Value& x,
                   const bento::protos::Value& y) {
     if (x.kind_case() != y.kind_case()) {
-        throw std::runtime_error("Values must be the same type.");
+        throw std::runtime_error(
+            "Values must be the same type. Stored values " +
+            valStoredTypeName(x) + " and " + valStoredTypeName(y) +
+            " do not match.");
     }
 
     // x and y are primitives
@@ -54,7 +63,8 @@ void validateNumeric(const bento::protos::Value_Primitive& x) {
             throw std::runtime_error("No value when validating numeric value.");
         }
         default: {
-            throw std::runtime_error("Value given is not numeric.");
+            throw std::runtime_error("Value given is not numeric. Got " +
+                                     valStoredTypeName(x) + ".");
         }
     }
 }
@@ -68,7 +78,8 @@ void validateBoolean(const bento::protos::Value_Primitive& x) {
             throw std::runtime_error("No value when validating boolean value.");
         }
         default: {
-            throw std::runtime_error("Value given is not a boolean.");
+            throw std::runtime_error("Value given is not a boolean. Got " +
+                                     valStoredTypeName(x));
         }
     }
 }
@@ -245,12 +256,16 @@ bento::protos::Value modOp(ics::ComponentStore& compStore,
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_int_32(xVal.primitive().int_32() %
                                                 yVal.primitive().int_32());
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_INT32);
             return val;
         }
         case Primitive::kInt64: {
             auto val = bento::protos::Value();
             val.mutable_primitive()->set_int_64(xVal.primitive().int_64() %
                                                 yVal.primitive().int_64());
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_INT64);
             return val;
         }
         default:
@@ -344,12 +359,16 @@ bento::protos::Value randomOp(ics::ComponentStore& compStore,
             auto dist = std::uniform_real_distribution(
                 lowPrimitive.float_32(), highPrimitive.float_32());
             val.mutable_primitive()->set_float_32(dist(gen));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_FLOAT32);
             return val;
         }
         case Primitive::kFloat64: {
             auto dist = std::uniform_real_distribution(
                 lowPrimitive.float_64(), highPrimitive.float_64());
             val.mutable_primitive()->set_float_64(dist(gen));
+            val.mutable_data_type()->set_primitive(
+                bento::protos::Type_Primitive_FLOAT64);
             return val;
         }
         case Primitive::VALUE_NOT_SET: {

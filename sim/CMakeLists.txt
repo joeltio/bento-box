@@ -38,6 +38,7 @@ set(TARGET_SIM_SOURCES
     src/network/grpcServer.cpp
     src/service/engineService.cpp
     src/ics.cpp
+    src/userValue.cpp
 )
 
 add_executable(${TARGET_SIM}

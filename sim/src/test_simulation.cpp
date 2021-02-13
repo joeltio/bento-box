@@ -6,10 +6,14 @@ TestComponent::TestComponent(int width, int height)
     : UserComponent(TEST_COMPONENT_NAME, createCompDef()) {
     auto widthVal = bento::protos::Value();
     widthVal.mutable_primitive()->set_int_64(width);
+    widthVal.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     setValue("width", widthVal);
 
     auto heightVal = bento::protos::Value();
     heightVal.mutable_primitive()->set_int_64(height);
+    heightVal.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     setValue("height", heightVal);
 }
 
@@ -22,25 +26,27 @@ bento::protos::SystemDef cycle100System(
 
     // Create condition
     auto maxHeightConst = bento::protos::Node();
-    maxHeightConst.mutable_const_op()
-        ->mutable_held_value()
-        ->mutable_primitive()
-        ->set_int_64(100);
+    auto maxHeightVal = maxHeightConst.mutable_const_op()->mutable_held_value();
+    maxHeightVal->mutable_primitive()->set_int_64(100);
+    maxHeightVal->mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     auto condNode = bento::protos::Node();
     condNode.mutable_gt_op()->mutable_x()->CopyFrom(attrRetrieve);
     condNode.mutable_gt_op()->mutable_y()->CopyFrom(maxHeightConst);
 
     // Create switch
     auto startHeightConst = bento::protos::Node();
-    startHeightConst.mutable_const_op()
-        ->mutable_held_value()
-        ->mutable_primitive()
-        ->set_int_64(0);
+    auto startHeightVal =
+        startHeightConst.mutable_const_op()->mutable_held_value();
+    startHeightVal->mutable_primitive()->set_int_64(0);
+    startHeightVal->mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     auto incrementHeightConst = bento::protos::Node();
-    incrementHeightConst.mutable_const_op()
-        ->mutable_held_value()
-        ->mutable_primitive()
-        ->set_int_64(1);
+    auto incrementHeightVal =
+        incrementHeightConst.mutable_const_op()->mutable_held_value();
+    incrementHeightVal->mutable_primitive()->set_int_64(1);
+    incrementHeightVal->mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
 
     auto nextHeight = bento::protos::Node();
     nextHeight.mutable_add_op()->mutable_x()->CopyFrom(attrRetrieve);

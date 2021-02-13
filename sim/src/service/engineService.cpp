@@ -142,7 +142,7 @@ Status EngineServiceImpl::StepSimulation(
                 grpc::INTERNAL,
                 formatError(
                     "Something went wrong while running system with ID: " +
-                        std::to_string(i) + ".",
+                        std::to_string(simDef.systems(i).id()) + ".",
                     e));
         }
     }
