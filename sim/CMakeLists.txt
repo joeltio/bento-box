@@ -38,6 +38,7 @@ set(TARGET_SIM_SOURCES
     src/network/grpcServer.cpp
     src/service/engineService.cpp
     src/proto/userValue.cpp
+    src/proto/valueType.cpp
     src/ics.cpp
 )
 

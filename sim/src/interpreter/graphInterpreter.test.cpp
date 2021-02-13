@@ -71,11 +71,12 @@ TEST_F(StoresFixture, MutateNode) {
     mutateAttr->set_attribute("width");
     // Set value to change to
     int newVal = 1000;
-    node.mutable_to_node()
-        ->mutable_const_op()
-        ->mutable_held_value()
-        ->mutable_primitive()
-        ->set_int_64(newVal);
+    auto valProtoVal = bento::protos::Value();
+    valProtoVal.mutable_primitive()->set_int_64(newVal);
+    valProtoVal.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
+    node.mutable_to_node()->mutable_const_op()->mutable_held_value()->CopyFrom(
+        valProtoVal);
 
     // Make sure that this test is valid by ensuring that the value to change to
     // is not the default value
@@ -87,6 +88,8 @@ TEST_F(StoresFixture, MutateNode) {
     auto& comp = ics::getComponent(indexStore, compStore, TEST_COMPONENT_NAME,
                                    entity1Id);
     ASSERT_EQ(comp.getValue("width").primitive().int_64(), newVal);
+    ASSERT_EQ(comp.getValue("width").data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 }
 
 TEST_F(StoresFixture, SwitchNode) {
@@ -95,16 +98,18 @@ TEST_F(StoresFixture, SwitchNode) {
     // Set the true and false nodes
     int trueVal = 10;
     int falseVal = 30;
-    switchOpNode->mutable_true_node()
-        ->mutable_const_op()
-        ->mutable_held_value()
-        ->mutable_primitive()
-        ->set_int_64(trueVal);
-    switchOpNode->mutable_false_node()
-        ->mutable_const_op()
-        ->mutable_held_value()
-        ->mutable_primitive()
-        ->set_int_64(falseVal);
+    auto trueNodeVal = switchOpNode->mutable_true_node()
+                           ->mutable_const_op()
+                           ->mutable_held_value();
+    trueNodeVal->mutable_primitive()->set_int_64(trueVal);
+    trueNodeVal->mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
+    auto falseNodeVal = switchOpNode->mutable_false_node()
+                            ->mutable_const_op()
+                            ->mutable_held_value();
+    falseNodeVal->mutable_primitive()->set_int_64(falseVal);
+    falseNodeVal->mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
 
     // Set the condition node value
     auto conditionNode = switchOpNode->mutable_condition_node();
@@ -114,13 +119,17 @@ TEST_F(StoresFixture, SwitchNode) {
     condVal->mutable_data_type()->set_primitive(
         bento::protos::Type_Primitive_BOOL);
 
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              trueVal);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_EQ(result.primitive().int_64(), trueVal);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 
     // Set the condition to false
     condVal->mutable_primitive()->set_boolean(false);
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              falseVal);
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_EQ(result.primitive().int_64(), falseVal);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 }
 
 TEST_F(StoresFixture, AddNode) {
@@ -141,8 +150,10 @@ TEST_F(StoresFixture, AddNode) {
         ->mutable_primitive()
         ->set_int_64(y);
 
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              x + y);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_EQ(result.primitive().int_64(), x + y);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 }
 
 TEST_F(StoresFixture, DivNodeFloorDividesInts) {
@@ -161,13 +172,17 @@ TEST_F(StoresFixture, DivNodeFloorDividesInts) {
     // Division of integers should be floored
     xVal->set_int_64(10);
     yVal->set_int_64(30);
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              0);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_EQ(result.primitive().int_64(), 0);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 
     xVal->set_int_64(4);
     yVal->set_int_64(3);
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              1);
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_EQ(result.primitive().int_64(), 1);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 }
 
 TEST_F(StoresFixture, DivNodeFloatDivide) {
@@ -185,9 +200,10 @@ TEST_F(StoresFixture, DivNodeFloatDivide) {
 
     xVal->set_float_64(1.0f);
     yVal->set_float_64(3.0f);
-    ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(),
-        1.0f / 3.0f);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FLOAT_EQ(result.primitive().float_64(), 1.0f / 3.0f);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
 }
 
 TEST_F(StoresFixture, MaxNode) {
@@ -205,8 +221,10 @@ TEST_F(StoresFixture, MaxNode) {
 
     xVal->set_int_64(10);
     yVal->set_int_64(30);
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              30);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_EQ(result.primitive().int_64(), 30);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 }
 
 TEST_F(StoresFixture, MinNode) {
@@ -224,8 +242,10 @@ TEST_F(StoresFixture, MinNode) {
 
     xVal->set_int_64(10);
     yVal->set_int_64(30);
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              10);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_EQ(result.primitive().int_64(), 10);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 }
 
 TEST_F(StoresFixture, AbsNode) {
@@ -238,11 +258,15 @@ TEST_F(StoresFixture, AbsNode) {
                    ->mutable_primitive();
 
     val->set_int_64(10);
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              10);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_EQ(result.primitive().int_64(), 10);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
+    result = evaluateNode(compStore, indexStore, node);
     val->set_int_64(-10);
-    ASSERT_EQ(evaluateNode(compStore, indexStore, node).primitive().int_64(),
-              10);
+    ASSERT_EQ(result.primitive().int_64(), 10);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 }
 
 TEST_F(StoresFixture, FloorNode) {
@@ -255,11 +279,15 @@ TEST_F(StoresFixture, FloorNode) {
                    ->mutable_primitive();
 
     val->set_float_64(1.98f);
-    ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(), 1.0f);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FLOAT_EQ(result.primitive().float_64(), 1.0f);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
     val->set_float_64(1.3f);
-    ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(), 1.0f);
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FLOAT_EQ(result.primitive().float_64(), 1.0f);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
 }
 
 TEST_F(StoresFixture, CeilNode) {
@@ -272,11 +300,15 @@ TEST_F(StoresFixture, CeilNode) {
                    ->mutable_primitive();
 
     val->set_float_64(1.3f);
-    ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(), 2.0f);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FLOAT_EQ(result.primitive().float_64(), 2.0f);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
     val->set_float_64(1.98f);
-    ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(), 2.0f);
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FLOAT_EQ(result.primitive().float_64(), 2.0f);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
 }
 
 TEST_F(StoresFixture, PowNode) {
@@ -294,9 +326,10 @@ TEST_F(StoresFixture, PowNode) {
 
     xVal->set_float_64(1.3f);
     yVal->set_float_64(2.0f);
-    ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(),
-        1.69f);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FLOAT_EQ(result.primitive().float_64(), 1.69f);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
 }
 
 TEST_F(StoresFixture, ModNode) {
@@ -319,8 +352,10 @@ TEST_F(StoresFixture, ModNode) {
 
     xVal->set_int_64(12);
     yVal->set_int_64(7);
-    ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().int_64(), 12 % 7);
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FLOAT_EQ(result.primitive().int_64(), 12 % 7);
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_INT64);
 }
 
 TEST_F(StoresFixture, SinNode) {
@@ -333,9 +368,10 @@ TEST_F(StoresFixture, SinNode) {
                     ->mutable_primitive();
 
     xVal->set_float_64(1.0f);
-    ASSERT_FLOAT_EQ(
-        evaluateNode(compStore, indexStore, node).primitive().float_64(),
-        sin(1.0f));
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FLOAT_EQ(result.primitive().float_64(), sin(1.0f));
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
 }
 
 TEST_F(StoresFixture, ArcSinNode) {
@@ -348,9 +384,12 @@ TEST_F(StoresFixture, ArcSinNode) {
                     ->mutable_primitive();
 
     xVal->set_float_64(1.0f);
+    auto result = evaluateNode(compStore, indexStore, node);
     ASSERT_FLOAT_EQ(
         evaluateNode(compStore, indexStore, node).primitive().float_64(),
         asin(1.0f));
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
 
     // The valid domain of arcsin is [-1, 1]
     xVal->set_float_64(2.0f);
@@ -374,10 +413,12 @@ TEST_F(StoresFixture, RandomNode) {
     lowVal->set_float_64(12.0f);
     highVal->set_float_64(13.0f);
 
-    auto rawVal =
-        evaluateNode(compStore, indexStore, node).primitive().float_64();
+    auto result = evaluateNode(compStore, indexStore, node);
+    auto rawVal = result.primitive().float_64();
     ASSERT_GE(rawVal, lowVal->float_64());
     ASSERT_LE(rawVal, highVal->float_64());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_FLOAT64);
 }
 
 TEST_F(StoresFixture, AndNode) {
@@ -396,13 +437,17 @@ TEST_F(StoresFixture, AndNode) {
 
     xVal->set_boolean(true);
     yVal->set_boolean(false);
-    ASSERT_FALSE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FALSE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 
     xVal->set_boolean(true);
     yVal->set_boolean(true);
-    ASSERT_TRUE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_TRUE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 }
 
 TEST_F(StoresFixture, EqNode) {
@@ -422,41 +467,55 @@ TEST_F(StoresFixture, EqNode) {
     // Boolean values
     xVal->set_boolean(false);
     yVal->set_boolean(false);
-    ASSERT_TRUE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_TRUE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 
     // String values
     xVal->set_str_val("hello");
     yVal->set_str_val("mello");
-    ASSERT_FALSE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FALSE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 
     xVal->set_str_val("hello");
     yVal->set_str_val("hello");
-    ASSERT_TRUE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_TRUE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 
     // Integral values
     xVal->set_int_64(12388);
     yVal->set_int_64(20);
-    ASSERT_FALSE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FALSE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 
     xVal->set_int_64(12388);
     yVal->set_int_64(12388);
-    ASSERT_TRUE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_TRUE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 
     // Floating point
     xVal->set_float_64(1.34f);
     yVal->set_float_64(1.84f);
-    ASSERT_FALSE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FALSE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 
     xVal->set_float_64(1.34f);
     yVal->set_float_64(1.34f);
-    ASSERT_TRUE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_TRUE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 }
 
 TEST_F(StoresFixture, GtNode) {
@@ -475,13 +534,17 @@ TEST_F(StoresFixture, GtNode) {
 
     xVal->set_int_64(30);
     yVal->set_int_64(30);
-    ASSERT_FALSE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    auto result = evaluateNode(compStore, indexStore, node);
+    ASSERT_FALSE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 
     xVal->set_int_64(30);
     yVal->set_int_64(10);
-    ASSERT_TRUE(
-        evaluateNode(compStore, indexStore, node).primitive().boolean());
+    result = evaluateNode(compStore, indexStore, node);
+    ASSERT_TRUE(result.primitive().boolean());
+    ASSERT_EQ(result.data_type().primitive(),
+              bento::protos::Type_Primitive_BOOL);
 }
 
 TEST_F(StoresFixture, ImplicitTypeConversion) {

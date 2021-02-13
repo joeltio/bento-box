@@ -1,5 +1,6 @@
 #include <interpreter/operations.h>
 #include <interpreter/graphInterpreter.h>
+#include <proto/userValue.h>
 #include <ics.h>
 #include <cmath>
 #include <random>

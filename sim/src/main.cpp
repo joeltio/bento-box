@@ -58,21 +58,29 @@ int main(int argc, char *argv[]) {
     auto tex1 = ics::component::Texture2DComponent();
     auto value = bento::protos::Value();
     value.mutable_primitive()->set_int_64(1);
+    value.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     tex1.setValue("texture", value);
 
     auto tex2 = ics::component::Texture2DComponent();
     value = bento::protos::Value();
     value.mutable_primitive()->set_int_64(2);
+    value.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     tex2.setValue("texture", value);
 
     auto tex3 = ics::component::Texture2DComponent();
     value = bento::protos::Value();
     value.mutable_primitive()->set_int_64(3);
+    value.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     tex3.setValue("texture", value);
 
     auto tex4 = ics::component::Texture2DComponent();
     value = bento::protos::Value();
     value.mutable_primitive()->set_int_64(4);
+    value.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT64);
     tex4.setValue("texture", value);
 
     ics::addComponent(indexStore, componentStore, tex1);
