@@ -95,12 +95,12 @@ def sim(client):
         controls[Keyboard].down = False
 
         car = g.entity(components=[Movement, Velocity, Position])
-        car[Movement].speed = 0
-        car[Movement].rotation = 90
-        car[Velocity].x = 0
-        car[Velocity].y = 0
-        car[Position].x = 0
-        car[Position].y = 0
+        car[Movement].speed = 0.0
+        car[Movement].rotation = 90.0
+        car[Velocity].x = 0.0
+        car[Velocity].y = 0.0
+        car[Position].x = 0.0
+        car[Position].y = 0.0
 
     @sim.system
     def control_sys(g: Plotter):
