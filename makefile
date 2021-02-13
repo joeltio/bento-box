@@ -97,8 +97,8 @@ test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
 
 run-sim: build-sim
-	env BENTOBOX_SIM_PORT=$(SIM_PORT)\
-		BENTOBOX_SIM_HOST=$(SIM_HOST)
+	env ENGINE_PORT=$(SIM_PORT)\
+		ENGINE_HOST=$(SIM_HOST)
 		$(SIM_BUILD_DIR)/$(SIM_TARGET)
 
 debug-sim: build-sim
@@ -178,7 +178,11 @@ lint-e2e: dep-e2e
 
 test-e2e-docker: dep-e2e install-sdk build-sim-docker
 	cd $(E2E_TESTS) && \
-		env BENTOBOX_SIM_DOCKER=$(SIM_DOCKER) $(PYTEST)
+		env ENGINE_CONTAINER=$(SIM_DOCKER) BOOT_ENGINE_CONTAINER=True $(PYTEST)
+
+test-e2e: dep-e2e install-sdk build-sim
+	cd $(E2E_TESTS) && \
+		env BOOT_ENGINE_CONTAINER=False $(PYTEST)
 
 # spellcheck bentobox codebase
 .PHONY: spellcheck autocorrect
