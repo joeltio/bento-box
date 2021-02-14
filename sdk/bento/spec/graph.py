@@ -1,7 +1,7 @@
 #
 # Bentobox
-# SDK - ECS
-# Graph
+# SDK - Specifications
+# Graph Specification
 #
 
 import yaml

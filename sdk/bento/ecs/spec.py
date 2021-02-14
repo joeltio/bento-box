@@ -1,6 +1,6 @@
 #
 # Bentobox
-# SDK - ECS
+# SDK - Specifications
 # Specifying ECS Definitions
 #
 

@@ -1,7 +1,7 @@
 #
 # Bentobox
-# SDK - Graph
-# Graph ECS
+# SDK - Specifications
+# Graph Specifications
 #
 
 from collections import OrderedDict
