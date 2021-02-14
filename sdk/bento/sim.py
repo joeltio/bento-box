@@ -16,32 +16,36 @@ from bento.protos.sim_pb2 import SimulationDef
 
 class Simulation:
     # TODO(mrzzy): Add a more complete usage example into docs.
-    """Represents a Simulation in running in the Bentobox Engine.
+    """Represents a `Simulation` in running in the Bentobox Engine.
 
     Example:
-    # define simulation with entities and components
-    sim = Simulation(name="sim", entities=[ ... ], components=[ ... ], client=client)
+        Building and running a simulation::
 
-    # use an init graph to initalize attribute values
-    @sim.init
-    def init_fn():
-        # initialize values with:  entity[Component].attribute = value
+            # define simulation with entities and components
+            sim = Simulation(name="sim", entities=[ ... ], components=[ ... ], client=client)
 
-    # implement systems running in the simulation
-    @sim.system
-    def system_fn():
-        # ...
+            # use an init graph to initalize attribute values
+            @sim.init
+            def init_fn():
+                # initialize values with:  entity[Component].attribute = value
 
-    # start-end the simulation using with block
-    with sim:
-        # simulation is running now ....
+            # implement systems running in the simulation
+            @sim.system
+            def system_fn():
+                # ...
+
+            # start-end the simulation using with block
+            with sim:
+                # run the simulation for one step
+                sim.step()
+                # ...
     """
 
     def __init__(
         self,
         name: str,
-        entities: Iterable[EntityDef],
         components: Iterable[ComponentDef],
+        entities: Iterable[EntityDef],
         client: Client,
     ):
         """Create a new simulation with the given entities and component
