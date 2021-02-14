@@ -26,7 +26,9 @@ ENGINE_PORT = 54242
 # if False, an engine instance should be already listening at locahost:ENGINE_PORT
 # Requires environment variables to be specified:
 # - ENGINE_CONTAINER - tag of the bentobox-sim docker image to run
-BOOT_ENGINE_CONTAINER = strtobool(os.environ.get("BOOT_ENGINE_CONTAINER", default=True))
+BOOT_ENGINE_CONTAINER = strtobool(
+    os.environ.get("BOOT_ENGINE_CONTAINER", default="True")
+)
 
 # define test components
 Meta = ComponentDef(
@@ -65,8 +67,8 @@ def engine_address():
         # would be created for each e2e test
         # setup bentobox-sim container and expose engine port
         engine = DockerContainer(os.environ["ENGINE_CONTAINER"])
-        engine.with_env("ENGINE_PORT", str(ENGINE_PORT))
-        engine.with_env("ENGINE_HOST", "0.0.0.0")
+        engine.with_env("BENTOBOX_SIM_PORT", str(ENGINE_PORT))
+        engine.with_env("BENTOBOX_SIM_HOST", "0.0.0.0")
         engine.with_exposed_ports(ENGINE_PORT)
         engine.start()
         # do e2e test
