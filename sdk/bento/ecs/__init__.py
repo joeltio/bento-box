@@ -3,4 +3,5 @@
 # SDK - ECS
 #
 
-from bento.ecs.spec import ComponentDef, EntityDef, SystemDef
+# since spec.ecs is frequently used, move to top level ecs module
+from bento.spec.ecs import ComponentDef, EntityDef, SystemDef

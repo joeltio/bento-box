@@ -11,10 +11,10 @@ from bento import types
 from bento.client import Client
 from bento.sim import Simulation
 from bento.utils import to_yaml_proto
-from bento.graph.spec import Graph
+from bento.spec.graph import Graph
 from bento.graph.plotter import Plotter
 from bento.graph.compile import compile_graph
-from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
+from bento.spec.ecs import EntityDef, ComponentDef, SystemDef
 from bento.example.specs import Position, Speed
 from bento.protos.sim_pb2 import SimulationDef
 

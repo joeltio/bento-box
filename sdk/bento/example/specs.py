@@ -3,9 +3,12 @@
 # SDK
 # Example Specs
 #
+"""
+Example ECS Component types implemented using `bento.spec.ecs.ComponentDef`
+"""
 
 
-from bento.ecs.spec import ComponentDef
+from bento.spec.ecs import ComponentDef
 from bento import types
 
 Position = ComponentDef(
@@ -15,6 +18,14 @@ Position = ComponentDef(
         "y": types.float64,
     },
 )
+"""
+Records the current position of an Entity
+
+Attributes:
+    x (float64): The position of the Entity on the x axis.
+    y (float64): The position of the Entity on the y axis.
+"""
+
 
 Velocity = ComponentDef(
     name="velocity",
@@ -23,6 +34,14 @@ Velocity = ComponentDef(
         "y": types.float64,
     },
 )
+"""
+The current velocity an Entity is moving at.
+
+Attributes:
+    x (float64): The velocity of the Entity on the x axis.
+    y (float64): The velocity of the Entity on the y axis.
+"""
+
 
 Speed = ComponentDef(
     name="speed",

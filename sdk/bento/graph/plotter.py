@@ -8,8 +8,8 @@ from collections import OrderedDict
 from typing import Any, Iterable, Union
 
 from bento.ecs.graph import GraphComponent, GraphEntity, GraphNode
-from bento.ecs.spec import ComponentDef, EntityDef
-from bento.graph.spec import Graph
+from bento.spec.ecs import ComponentDef, EntityDef
+from bento.spec.graph import Graph
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.utils import to_str_attr

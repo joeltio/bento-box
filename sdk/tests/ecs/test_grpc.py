@@ -10,7 +10,7 @@ from unittest.mock import Mock
 from bento import types
 from bento.value import wrap
 from bento.client import Client
-from bento.ecs.spec import ComponentDef
+from bento.spec.ecs import ComponentDef
 from bento.ecs.grpc import Component, Entity
 from bento.protos.references_pb2 import AttributeRef
 

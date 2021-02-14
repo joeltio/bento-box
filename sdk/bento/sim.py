@@ -8,9 +8,9 @@ from typing import Iterable, Set, List
 
 from bento.client import Client
 from bento.ecs.grpc import Entity, Component
-from bento.ecs.spec import EntityDef, ComponentDef, SystemDef
+from bento.spec.ecs import EntityDef, ComponentDef, SystemDef
 from bento.graph.compile import compile_graph, ConvertFn
-from bento.graph.spec import Graph
+from bento.spec.graph import Graph
 from bento.protos.sim_pb2 import SimulationDef
 
 

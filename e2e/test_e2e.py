@@ -17,7 +17,7 @@ from bento.client import Client
 from bento.sim import Simulation
 from bento.utils import to_yaml_proto
 from bento.graph.plotter import Plotter
-from bento.ecs.spec import EntityDef, ComponentDef
+from bento.spec.ecs import EntityDef, ComponentDef
 from bento.example.specs import Velocity, Position
 
 # port that the engine listens on

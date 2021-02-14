@@ -2,6 +2,10 @@
 # Bentobox
 # SDK - Types
 #
+"""
+Provides access to primitive data types supported by `bentobox-sdk`
+"""
+
 
 from bento.protos.types_pb2 import Type
 
