@@ -4,14 +4,15 @@
 # Simulation
 #
 
-from typing import Iterable, Set, List
+from typing import Iterable, List, Set
 
 from bento.client import Client
-from bento.ecs.grpc import Entity, Component
-from bento.spec.ecs import EntityDef, ComponentDef, SystemDef
-from bento.graph.compile import compile_graph, ConvertFn
+from bento.ecs.grpc import Component, Entity
+from bento.graph.compile import ConvertFn, compile_graph
+from bento.protos import sim_pb2
+from bento.spec.ecs import ComponentDef, EntityDef, SystemDef
 from bento.spec.graph import Graph
-from bento.protos.sim_pb2 import SimulationDef
+from bento.spec.sim import SimulationDef
 
 
 class Simulation:
@@ -21,8 +22,10 @@ class Simulation:
     Example:
         Building and running a simulation::
 
-            # define simulation with entities and components
+            # either: define simulation with entities and components
             sim = Simulation(name="sim", entities=[ ... ], components=[ ... ], client=client)
+            # or: load/hydrate a predefined simulation from a SimulationDef
+            sim = Simulation.from_def(sim_def)
 
             # use an init graph to initalize attribute values
             @sim.init
@@ -47,27 +50,26 @@ class Simulation:
         components: Iterable[ComponentDef],
         entities: Iterable[EntityDef],
         client: Client,
+        systems: Iterable[SystemDef] = [],
+        init_graph: Graph = Graph(),
     ):
         """Create a new simulation with the given entities and component
         Args:
             name: Name of the simulation. Must be unique for all simulations in the Engine.
-            entities: List of entities in use jn the simulation.
-            component: List of component types in use in the simulation.
+            entities: List of entities in use in the simulation.
+            components: List of component types in use in the simulation.
             client: Client to use to communicate with the Engine.
+            systems: List of systems to run in this simulation.
+            init_graph: The init graph to use to initialize attribute values.
         """
-        self.name = name
         self.client = client
         self.started = False
-        self.component_defs = list(components)
-        self.entity_defs = list(entities)
-        self.system_defs = []
-        self.init_graph = Graph()
+        self.sim_def = SimulationDef(name, components, entities, systems, init_graph)
 
         # register sim on engine
-        applied_proto = self.client.apply_sim(self.proto)
-
         # obtain autogen ids for entities and the engine by recreating from applied proto
-        self.entity_defs = [EntityDef.from_proto(e) for e in applied_proto.entities]
+        applied_proto = self.client.apply_sim(self.proto)
+        self.sim_def = SimulationDef.from_proto(applied_proto)
 
         # unpack entity and components from proto
         # unpack Entity protos into grpc backed entities (set(components) -> grpc entity)
@@ -78,22 +80,26 @@ class Simulation:
                 components=e.components,
                 client=self.client,
             )
-            for e in self.entity_defs
+            for e in self.sim_def.entities
         }
 
-    @property
-    def proto(self) -> SimulationDef:
+    @classmethod
+    def from_def(cls, sim_def: SimulationDef, client: Client):
         """
-        Get a Protobuf representation of this simulation.
+        Hydrate/Load a Simulation from a `bento.spec.SimulationDef`.
+
+        Args:
+            sim_def: SimulationDef specification to load the Simulation from.
+            client: Client to use to communicate with the Engine.
         """
-        proto = SimulationDef(
-            name=self.name,
-            entities=[e.proto for e in self.entity_defs],
-            components=[c.proto for c in self.component_defs],
-            systems=[s.proto for s in self.system_defs],
-            init_graph=self.init_graph.proto,
+        return cls(
+            name=sim_def.name,
+            components=sim_def.components,
+            entities=sim_def.entities,
+            systems=sim_def.systems,
+            init_graph=sim_def.init_graph,
+            client=client,
         )
-        return proto
 
     def start(self):
         """Starts this Simulation on the Engine.
@@ -140,17 +146,9 @@ class Simulation:
             )
         comp_set = frozenset([str(c) for c in components])
         # check for duplicates in given components
-        if len(comp_set) != len(components):
+        if len(comp_set) != len(list(components)):
             raise ValueError("Given component names should not contain duplicates")
         return self.entity_map[comp_set]
-
-    @property
-    def entities(self) -> List[Entity]:
-        """Get gRPC entities to this Simulation.
-        Returns:
-            List of entities belonging to this Simulation
-        """
-        return list(self.entity_map.values())
 
     def init(self, init_fn: ConvertFn):
         """Register given init_fn as the init graph for this simulation.
@@ -170,7 +168,9 @@ class Simulation:
             system_fn: Function that contains the implementation of the system.
                 Must be compilable by `compile_graph()`.
         """
-        self.init_graph = compile_graph(init_fn, self.entity_defs, self.component_defs)
+        self.sim_def.init_graph = compile_graph(
+            init_fn, self.sim_def.entities, self.sim_def.components
+        )
 
     def system(self, system_fn: ConvertFn):
         """Register ECS system with the given system_fn implementation on this Simulation.
@@ -189,8 +189,11 @@ class Simulation:
             system_fn: Function that contains the implementation of the system.
                 Must be compilable by `compile_graph()`.
         """
-        graph = compile_graph(system_fn, self.entity_defs, self.component_defs)
-        self.system_defs.append(SystemDef(graph))
+        graph = compile_graph(system_fn, self.sim_def.entities, self.sim_def.components)
+        # required to properly set systems in Simulation
+        systems = self.sim_def.systems
+        systems.append(SystemDef(graph))
+        self.sim_def.systems = systems
 
     def step(self):
         """Run this simulation for one step
@@ -209,6 +212,28 @@ class Simulation:
                 "Cannot step a simulation that has not started or already stopped."
             )
         self.client.step_sim(self.name)
+
+    @property
+    def proto(self) -> sim_pb2.SimulationDef:
+        """
+        Get the `bento.proto.sim_pb2.SimulationDef` Protobuf representation of this simulation.
+        """
+        return self.sim_def.proto
+
+    @property
+    def name(self) -> str:
+        """
+        Get the Name of this Simulation.
+        """
+        return self.sim_def.name
+
+    @property
+    def entities(self) -> List[Entity]:
+        """Get gRPC entities to this Simulation.
+        Returns:
+            List of entities belonging to this Simulation
+        """
+        return list(self.entity_map.values())
 
     def __enter__(self):
         self.start()

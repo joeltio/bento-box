@@ -4,19 +4,34 @@
 # Simulation
 #
 
-import pytest
 from unittest.mock import Mock
 
+import pytest
 from bento import types
 from bento.client import Client
-from bento.sim import Simulation
-from bento.utils import to_yaml_proto
-from bento.spec.graph import Graph
-from bento.graph.plotter import Plotter
-from bento.graph.compile import compile_graph
-from bento.spec.ecs import EntityDef, ComponentDef, SystemDef
 from bento.example.specs import Position, Speed
-from bento.protos.sim_pb2 import SimulationDef
+from bento.graph.compile import compile_graph
+from bento.graph.plotter import Plotter
+from bento.protos import sim_pb2
+from bento.sim import Simulation
+from bento.spec.ecs import ComponentDef, EntityDef, SystemDef
+from bento.spec.graph import Graph
+from bento.spec.sim import SimulationDef
+from bento.utils import to_yaml_proto
+
+
+# test init graph & system
+def init_fn(g: Plotter):
+    car = g.entity(components=[Position, Speed])
+    car[Position].x = 50
+    car[Position].y = 25
+    car[Speed].x = 1
+    car[Speed].y = 2
+
+
+def sim_fn(g: Plotter):
+    car = g.entity(components=[Position, Speed])
+    car[Position].x = 2 * car[Speed].x_neg
 
 
 @pytest.fixture
@@ -30,48 +45,87 @@ def entity_defs(component_defs):
 
 
 @pytest.fixture
-def sim_proto(component_defs, entity_defs):
-    return SimulationDef(
+def system_defs(component_defs, entity_defs):
+    graph = compile_graph(sim_fn, entity_defs, component_defs)
+    return [SystemDef(graph, system_id=1)]
+
+
+@pytest.fixture
+def init_graph(component_defs, entity_defs):
+    return compile_graph(init_fn, entity_defs, component_defs)
+
+
+@pytest.fixture
+def sim_proto(component_defs, entity_defs, system_defs, init_graph):
+    return sim_pb2.SimulationDef(
         name="test_sim",
         entities=[e.proto for e in entity_defs],
         components=[c.proto for c in component_defs],
+        systems=[s.proto for s in system_defs],
+        init_graph=init_graph.proto,
     )
 
 
 @pytest.fixture
-def mock_client(sim_proto):
+def mock_client():
     client = Mock(spec=Client)
-    client.apply_sim.return_value = sim_proto
     return client
 
 
 @pytest.fixture
-def sim(mock_client, component_defs, entity_defs):
+def sim(mock_client, component_defs, entity_defs, system_defs, init_graph, sim_proto):
     """Simulation object for testing"""
+    mock_client.apply_sim.return_value = sim_proto
+
     return Simulation(
         name="test_sim",
         components=component_defs,
         entities=entity_defs,
+        systems=system_defs,
+        init_graph=init_graph,
         client=mock_client,
     )
 
 
-def test_simulation_init(mock_client, component_defs, entity_defs, sim_proto):
-    # remove ids from entity_def to simulate entity defs created by use without entity_id set.
+@pytest.fixture
+def sim_def(component_defs, entity_defs, system_defs, init_graph):
+    return SimulationDef(
+        name="test_sim",
+        components=component_defs,
+        entities=entity_defs,
+        systems=system_defs,
+        init_graph=init_graph,
+    )
+
+
+def test_simulation_create(
+    mock_client, component_defs, entity_defs, system_defs, init_graph, sim_proto
+):
+    # remove ids from entity_def & system_defs to simulate entity defs created by use without entity_id set.
     noid_entity_defs = []
     for entity_def in entity_defs:
         entity_def.proto.id = 0
         noid_entity_defs.append(entity_def)
 
-    noid_sim_proto = SimulationDef()
+    noid_system_defs = []
+    for system_def in system_defs:
+        system_def.proto.id = 0
+        noid_system_defs.append(system_def)
+
+    noid_sim_proto = sim_pb2.SimulationDef()
     noid_sim_proto.CopyFrom(sim_proto)
     del noid_sim_proto.entities[:]
     noid_sim_proto.entities.extend([e.proto for e in noid_entity_defs])
+    del noid_sim_proto.systems[:]
+    noid_sim_proto.systems.extend([e.proto for e in noid_system_defs])
 
+    mock_client.apply_sim.return_value = sim_proto
     sim = Simulation(
         name="test_sim",
         components=component_defs,
         entities=noid_entity_defs,
+        systems=noid_system_defs,
+        init_graph=init_graph,
         client=mock_client,
     )
 
@@ -82,6 +136,13 @@ def test_simulation_init(mock_client, component_defs, entity_defs, sim_proto):
 
     # check entity ids provided by the engine are applied
     assert sim.entities[0].id == 1
+    assert sim.proto.systems[0].id == 1
+
+
+def test_simulation_from_def(mock_client, sim_def, sim_proto):
+    mock_client.apply_sim.return_value = sim_def.proto
+    sim = Simulation.from_def(sim_def, mock_client)
+    assert sim.proto == sim_proto
 
 
 def test_simulation_start(sim, mock_client, sim_proto):
@@ -150,25 +211,13 @@ def test_simulation_entity(sim, entity_defs, component_defs):
     )
 
 
-def test_simulation_system(sim, entity_defs, component_defs):
-    def test_sim_fn(g: Plotter):
-        car = g.entity(components=[Position, Speed])
-        car[Position].x = 2 * car[Speed].x_neg
-
-    sim.system(test_sim_fn)
-    expected_graph = compile_graph(test_sim_fn, entity_defs, component_defs)
-
-    assert Graph.from_proto(sim.proto.systems[0].graph).yaml == expected_graph.yaml
+def test_simulation_system(sim, entity_defs, component_defs, system_defs):
+    sim.system(sim_fn)
+    expected_graph = system_defs[0].graph
+    assert len(sim.proto.systems) == 2
+    assert Graph.from_proto(sim.proto.systems[-1].graph).yaml == expected_graph.yaml
 
 
-def test_simulation_init(sim, entity_defs, component_defs):
-    def test_init_fn(g: Plotter):
-        car = g.entity(components=[Position, Speed])
-        car[Position].x = 50
-        car[Position].y = 25
-        car[Speed].x = 1
-        car[Speed].y = 2
-
-    sim.init(test_init_fn)
-    expected_graph = compile_graph(test_init_fn, entity_defs, component_defs)
-    assert Graph.from_proto(sim.proto.init_graph).yaml == expected_graph.yaml
+def test_simulation_init_graph(sim, entity_defs, component_defs, init_graph):
+    sim.init(init_fn)
+    assert Graph.from_proto(sim.proto.init_graph).yaml == init_graph.yaml

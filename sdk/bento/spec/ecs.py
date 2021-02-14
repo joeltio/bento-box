@@ -4,10 +4,11 @@
 # Specifying ECS Definitions
 #
 
-from bento.types import Type
+from typing import Dict, Iterable, List, Union
+
 from bento.protos import ecs_pb2
 from bento.spec.graph import Graph
-from typing import Dict, Iterable, List, Union
+from bento.types import Type
 
 
 class ComponentDef:
@@ -29,7 +30,7 @@ class ComponentDef:
     @classmethod
     def from_proto(cls, proto: ecs_pb2.ComponentDef):
         """Create a ComponentDef from a ComponentDef Proto"""
-        return cls(name=proto.name, schema=proto.schema)
+        return cls(name=proto.name, schema=dict(proto.schema))
 
     @property
     def name(self) -> str:
@@ -39,7 +40,7 @@ class ComponentDef:
     @property
     def schema(self) -> Dict[str, Type]:
         """Get the schema of Component defined in this ComponentDef"""
-        return self.proto.schema
+        return dict(self.proto.schema)
 
     def __repr__(self):
         return self.proto.name
