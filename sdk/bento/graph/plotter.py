@@ -141,6 +141,10 @@ class Plotter:
         x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
 
+    def clip(self, x: Any, min_x: Any, max_x: Any) -> GraphNode:
+        # clip x between min_x & max_x
+        return self.max(self.min(x, max_x), min_x)
+
     def abs(self, x: Any) -> GraphNode:
         x = GraphNode.wrap(x)
         return GraphNode(node=Node(abs_op=Node.Abs(x=x)))
