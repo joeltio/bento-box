@@ -168,12 +168,10 @@ class Simulation:
             system_fn: Function that contains the implementation of the system.
                 Must be compilable by `compile_graph()`.
         """
-        self.sim_def.init_graph = compile_graph(
-            init_fn, self.sim_def.entities, self.sim_def.components
-        )
+        self.sim_def.init(init_fn)
 
     def system(self, system_fn: ConvertFn):
-        """Register ECS system with the given system_fn implementation on this Simulation.
+        """Register a ECS system with the given system_fn on this Simulation.
 
         ECS Systems are run every step of simulation and encapsulate the logic of the simulation.
 
@@ -189,11 +187,7 @@ class Simulation:
             system_fn: Function that contains the implementation of the system.
                 Must be compilable by `compile_graph()`.
         """
-        graph = compile_graph(system_fn, self.sim_def.entities, self.sim_def.components)
-        # required to properly set systems in Simulation
-        systems = self.sim_def.systems
-        systems.append(SystemDef(graph))
-        self.sim_def.systems = systems
+        self.sim_def.system(system_fn)
 
     def step(self):
         """Run this simulation for one step

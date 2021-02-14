@@ -6,6 +6,7 @@
 
 
 from typing import Iterable, List
+from bento.graph.compile import ConvertFn, compile_graph
 
 from bento.protos import sim_pb2
 from bento.spec.ecs import ComponentDef, EntityDef, SystemDef
@@ -51,7 +52,7 @@ class SimulationDef:
 
     @classmethod
     def from_proto(cls, proto: sim_pb2.SimulationDef):
-        """Create a SimulationDef from a `bento.proto.sim_pb2.SimulationDef Proto"""
+        """Create a SimulationDef from a `bento.protos.sim_pb2.SimulationDef` Proto"""
         return cls(
             name=proto.name,
             entities=[EntityDef.from_proto(c) for c in proto.entities],
@@ -75,26 +76,31 @@ class SimulationDef:
         """Get the entities in the Simulation defined by this SimulationDef"""
         return [EntityDef.from_proto(e) for e in self.proto.entities]
 
+    def system(self, system_fn: ConvertFn):
+        """Register a ECS system with the given system_fn in this SimulationDef
+        See `bento.sim.Simulation.system()` for more information.
+        """
+        systems = self.systems
+        del self.proto.systems[:]
+        graph = compile_graph(system_fn, self.entities, self.components)
+        systems.append(SystemDef(graph))
+        self.proto.systems.extend([s.proto for s in systems])
+
     @property
     def systems(self) -> List[SystemDef]:
         """Get the systems running in the Simulation defined by this SimulationDef"""
         return [SystemDef.from_proto(s) for s in self.proto.systems]
 
-    @systems.setter
-    def systems(self, system_defs: List[SystemDef]):
-        """Set the systems running in the Simulation defined by this SimulationDef"""
-        del self.proto.systems[:]
-        self.proto.systems.extend([s.proto for s in system_defs])
+    def init(self, init_fn: ConvertFn):
+        """Register given init_fn as the init graph for this SimulationDef
+        See `bento.sim.Simulation.init()` for more information.
+        """
+        graph = compile_graph(init_fn, self.entities, self.components)
 
     @property
     def init_graph(self) -> Graph:
         """Get the init graph used in the Simulation defined by this SimulationDef"""
         return Graph.from_proto(self.proto.init_graph)
-
-    @init_graph.setter
-    def init_graph(self, graph: Graph):
-        """Set the init graph used in the Simulation defined by this SimulationDef"""
-        self.proto.init_graph.CopyFrom(graph.proto)
 
     def __repr__(self):
         return self.proto.name
