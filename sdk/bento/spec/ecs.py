@@ -83,7 +83,7 @@ class EntityDef:
     @property
     def components(self) -> List[str]:
         """Get the names of the components attached to the ECS entity defined in this EntityDef"""
-        return self.proto.components
+        return list(self.proto.components)
 
     def __repr__(self):
         # default id to ? if not yet set by engine

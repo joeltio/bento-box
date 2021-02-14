@@ -22,8 +22,9 @@ Position = ComponentDef(
 Records the current position of an Entity
 
 Attributes:
-    x (float64): The position of the Entity on the x axis.
-    y (float64): The position of the Entity on the y axis.
+    **x** (`float64`): The position of the Entity on the x axis.
+
+    **y** (`float64`): The position of the Entity on the y axis.
 """
 
 
@@ -38,8 +39,9 @@ Velocity = ComponentDef(
 The current velocity an Entity is moving at.
 
 Attributes:
-    x (float64): The velocity of the Entity on the x axis.
-    y (float64): The velocity of the Entity on the y axis.
+    **x** (`float64`): The velocity of the Entity on the x axis.
+
+    **y** (`float64`): The velocity of the Entity on the y axis.
 """
 
 
