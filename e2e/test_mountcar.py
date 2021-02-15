@@ -19,6 +19,7 @@ def sim(client):
     sim.start()
     return sim
 
+
 def test_e2e_mountcar_init(sim):
     # check that the init graph has initalized attribute values correctly
     car = sim.entity(components=[Velocity, Position])
@@ -29,6 +30,7 @@ def test_e2e_mountcar_init(sim):
     assert env[State].reward == 0
     assert env[State].ended == False
     assert env[Action].accelerate == 1
+
 
 def test_e2e_mountcar_action_accelerate(sim):
     env = sim.entity(components=[Action, State])
@@ -72,6 +74,7 @@ def test_e2e_mountcar_collision(sim):
     sim.step()
     assert car[Velocity].x == 0.0
     assert car[Position].x == -1.2
+
 
 def test_e2e_mountcar_reward_end_condition(sim):
     env = sim.entity(components=[Action, State])

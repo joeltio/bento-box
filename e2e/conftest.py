@@ -21,6 +21,7 @@ BOOT_ENGINE_CONTAINER = strtobool(
     os.environ.get("BOOT_ENGINE_CONTAINER", default="True")
 )
 
+
 @pytest.fixture
 def engine_address():
     print(BOOT_ENGINE_CONTAINER)
@@ -48,6 +49,7 @@ def engine_address():
         print(f"e2e: Warning: Engine instance not reset for each E2E test")
         # perform e2e test on already started engine instance listening on localhost
         yield "localhost", ENGINE_PORT
+
 
 @pytest.fixture
 def client(engine_address):
