@@ -1,5 +1,3 @@
-# type: ignore
-# TODO(mrzzy): remove this before commit
 #
 # bento-box
 # E2E Test
