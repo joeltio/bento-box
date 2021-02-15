@@ -85,9 +85,17 @@ def sim_fn(g: Plotter):
     # process car physics
     # compute velocity based on acceleration action & decceleration due to gravity
     acceleration, gravity, max_speed = 0.001, 0.0025, 0.07
+    # apply acceleration based on accelerate action:
+    # 0: Accelerate to the Left
+    # 1: Don't accelerate
+    # 2: Accelerate to the Right
     car[Velocity].x += (env[Action].accelerate - 1.0) * acceleration
-    car[Velocity].x += g.cos(3 * car[Velocity].x) * (-gravity)
-    car[Velocity].x = g.clip(car[Velocity].x, min_x=-max_speed, max_x=max_speed)
+    # apply gravity inverse to the mountain path used by the car
+    # the mountain is defined by y = sin(3*x)
+    # as such we apply gravity inversely using y = cos(3*x)
+    # apply negative gravity as gravity works in the opposite direction of movement
+    car[Velocity].x += g.cos(3 * car[Position].x) * (-gravity)
+    car[Velocity].x = g.clip(car[Position].x, min_x=-max_speed, max_x=max_speed)
 
     # compute new position from current velocity
     min_position, max_position = -1.2, 0.6
