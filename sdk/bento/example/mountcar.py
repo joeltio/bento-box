@@ -74,6 +74,7 @@ def init_fn(g: Plotter):
     env = g.entity(components=[Action, State])
     env[State].reward = 0
     env[State].ended = False
+    env[Action].accelerate = 1
 
 
 @MountainCar.system
@@ -84,7 +85,7 @@ def sim_fn(g: Plotter):
     # process car physics
     # compute velocity based on acceleration action & decceleration due to gravity
     acceleration, gravity, max_speed = 0.001, 0.0025, 0.07
-    car[Velocity].x += (env[Action].accelerate - 1) * acceleration
+    car[Velocity].x += (env[Action].accelerate - 1.0) * acceleration
     car[Velocity].x += g.cos(3 * car[Velocity].x) * (-gravity)
     car[Velocity].x = g.clip(car[Velocity].x, min_x=-max_speed, max_x=max_speed)
 
@@ -95,7 +96,7 @@ def sim_fn(g: Plotter):
 
     # collision: stop car when colliding with min_position
     if car[Position].x <= min_position:
-        car[Velocity].x = 0
+        car[Velocity].x = 0.0
 
     # resolve simulation state: reward and simulation completition
     env[State].reward = 0 if car[Position].x >= 0.5 else -1
