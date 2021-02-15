@@ -1,3 +1,5 @@
+# type: ignore
+# TODO(mrzzy): remove this before commit
 #
 # bento-box
 # E2E Test
@@ -35,14 +37,14 @@ Meta = ComponentDef(
     name="meta",
     schema={
         "name": types.string,
+        "id": types.int64,
         "version": types.int32,
     },
 )
-
 Movement = ComponentDef(
     name="movement",
     schema={
-        "rotation": types.float64,
+        "rotation": types.float32,
         "speed": types.float64,
     },
 )
@@ -54,6 +56,7 @@ Keyboard = ComponentDef(
         "down": types.boolean,
         "left": types.boolean,
         "right": types.boolean,
+        "key": types.byte,
     },
 )
 
@@ -117,9 +120,11 @@ def sim(client):
         controls[Keyboard].right = False
         controls[Keyboard].up = False
         controls[Keyboard].down = False
+        controls[Keyboard].key = 0
 
         car = g.entity(components=[Movement, Velocity, Position, Meta])
         car[Meta].name = "beetle"
+        car[Meta].id = 512
         car[Meta].version = 2
         car[Movement].speed = 0.0
         car[Movement].rotation = 90.0
@@ -149,6 +154,10 @@ def sim(client):
         elif controls[Keyboard].down:
             car[Movement].speed = g.max(car[Movement].speed - acceleration, 0.0)
             controls[Keyboard].down = False
+        elif controls[Keyboard].key == ord(" "):
+            # handbrake on space: slow down twice as fast
+            car[Movement].speed = g.max(car[Movement].speed - 2 * acceleration, 0.0)
+            controls[Keyboard].key = 0
 
     @sim.system
     def physics_sys(g: Plotter):
@@ -224,8 +233,43 @@ def test_e2e_engine_get_set_attr(sim, client):
     assert car[Movement].speed == 23.5
 
 
+def test_e2e_engine_implict_type_convert(sim, client):
+    # test implicit type conversion
+    car = sim.entity(components=[Movement, Velocity, Position, Meta])
+    controls = sim.entity(components=[Keyboard])
+
+    # setup test values to attributes
+    car[Meta].id = 1
+    car[Meta].version = 1
+    car[Meta].speed = 1.0
+    car[Meta].rotation = 1.0
+
+    # test implicit type conversion with combinations of numeric data types
+    # numeric data type => lambda to , get attribute) with that data type
+    dtype_attrs = {
+        types.int64: (lambda: car[Meta].id),
+        types.int32: (lambda: car[Meta].version),
+        types.float64: (lambda: car[Movement].speed),
+        types.float32: (lambda: car[Movement].rotation),
+    }
+
+    for dtype in dtype_attrs.keys():
+        other_dtypes = [ t for t in dtype_attrs.keys() if t != dtype ]
+        for other_dtype in other_dtypes:
+            value_attr = dtype_attrs[other_dtype]
+            if dtype == types.int64:
+                car[Meta].id = value_attr()
+            elif dtype == types.int32:
+                car[Meta].version = value_attr()
+            elif dtype == types.float64:
+                car[Meta].speed = value_attr()
+            elif dtype == types.float32:
+                car[Meta].rotation = value_attr()
+
+            actual_attr = dtype_attrs[dtype]
+            assert actual_attr() == 1
+
 def test_e2e_engine_step_sim(sim, client):
-    # TODO(mrzzy): replace this temporary workaround to trigger init graph
     # once https://github.com/joeltio/bento-box/issues/34 is fixed.
     # test init
     sim.step()
@@ -236,6 +280,7 @@ def test_e2e_engine_step_sim(sim, client):
     assert controls[Keyboard].right == False
     assert controls[Keyboard].up == False
     assert controls[Keyboard].left == False
+    assert controls[Keyboard].key == 0
 
     car = sim.entity(components=[Movement, Velocity, Position, Meta])
     assert car[Meta].name == "beetle"
@@ -247,10 +292,9 @@ def test_e2e_engine_step_sim(sim, client):
     assert car[Position].x == 0.0
     assert car[Position].y == 0.0
 
+    # test running simulation for one step
     controls[Keyboard].up = True
     controls[Keyboard].left = True
-
-    # test running simulation for one step
     sim.step()
 
     # test attributes have been updated by system
@@ -258,3 +302,14 @@ def test_e2e_engine_step_sim(sim, client):
     assert controls[Keyboard].up == False
     assert car[Movement].speed == 5
     assert car[Movement].rotation == 80
+
+    # test running the simulation for one more step to exercise other conditional branch
+    controls[Keyboard].down = True
+    controls[Keyboard].right = True
+    sim.step()
+
+    # test attributes have been updated by system
+    assert controls[Keyboard].down == False
+    assert controls[Keyboard].right == False
+    assert car[Movement].speed == 0
+    assert car[Movement].rotation == 90
