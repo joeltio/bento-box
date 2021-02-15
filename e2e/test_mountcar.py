@@ -6,11 +6,13 @@
 from bento.utils import to_yaml_proto
 import pytest
 
-from math import cos
+from math import cos, isclose
 from bento.graph.plotter import Plotter
 from bento.example.specs import Velocity, Position
 from bento.example.mountcar import MountainCar, Action, State
 from bento.sim import Simulation
+
+FLOAT_TOLERANCE = 1e-1
 
 
 @pytest.fixture
@@ -37,34 +39,36 @@ def test_e2e_mountcar_action_accelerate(sim):
     car = sim.entity(components=[Velocity, Position])
 
     acceleration, gravity, max_speed = 0.001, 0.0025, 0.07
-    car[Position].x = 0.0
+    car[Position].x = -0.6
 
     # accelerate left
     env[Action].accelerate = 0
-    sim.step()
     expected_pos_x = car[Position].x
+    sim.step()
     expected_velocity_x = -acceleration
     expected_velocity_x += cos(3 * expected_pos_x) * (-gravity)
     expected_pos_x += expected_velocity_x
-    assert car[Velocity].x == expected_velocity_x
-    assert car[Position].x == expected_pos_x
+    assert isclose(car[Velocity].x, expected_velocity_x, rel_tol=FLOAT_TOLERANCE)
+    assert isclose(car[Position].x, expected_pos_x, rel_tol=FLOAT_TOLERANCE)
 
     # accelerate right
     env[Action].accelerate = 2
+    expected_pos_x = car[Position].x
     sim.step()
     expected_velocity_x += acceleration
     expected_velocity_x += cos(3 * expected_pos_x) * (-gravity)
     expected_pos_x += expected_velocity_x
-    assert car[Velocity].x == expected_velocity_x
-    assert car[Position].x == expected_pos_x
+    assert isclose(car[Velocity].x, expected_velocity_x, rel_tol=FLOAT_TOLERANCE)
+    assert isclose(car[Position].x, expected_pos_x, rel_tol=FLOAT_TOLERANCE)
 
     # no acceleration
     env[Action].accelerate = 1
+    expected_pos_x = car[Position].x
     sim.step()
     expected_velocity_x += cos(3 * expected_pos_x) * (-gravity)
     expected_pos_x += expected_velocity_x
-    assert car[Velocity].x == expected_velocity_x
-    assert car[Position].x == expected_pos_x
+    assert isclose(car[Velocity].x, expected_velocity_x, rel_tol=FLOAT_TOLERANCE)
+    assert isclose(car[Position].x, expected_pos_x, rel_tol=FLOAT_TOLERANCE)
 
 
 def test_e2e_mountcar_collision(sim):

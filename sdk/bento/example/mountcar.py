@@ -89,7 +89,7 @@ def sim_fn(g: Plotter):
     # 0: Accelerate to the Left
     # 1: Don't accelerate
     # 2: Accelerate to the Right
-    car[Velocity].x += (env[Action].accelerate - 1.0) * acceleration
+    car[Velocity].x += (env[Action].accelerate - 1) * acceleration
     # apply gravity inverse to the mountain path used by the car
     # the mountain is defined by y = sin(3*x)
     # as such we apply gravity inversely using y = cos(3*x)
