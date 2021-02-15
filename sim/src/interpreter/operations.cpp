@@ -33,7 +33,6 @@ void mutateOp(ics::ComponentStore& compStore,
     auto& ref = node.mutate_attr();
     auto& component = ics::getComponent(indexStore, compStore, ref.component(),
                                         ref.entity_id());
-    auto& mutableVal = component.getMutableValue(ref.attribute());
 
     // Set the value
     component.setValue(ref.attribute(), val);

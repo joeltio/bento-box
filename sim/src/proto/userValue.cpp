@@ -110,4 +110,53 @@ bool isValOfType<BOOL>(const bento::protos::Value& protoVal) {
            bento::protos::Value_Primitive::kBoolean;
 }
 
+template <>
+bool isProtoTypeOfType<INT32>(const bento::protos::Type& protoType) {
+    return protoType.primitive() == bento::protos::Type_Primitive_INT32;
+}
+
+template <>
+bool isProtoTypeOfType<INT64>(const bento::protos::Type& protoType) {
+    return protoType.primitive() == bento::protos::Type_Primitive_INT64;
+}
+
+template <>
+bool isProtoTypeOfType<FLOAT32>(const bento::protos::Type& protoType) {
+    return protoType.primitive() == bento::protos::Type_Primitive_FLOAT32;
+}
+
+template <>
+bool isProtoTypeOfType<FLOAT64>(const bento::protos::Type& protoType) {
+    return protoType.primitive() == bento::protos::Type_Primitive_FLOAT64;
+}
+
+template <>
+bool isProtoTypeOfType<STR>(const bento::protos::Type& protoType) {
+    return protoType.primitive() == bento::protos::Type_Primitive_STRING;
+}
+
+template <>
+bool isProtoTypeOfType<BOOL>(const bento::protos::Type& protoType) {
+    return protoType.primitive() == bento::protos::Type_Primitive_BOOL;
+}
+
+bool valHasCorrectDataType(const bento::protos::Value& val) {
+    // Handle unset data_type
+    if (!val.has_data_type()) {
+        return false;
+    }
+
+    bool result;
+    runFnWithValType<proto_ANY>(
+        val.data_type(), [&val, &result]<class X>(X* _) {
+            runFnWithVal<proto_ANY>(val, [&result]<class Y>(Y y) {
+                result = std::is_same_v<X, Y>;
+                // Return something random since it is required
+                return 3;
+            });
+        });
+
+    return result;
+}
+
 }  // namespace proto
