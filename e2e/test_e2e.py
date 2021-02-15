@@ -246,7 +246,7 @@ def test_e2e_engine_implict_type_convert(sim, client):
     }
 
     for dtype in dtype_attrs.keys():
-        other_dtypes = [ t for t in dtype_attrs.keys() if t != dtype ]
+        other_dtypes = [t for t in dtype_attrs.keys() if t != dtype]
         for other_dtype in other_dtypes:
             value_attr = dtype_attrs[other_dtype]
             if dtype == types.int64:
@@ -260,6 +260,7 @@ def test_e2e_engine_implict_type_convert(sim, client):
 
             actual_attr = dtype_attrs[dtype]
             assert actual_attr() == 1
+
 
 def test_e2e_engine_step_sim(sim, client):
     # once https://github.com/joeltio/bento-box/issues/34 is fixed.
