@@ -42,9 +42,10 @@ def test_e2e_mountcar_action_accelerate(sim):
     # accelerate left
     env[Action].accelerate = 0
     sim.step()
+    expected_pos_x = car[Position].x
     expected_velocity_x = -acceleration
-    expected_velocity_x += cos(3 * expected_velocity_x) * (-gravity)
-    expected_pos_x = expected_velocity_x
+    expected_velocity_x += cos(3 * expected_pos_x) * (-gravity)
+    expected_pos_x += expected_velocity_x
     assert car[Velocity].x == expected_velocity_x
     assert car[Position].x == expected_pos_x
 
@@ -52,7 +53,7 @@ def test_e2e_mountcar_action_accelerate(sim):
     env[Action].accelerate = 2
     sim.step()
     expected_velocity_x += acceleration
-    expected_velocity_x += cos(3 * expected_velocity_x) * (-gravity)
+    expected_velocity_x += cos(3 * expected_pos_x) * (-gravity)
     expected_pos_x += expected_velocity_x
     assert car[Velocity].x == expected_velocity_x
     assert car[Position].x == expected_pos_x
@@ -60,7 +61,7 @@ def test_e2e_mountcar_action_accelerate(sim):
     # no acceleration
     env[Action].accelerate = 1
     sim.step()
-    expected_velocity_x += cos(3 * expected_velocity_x) * (-gravity)
+    expected_velocity_x += cos(3 * expected_pos_x) * (-gravity)
     expected_pos_x += expected_velocity_x
     assert car[Velocity].x == expected_velocity_x
     assert car[Position].x == expected_pos_x

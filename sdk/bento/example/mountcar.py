@@ -95,7 +95,7 @@ def sim_fn(g: Plotter):
     # as such we apply gravity inversely using y = cos(3*x)
     # apply negative gravity as gravity works in the opposite direction of movement
     car[Velocity].x += g.cos(3 * car[Position].x) * (-gravity)
-    car[Velocity].x = g.clip(car[Position].x, min_x=-max_speed, max_x=max_speed)
+    car[Velocity].x = g.clip(car[Velocity].x, min_x=-max_speed, max_x=max_speed)
 
     # compute new position from current velocity
     min_position, max_position = -1.2, 0.6
