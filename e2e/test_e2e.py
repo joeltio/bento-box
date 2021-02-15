@@ -220,6 +220,7 @@ def test_e2e_engine_get_set_attr(sim, client):
     assert car[Meta].version == 10
 
     car[Movement].rotation = -134.2
+    # rounding required due to loss of precision when using float32
     assert round(car[Movement].rotation, 4) == -134.2
     car[Movement].speed = 23.5
     assert car[Movement].speed == 23.5
