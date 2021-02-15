@@ -12,7 +12,13 @@ const bento::protos::Value& UserComponent::getValue(
 
 bento::protos::Value& UserComponent::getMutableValue(
     const std::string& attrName) {
-    return values[attrName];
+    auto& val = values[attrName];
+    if (!val.has_primitive() && !val.has_array()) {
+        throw std::runtime_error(
+            "Attempting to retrieve primitive value which has not been set");
+    }
+
+    return val;
 }
 
 void UserComponent::setValue(const std::string& attrName,

@@ -93,3 +93,8 @@ TEST(TEST_SUITE, SetValueImplicitCast) {
     comp.setValue("height", height);
     ASSERT_EQ(comp.getValue("height").primitive().int_64(), 20);
 }
+
+TEST(TEST_SUITE, GetValueWhichHasNotBeenSet) {
+    TestComponent comp;
+    ASSERT_ANY_THROW(comp.getValue("height"));
+}
