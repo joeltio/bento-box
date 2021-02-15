@@ -20,20 +20,22 @@ def sim(client):
     return sim
 
 def test_e2e_mountcar_init(sim):
-    # check that the init graph has initalized attribute values correctlya
+    # check that the init graph has initalized attribute values correctly
     car = sim.entity(components=[Velocity, Position])
-    car[Velocity].x = 0.0
-    car[Position].x = 0.0
+    assert car[Velocity].x == 0.0
+    assert -0.6 <= car[Position].x <= -0.4
 
     env = sim.entity(components=[Action, State])
-    env[State].reward = 0
-    env[State].ended = False
+    assert env[State].reward == 0
+    assert env[State].ended == False
+    assert env[Action].accelerate == 1
 
 def test_e2e_mountcar_action_accelerate(sim):
     env = sim.entity(components=[Action, State])
     car = sim.entity(components=[Velocity, Position])
 
     acceleration, gravity, max_speed = 0.001, 0.0025, 0.07
+    car[Position].x = 0.0
 
     # accelerate left
     env[Action].accelerate = 0
@@ -71,3 +73,19 @@ def test_e2e_mountcar_collision(sim):
     assert car[Velocity].x == 0.0
     assert car[Position].x == -1.2
 
+def test_e2e_mountcar_reward_end_condition(sim):
+    env = sim.entity(components=[Action, State])
+    car = sim.entity(components=[Velocity, Position])
+
+    # has not reached target flagpole
+    pos_x = 0.0
+    car[Position].x = 0.0
+    sim.step()
+    assert env[State].reward == -1
+    assert env[State].ended == False
+
+    # past the target flagpole
+    car[Position].x = 0.6
+    sim.step()
+    assert env[State].reward == 0
+    assert env[State].ended == True
