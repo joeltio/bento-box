@@ -8,8 +8,8 @@ from collections import OrderedDict
 from typing import Any, Iterable, Union
 
 from bento.ecs.graph import GraphComponent, GraphEntity, GraphNode
-from bento.ecs.spec import ComponentDef, EntityDef
-from bento.graph.spec import Graph
+from bento.spec.ecs import ComponentDef, EntityDef
+from bento.spec.graph import Graph
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.utils import to_str_attr
@@ -140,6 +140,10 @@ class Plotter:
     def min(self, x: Any, y: Any) -> GraphNode:
         x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
+
+    def clip(self, x: Any, min_x: Any, max_x: Any) -> GraphNode:
+        # clip x between min_x & max_x
+        return self.max(self.min(x, max_x), min_x)
 
     def abs(self, x: Any) -> GraphNode:
         x = GraphNode.wrap(x)

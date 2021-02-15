@@ -2,33 +2,17 @@
 # bento-box
 # E2E Test
 #
-# Requires environment variables to be specified:
-# - ENGINE_DOCKER - tag of the bentobox-sim docker image to run
 
-import os
 import pytest
-from distutils.util import strtobool
 from git import Repo
 from math import cos, sin
-from testcontainers.core.container import DockerContainer
 
 from bento import types
-from bento.client import Client
 from bento.sim import Simulation
 from bento.utils import to_yaml_proto
 from bento.graph.plotter import Plotter
-from bento.ecs.spec import EntityDef, ComponentDef
+from bento.spec.ecs import EntityDef, ComponentDef
 from bento.example.specs import Velocity, Position
-
-# port that the engine listens on
-ENGINE_PORT = 54242
-# whether to start a docker container to provide the engine component in the e2e test
-# if False, an engine instance should be already listening at locahost:ENGINE_PORT
-# Requires environment variables to be specified:
-# - ENGINE_CONTAINER - tag of the bentobox-sim docker image to run
-BOOT_ENGINE_CONTAINER = strtobool(
-    os.environ.get("BOOT_ENGINE_CONTAINER", default="True")
-)
 
 # define test components
 Meta = ComponentDef(
@@ -56,45 +40,6 @@ Keyboard = ComponentDef(
         "right": types.boolean,
     },
 )
-
-
-@pytest.fixture
-def engine_address():
-    print(BOOT_ENGINE_CONTAINER)
-    if BOOT_ENGINE_CONTAINER:
-        print("e2e: Using Engine Container to provide Engine for E2E")
-        # since this fixture as function scope, a fresh Engine instance
-        # would be created for each e2e test
-        # setup bentobox-sim container and expose engine port
-        engine = DockerContainer(os.environ["ENGINE_CONTAINER"])
-        engine.with_env("BENTOBOX_SIM_PORT", str(ENGINE_PORT))
-        engine.with_env("BENTOBOX_SIM_HOST", "0.0.0.0")
-        engine.with_exposed_ports(ENGINE_PORT)
-        engine.start()
-        # do e2e test
-        yield engine.get_container_host_ip(), engine.get_exposed_port(ENGINE_PORT)
-        # print the engine's logs
-        print("=" * 40, "[Engine Logs]", "=" * 40)
-        print(engine._container.logs().decode())
-        print("=" * 40, "[Engine Logs]", "=" * 40)
-        # cleanup by stopping sim container at end of test
-        # kill the container instead of waiting for cleanup
-        engine.stop(force=True)
-    else:
-        print(f"e2e: Using Engine instance listening on localhost:{ENGINE_PORT}")
-        print(f"e2e: Warning: Engine instance not reset for each E2E test")
-        # perform e2e test on already started engine instance listening on localhost
-        yield "localhost", ENGINE_PORT
-
-
-@pytest.fixture
-def client(engine_address):
-    # setup bentobox-sdk client
-    engine_host, engine_port = engine_address
-    client = Client(host=engine_host, port=engine_port)
-    # wait for sim to start accepting connections from the SDK
-    client.connect(timeout_sec=30)
-    return client
 
 
 @pytest.fixture
@@ -171,26 +116,26 @@ def sim(client):
     return sim
 
 
-def test_e2e_engine_get_version(client):
+def test_e2e_sim_get_version(client):
     # e2e test that we can obtain sim/engine's version via SDK
     repo = Repo(search_parent_directories=True)
     assert client.get_version() == repo.head.object.hexsha
 
 
-def test_e2e_engine_apply_sim(sim):
+def test_e2e_sim_apply_sim(sim):
     # check the sim's entities have populated ids
     assert len([e.id for e in sim.entities if e.id != 0]) == len(sim.entities)
 
 
-def test_e2e_engine_list_sims(sim, client):
+def test_e2e_sim_list_sims(sim, client):
     # check that sim is listed
     assert client.list_sims()[0] == sim.name
 
 
-def test_e2e_engine_get_sim(sim, client):
+def test_e2e_sim_get_sim(sim, client):
     # check that sim's can be retrieved by name
     applied_proto = client.get_sim(sim.name)
-    assert to_yaml_proto(applied_proto) == to_yaml_proto(sim.proto)
+    assert to_yaml_proto(applied_proto) == to_yaml_proto(sim.build())
 
     # test error handling when getting nonexistent sim
     has_error = False
@@ -201,13 +146,13 @@ def test_e2e_engine_get_sim(sim, client):
     assert has_error
 
 
-def test_e2e_engine_remove(sim, client):
+def test_e2e_sim_remove(sim, client):
     # test removing simulations
     client.remove_sim(sim.name)
     assert len(client.list_sims()) == 0
 
 
-def test_e2e_engine_get_set_attr(sim, client):
+def test_e2e_sim_get_set_attr(sim, client):
     # test setting/setting attributes for every primitive data type
     controls = sim.entity(components=[Keyboard])
     controls[Keyboard].left = True
@@ -264,7 +209,7 @@ def test_e2e_engine_implict_type_convert(sim, client):
             assert actual_attr() == 1
 
 
-def test_e2e_engine_step_sim(sim, client):
+def test_e2e_sim_step(sim, client):
     # once https://github.com/joeltio/bento-box/issues/34 is fixed.
     # test init
     sim.step()

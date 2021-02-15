@@ -11,7 +11,7 @@ from typing import Any, Iterable, List, Union, FrozenSet, Dict
 from bento.types import Type
 from bento.utils import to_str_attr
 from bento.ecs.base import Component, Entity
-from bento.ecs.spec import ComponentDef, EntityDef
+from bento.spec.ecs import ComponentDef, EntityDef
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
@@ -19,7 +19,7 @@ from bento.protos.values_pb2 import Value
 
 
 class GraphNode:
-    """Shim that wraps a Node proto to provide operations when building a graph.
+    """Shim that wraps a `bento.protos.graph_pb2.Node` proto to provide operations when building a graph.
 
     Provides operator overloads for Node proto to provide operations during
     computational graph constructions. Records the operations performed on the Node proto.

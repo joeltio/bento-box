@@ -5,10 +5,10 @@
 
 
 from bento.ecs.graph import GraphComponent, GraphEntity
-from bento.ecs.spec import ComponentDef, EntityDef
+from bento.spec.ecs import ComponentDef, EntityDef
 from bento.example.specs import Keyboard, Position, Velocity
 from bento.graph.plotter import Plotter
-from bento.graph.spec import Graph
+from bento.spec.graph import Graph
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
 from bento.value import wrap

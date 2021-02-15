@@ -9,11 +9,11 @@ from typing import Any, Callable
 from unittest.mock import Mock
 
 from bento.client import Client
-from bento.ecs.spec import ComponentDef, EntityDef
+from bento.spec.ecs import ComponentDef, EntityDef
 from bento.example.specs import Clock, Position, Speed, Velocity
 from bento.graph.compile import compile_graph
 from bento.graph.plotter import Plotter
-from bento.graph.spec import Graph
+from bento.spec.graph import Graph
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Graph as GraphProto, Node
 from bento.protos.references_pb2 import AttributeRef

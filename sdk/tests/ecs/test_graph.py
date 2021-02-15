@@ -1,7 +1,7 @@
 #
 # Bentobox
-# SDK - Graph
-# Graph ECS
+# SDK - Specifications
+# Graph Specifications
 #
 
 from collections import OrderedDict
@@ -14,7 +14,7 @@ from bento.ecs.graph import (
     to_str_attr,
     wrap_const,
 )
-from bento.ecs.spec import ComponentDef, EntityDef
+from bento.spec.ecs import ComponentDef, EntityDef
 from bento.example.specs import Position, Speed
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef

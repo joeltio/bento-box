@@ -1,15 +1,15 @@
 #
 # Bentobox
-# SDK - ECS
-# Graph
+# SDK - Specifications
+# Graph Specification
 #
 
-import yaml
 from typing import Iterable
 
-
+import yaml
+from bento.protos.graph_pb2 import Graph as GraphProto
+from bento.protos.graph_pb2 import Node
 from bento.utils import to_yaml_proto
-from bento.protos.graph_pb2 import Node, Graph as GraphProto
 
 
 class Graph:
@@ -36,7 +36,7 @@ class Graph:
         self.proto = GraphProto(inputs=inputs, outputs=outputs)
 
     @classmethod
-    def from_proto(cls, proto: GraphProto):
+    def from_proto(cls, proto: GraphProto) -> "Graph":
         """Create a ComponentDef from a Graph proto."""
         return cls(proto.inputs, proto.outputs)
 

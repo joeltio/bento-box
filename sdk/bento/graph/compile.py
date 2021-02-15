@@ -7,7 +7,7 @@ import os
 from textwrap import dedent
 from typing import Callable, List
 
-from bento.ecs.spec import ComponentDef, EntityDef
+from bento.spec.ecs import ComponentDef, EntityDef
 from bento.graph.analyzers import (
     analyze_activity,
     analyze_assign,
@@ -21,7 +21,7 @@ from bento.graph.analyzers import (
 from bento.graph.ast import load_ast_module, parse_ast
 from bento.graph.plotter import Plotter
 from bento.graph.preprocessors import preprocess_augassign
-from bento.graph.spec import Graph
+from bento.spec.graph import Graph
 from bento.graph.transforms import (
     transform_build_graph,
     transform_ifelse,

@@ -7,7 +7,7 @@
 from typing import List, Any, Set, Union
 from abc import ABC, abstractmethod, abstractproperty
 
-from bento.ecs.spec import ComponentDef
+from bento.spec.ecs import ComponentDef
 
 
 class Component(ABC):
