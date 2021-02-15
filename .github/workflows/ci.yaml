@@ -118,8 +118,6 @@ jobs:
   build-test-e2e:
     needs:
     - check-protos
-    - build-test-sdk
-    - build-test-sim
     runs-on: ubuntu-20.04
     name: "Build & Test bentobox End to End"
     steps:
