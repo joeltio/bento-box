@@ -4,34 +4,10 @@ namespace proto {
 
 std::string valStoredTypeName(const bento::protos::Value_Primitive& val) {
     std::string name = "Primitive[";
-    switch (val.value_case()) {
-        case bento::protos::Value_Primitive::kInt8:
-            name += "8-bit Integer";
-            break;
-        case bento::protos::Value_Primitive::kInt32:
-            name += "32-bit Integer";
-            break;
-        case bento::protos::Value_Primitive::kInt64:
-            name += "64-bit Integer";
-            break;
-        case bento::protos::Value_Primitive::kFloat32:
-            name += "32-bit Float";
-            break;
-        case bento::protos::Value_Primitive::kFloat64:
-            name += "64-bit Float";
-            break;
-        case bento::protos::Value_Primitive::kStrVal:
-            name += "String";
-            break;
-        case bento::protos::Value_Primitive::kBoolean:
-            name += "Boolean";
-            break;
-        case bento::protos::Value_Primitive::VALUE_NOT_SET:
-            name += "None";
-            break;
-        default:
-            name += "UNHANDLED TYPE";
-    }
+    auto typeEnumVal = val.value_case();
+    name += bento::protos::Value_Primitive::descriptor()
+                ->FindFieldByNumber(typeEnumVal)
+                ->name();
     name += "]";
     return name;
 }
@@ -59,35 +35,7 @@ std::string valStoredTypeName(const bento::protos::Value& val) {
 // Returns a name for what the Value says it stores under its data_type
 std::string valDataTypeName(const bento::protos::Type_Primitive& valType) {
     std::string name = "Primitive.DataType[";
-    switch (valType) {
-        case bento::protos::Type_Primitive_INVALID:
-            name += "Invalid";
-            break;
-        case bento::protos::Type_Primitive_BYTE:
-            name += "Byte";
-            break;
-        case bento::protos::Type_Primitive_INT32:
-            name += "32-bit Integer";
-            break;
-        case bento::protos::Type_Primitive_INT64:
-            name += "64-bit Integer";
-            break;
-        case bento::protos::Type_Primitive_FLOAT32:
-            name += "32-bit Float";
-            break;
-        case bento::protos::Type_Primitive_FLOAT64:
-            name += "64-bit Float";
-            break;
-        case bento::protos::Type_Primitive_BOOL:
-            name += "Boolean";
-            break;
-        case bento::protos::Type_Primitive_STRING:
-            name += "String";
-            break;
-        default:
-            name += "Unknown";
-    }
-
+    name += bento::protos::Type_Primitive_Name(valType);
     name += "]";
     return name;
 }
@@ -121,4 +69,4 @@ std::string valDataTypeName(const bento::protos::Type& valType) {
     }
 }
 
-}
+}  // namespace proto
