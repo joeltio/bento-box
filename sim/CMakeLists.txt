@@ -40,6 +40,7 @@ set(TARGET_SIM_SOURCES
     src/proto/userValue.cpp
     src/proto/valueType.cpp
     src/ics.cpp
+    src/userValue.cpp
 )
 
 add_executable(${TARGET_SIM}
