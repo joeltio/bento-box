@@ -76,15 +76,15 @@ requires(proto::ProtobufType<Ts>&&...) bool isValOfTypes(
 }
 
 template <class T>
-requires ProtobufType<T> bool isTypeOfType(
+requires ProtobufType<T> bool isProtoTypeOfType(
     const bento::protos::Type& protoType) {
     throw std::runtime_error("Invalid protobuf type.");
 }
 
 template <class... Ts>
-requires(proto::ProtobufType<Ts>&&...) bool isTypeOfTypes(
+requires(proto::ProtobufType<Ts>&&...) bool isProtoTypeOfTypes(
     const bento::protos::Type& protoType) {
-    return (proto::isTypeOfType<Ts>(protoType) || ...);
+    return (proto::isProtoTypeOfType<Ts>(protoType) || ...);
 }
 
 // Validates if a given type is in a list of types
@@ -114,7 +114,7 @@ void runFnWithValType(const bento::protos::Type& type, Fn fn) {
 
     bool fnCalled = false;
     if constexpr (typeInTypes<INT32, AllowedTypes...>) {
-        if (isTypeOfType<INT32>(type)) {
+        if (isProtoTypeOfType<INT32>(type)) {
             // Calling the lambda with a template parameter is not possible, so
             // we make use of type deduction here to provide the type. We do so
             // by using a pointer casted to the right type.
@@ -123,31 +123,31 @@ void runFnWithValType(const bento::protos::Type& type, Fn fn) {
         }
     }
     if constexpr (typeInTypes<INT64, AllowedTypes...>) {
-        if (isTypeOfType<INT64>(type)) {
+        if (isProtoTypeOfType<INT64>(type)) {
             fn((INT64*)nullptr);
             fnCalled = true;
         }
     }
     if constexpr (typeInTypes<FLOAT32, AllowedTypes...>) {
-        if (isTypeOfType<FLOAT32>(type)) {
+        if (isProtoTypeOfType<FLOAT32>(type)) {
             fn((FLOAT32*)nullptr);
             fnCalled = true;
         }
     }
     if constexpr (typeInTypes<FLOAT64, AllowedTypes...>) {
-        if (isTypeOfType<FLOAT64>(type)) {
+        if (isProtoTypeOfType<FLOAT64>(type)) {
             fn((FLOAT64*)nullptr);
             fnCalled = true;
         }
     }
     if constexpr (typeInTypes<STR, AllowedTypes...>) {
-        if (isTypeOfType<STR>(type)) {
+        if (isProtoTypeOfType<STR>(type)) {
             fn((STR*)nullptr);
             fnCalled = true;
         }
     }
     if constexpr (typeInTypes<BOOL, AllowedTypes...>) {
-        if (isTypeOfType<BOOL>(type)) {
+        if (isProtoTypeOfType<BOOL>(type)) {
             fn((BOOL*)nullptr);
             fnCalled = true;
         }

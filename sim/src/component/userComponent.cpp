@@ -51,7 +51,7 @@ void UserComponent::setValue(const std::string& attrName,
 
     // TODO(joeltio): Streamline this together with eqOp
     // If schemaType and value are numeric, try to convert
-    if (proto::isTypeOfTypes<proto_NUMERIC>(schemaType) &&
+    if (proto::isProtoTypeOfTypes<proto_NUMERIC>(schemaType) &&
         proto::isValOfTypes<proto_NUMERIC>(value)) {
         proto::runFnWithVal<proto_NUMERIC>(
             value, [&valToSet, &schemaType]<class X>(X x) {

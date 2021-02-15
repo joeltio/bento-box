@@ -112,48 +112,48 @@ TEST(TEST_SUITE, IsTypeOfType) {
     auto type = bento::protos::Type();
     // Test all the true cases
     type.set_primitive(bento::protos::Type_Primitive_INT32);
-    ASSERT_TRUE(isTypeOfType<INT32>(type));
+    ASSERT_TRUE(isProtoTypeOfType<INT32>(type));
     type.set_primitive(bento::protos::Type_Primitive_INT64);
-    ASSERT_TRUE(isTypeOfType<INT64>(type));
+    ASSERT_TRUE(isProtoTypeOfType<INT64>(type));
 
     type.set_primitive(bento::protos::Type_Primitive_FLOAT32);
-    ASSERT_TRUE(isTypeOfType<FLOAT32>(type));
+    ASSERT_TRUE(isProtoTypeOfType<FLOAT32>(type));
     type.set_primitive(bento::protos::Type_Primitive_FLOAT64);
-    ASSERT_TRUE(isTypeOfType<FLOAT64>(type));
+    ASSERT_TRUE(isProtoTypeOfType<FLOAT64>(type));
 
     type.set_primitive(bento::protos::Type_Primitive_STRING);
-    ASSERT_TRUE(isTypeOfType<STR>(type));
+    ASSERT_TRUE(isProtoTypeOfType<STR>(type));
     type.set_primitive(bento::protos::Type_Primitive_BOOL);
-    ASSERT_TRUE(isTypeOfType<BOOL>(type));
+    ASSERT_TRUE(isProtoTypeOfType<BOOL>(type));
 
     // Test some false cases
-    ASSERT_FALSE(isTypeOfType<INT32>(type));
-    ASSERT_FALSE(isTypeOfType<INT64>(type));
+    ASSERT_FALSE(isProtoTypeOfType<INT32>(type));
+    ASSERT_FALSE(isProtoTypeOfType<INT64>(type));
 
     type.set_primitive(bento::protos::Type_Primitive_FLOAT32);
-    ASSERT_FALSE(isTypeOfType<STR>(type));
-    ASSERT_FALSE(isTypeOfType<FLOAT64>(type));
+    ASSERT_FALSE(isProtoTypeOfType<STR>(type));
+    ASSERT_FALSE(isProtoTypeOfType<FLOAT64>(type));
 
     type.set_primitive(bento::protos::Type_Primitive_INT32);
-    ASSERT_FALSE(isTypeOfType<BOOL>(type));
-    ASSERT_FALSE(isTypeOfType<FLOAT32>(type));
+    ASSERT_FALSE(isProtoTypeOfType<BOOL>(type));
+    ASSERT_FALSE(isProtoTypeOfType<FLOAT32>(type));
 }
 
 TEST(TEST_SUITE, IsTypeOfTypes) {
     auto type = bento::protos::Type();
 
     type.set_primitive(bento::protos::Type_Primitive_INT32);
-    bool isValid = isTypeOfTypes<INT32, FLOAT64>(type);
+    bool isValid = isProtoTypeOfTypes<INT32, FLOAT64>(type);
     // For some reason, putting the literal into the ASSERT_TRUE macro fails to
     // compile
     ASSERT_TRUE(isValid);
-    isValid = isTypeOfTypes<FLOAT64, STR, BOOL>(type);
+    isValid = isProtoTypeOfTypes<FLOAT64, STR, BOOL>(type);
     ASSERT_FALSE(isValid);
 
     type.set_primitive(bento::protos::Type_Primitive_BOOL);
-    isValid = isTypeOfTypes<STR, FLOAT64, BOOL>(type);
+    isValid = isProtoTypeOfTypes<STR, FLOAT64, BOOL>(type);
     ASSERT_TRUE(isValid);
-    isValid = isTypeOfTypes<FLOAT64, STR, INT32>(type);
+    isValid = isProtoTypeOfTypes<FLOAT64, STR, INT32>(type);
     ASSERT_FALSE(isValid);
 }
 

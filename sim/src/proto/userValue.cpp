@@ -111,32 +111,32 @@ bool isValOfType<BOOL>(const bento::protos::Value& protoVal) {
 }
 
 template <>
-bool isTypeOfType<INT32>(const bento::protos::Type& protoType) {
+bool isProtoTypeOfType<INT32>(const bento::protos::Type& protoType) {
     return protoType.primitive() == bento::protos::Type_Primitive_INT32;
 }
 
 template <>
-bool isTypeOfType<INT64>(const bento::protos::Type& protoType) {
+bool isProtoTypeOfType<INT64>(const bento::protos::Type& protoType) {
     return protoType.primitive() == bento::protos::Type_Primitive_INT64;
 }
 
 template <>
-bool isTypeOfType<FLOAT32>(const bento::protos::Type& protoType) {
+bool isProtoTypeOfType<FLOAT32>(const bento::protos::Type& protoType) {
     return protoType.primitive() == bento::protos::Type_Primitive_FLOAT32;
 }
 
 template <>
-bool isTypeOfType<FLOAT64>(const bento::protos::Type& protoType) {
+bool isProtoTypeOfType<FLOAT64>(const bento::protos::Type& protoType) {
     return protoType.primitive() == bento::protos::Type_Primitive_FLOAT64;
 }
 
 template <>
-bool isTypeOfType<STR>(const bento::protos::Type& protoType) {
+bool isProtoTypeOfType<STR>(const bento::protos::Type& protoType) {
     return protoType.primitive() == bento::protos::Type_Primitive_STRING;
 }
 
 template <>
-bool isTypeOfType<BOOL>(const bento::protos::Type& protoType) {
+bool isProtoTypeOfType<BOOL>(const bento::protos::Type& protoType) {
     return protoType.primitive() == bento::protos::Type_Primitive_BOOL;
 }
 
