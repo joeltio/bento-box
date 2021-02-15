@@ -1,6 +1,6 @@
 #include <component/userComponent.h>
 #include <google/protobuf/util/message_differencer.h>
-#include <userValue.h>
+#include <proto/valueType.h>
 
 namespace ics::component {
 
@@ -31,8 +31,8 @@ void UserComponent::setValue(const std::string& attrName,
         throw std::runtime_error(
             "Data type of given value does not match schema type for "
             "attribute " +
-            attrName + ". Expected: " + valDataTypeName(schemaType) +
-            ", Got: " + valDataTypeName(value.data_type()) + ".");
+            attrName + ". Expected: " + proto::valDataTypeName(schemaType) +
+            ", Got: " + proto::valDataTypeName(value.data_type()) + ".");
     }
 
     values[attrName] = value;

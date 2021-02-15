@@ -1,90 +1,9 @@
 #include <interpreter/operations.h>
 #include <interpreter/graphInterpreter.h>
-#include <userValue.h>
+#include <proto/userValue.h>
 #include <ics.h>
 #include <cmath>
 #include <random>
-
-namespace {
-
-void validateSame(const bento::protos::Value_Primitive& x,
-                  const bento::protos::Value_Primitive& y) {
-    if (x.value_case() != y.value_case()) {
-        throw std::runtime_error(
-            "Primitive values must be the same type. Stored values " +
-            valStoredTypeName(x) + " and " + valStoredTypeName(y) +
-            " do not match.");
-    }
-}
-
-void validateSame(const bento::protos::Value_Array& x,
-                  const bento::protos::Value_Array& y) {
-    if (x.values_size() != y.values_size()) {
-        throw std::runtime_error("Arrays must have the same size. Dimensions " +
-                                 valStoredTypeName(x) + " and " +
-                                 valStoredTypeName(y) + " do not match.");
-    }
-
-    for (size_t i = 0; i < x.values_size(); i++) {
-        auto& xPrimitive = x.values(i);
-        auto& yPrimitive = y.values(i);
-
-        validateSame(xPrimitive, yPrimitive);
-    }
-}
-
-void validateSame(const bento::protos::Value& x,
-                  const bento::protos::Value& y) {
-    if (x.kind_case() != y.kind_case()) {
-        throw std::runtime_error(
-            "Values must be the same type. Stored values " +
-            valStoredTypeName(x) + " and " + valStoredTypeName(y) +
-            " do not match.");
-    }
-
-    // x and y are primitives
-    if (x.has_primitive()) {
-        validateSame(x.primitive(), y.primitive());
-        return;
-    }
-
-    validateSame(x.array(), y.array());
-}
-
-void validateNumeric(const bento::protos::Value_Primitive& x) {
-    typedef bento::protos::Value_Primitive Primitive;
-    switch (x.value_case()) {
-        case Primitive::kInt32:
-        case Primitive::kInt64:
-        case Primitive::kFloat32:
-        case Primitive::kFloat64:
-            return;
-        case Primitive::VALUE_NOT_SET: {
-            throw std::runtime_error("No value when validating numeric value.");
-        }
-        default: {
-            throw std::runtime_error("Value given is not numeric. Got " +
-                                     valStoredTypeName(x) + ".");
-        }
-    }
-}
-
-void validateBoolean(const bento::protos::Value_Primitive& x) {
-    typedef bento::protos::Value_Primitive Primitive;
-    switch (x.value_case()) {
-        case Primitive::kBoolean:
-            return;
-        case Primitive::VALUE_NOT_SET: {
-            throw std::runtime_error("No value when validating boolean value.");
-        }
-        default: {
-            throw std::runtime_error("Value given is not a boolean. Got " +
-                                     valStoredTypeName(x));
-        }
-    }
-}
-
-}  // namespace
 
 namespace interpreter {
 
@@ -145,8 +64,8 @@ bento::protos::Value addOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Add& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y) { return x + y; };
-    return runMathFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x + y; };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value subOp(ics::ComponentStore& compStore,
@@ -154,8 +73,8 @@ bento::protos::Value subOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Sub& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y) { return x - y; };
-    return runMathFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x - y; };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value mulOp(ics::ComponentStore& compStore,
@@ -163,8 +82,8 @@ bento::protos::Value mulOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Mul& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y) { return x * y; };
-    return runMathFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x * y; };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value divOp(ics::ComponentStore& compStore,
@@ -172,8 +91,8 @@ bento::protos::Value divOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Div& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y) { return x / y; };
-    return runMathFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x / y; };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value maxOp(ics::ComponentStore& compStore,
@@ -181,14 +100,15 @@ bento::protos::Value maxOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Max& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y) {
+    auto op = []<class X, class Y>(X x, Y y) {
+        typedef decltype(std::declval<X>() + std::declval<Y>()) RetType;
         if (x > y) {
-            return x;
+            return (RetType)x;
         } else {
-            return y;
+            return (RetType)y;
         }
     };
-    return runMathFn(op, xVal, yVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value minOp(ics::ComponentStore& compStore,
@@ -196,14 +116,15 @@ bento::protos::Value minOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Min& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y) {
+    auto op = []<class X, class Y>(X x, Y y) {
+        typedef decltype(std::declval<X>() + std::declval<Y>()) RetType;
         if (x < y) {
-            return x;
+            return (RetType)x;
         } else {
-            return y;
+            return (RetType)y;
         }
     };
-    return runMathFn(op, xVal, yVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value absOp(ics::ComponentStore& compStore,
@@ -211,7 +132,7 @@ bento::protos::Value absOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Abs& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return abs(x); };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value floorOp(ics::ComponentStore& compStore,
@@ -219,7 +140,7 @@ bento::protos::Value floorOp(ics::ComponentStore& compStore,
                              const bento::protos::Node_Floor& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return floor(x); };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value ceilOp(ics::ComponentStore& compStore,
@@ -227,7 +148,7 @@ bento::protos::Value ceilOp(ics::ComponentStore& compStore,
                             const bento::protos::Node_Ceil& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return ceil(x); };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value powOp(ics::ComponentStore& compStore,
@@ -235,8 +156,8 @@ bento::protos::Value powOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Pow& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
-    auto op = []<class C>(C x, C y) { return pow(x, y); };
-    return runMathFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return pow(x, y); };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value modOp(ics::ComponentStore& compStore,
@@ -245,33 +166,8 @@ bento::protos::Value modOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    // Only integers can use modulo, so write the switch case here manually
-    // This code is taken from runMathFn
-    validateSame(xVal, yVal);
-    validateNumeric(xVal.primitive());
-
-    typedef bento::protos::Value_Primitive Primitive;
-    switch (xVal.primitive().value_case()) {
-        case Primitive::kInt32: {
-            auto val = bento::protos::Value();
-            val.mutable_primitive()->set_int_32(xVal.primitive().int_32() %
-                                                yVal.primitive().int_32());
-            val.mutable_data_type()->set_primitive(
-                bento::protos::Type_Primitive_INT32);
-            return val;
-        }
-        case Primitive::kInt64: {
-            auto val = bento::protos::Value();
-            val.mutable_primitive()->set_int_64(xVal.primitive().int_64() %
-                                                yVal.primitive().int_64());
-            val.mutable_data_type()->set_primitive(
-                bento::protos::Type_Primitive_INT64);
-            return val;
-        }
-        default:
-            throw std::runtime_error(
-                "Cannot perform modulo operation on non-integral values.");
-    }
+    auto op = []<class X, class Y>(X x, Y y) { return x % y; };
+    return proto::runFnWithVal<proto::INT32, proto::INT64>(xVal, yVal, op);
 }
 
 bento::protos::Value sinOp(ics::ComponentStore& compStore,
@@ -279,7 +175,7 @@ bento::protos::Value sinOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Sin& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return sin(x); };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value arcSinOp(ics::ComponentStore& compStore,
@@ -292,7 +188,7 @@ bento::protos::Value arcSinOp(ics::ComponentStore& compStore,
         }
         return asin(x);
     };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value cosOp(ics::ComponentStore& compStore,
@@ -300,7 +196,7 @@ bento::protos::Value cosOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Cos& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return cos(x); };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value arcCosOp(ics::ComponentStore& compStore,
@@ -313,7 +209,7 @@ bento::protos::Value arcCosOp(ics::ComponentStore& compStore,
         }
         return acos(x);
     };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value tanOp(ics::ComponentStore& compStore,
@@ -321,7 +217,7 @@ bento::protos::Value tanOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Tan& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return tan(x); };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 bento::protos::Value arcTanOp(ics::ComponentStore& compStore,
@@ -329,7 +225,7 @@ bento::protos::Value arcTanOp(ics::ComponentStore& compStore,
                               const bento::protos::Node_ArcTan& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto op = []<class C>(C x) { return atan(x); };
-    return runMathFn(op, xVal);
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, op);
 }
 
 // Generate random number
@@ -343,44 +239,14 @@ bento::protos::Value randomOp(ics::ComponentStore& compStore,
     auto lowVal = evaluateNode(compStore, indexStore, node.low());
     auto highVal = evaluateNode(compStore, indexStore, node.high());
 
-    // Lambdas cannot capture static variables, so the code from runMathFn is
-    // put here.
-    validateSame(lowVal, highVal);
-    validateNumeric(lowVal.primitive());
-
-    auto& lowPrimitive = lowVal.primitive();
-    auto& highPrimitive = highVal.primitive();
-
-    auto val = bento::protos::Value();
-
-    typedef bento::protos::Value_Primitive Primitive;
-    switch (lowPrimitive.value_case()) {
-        case Primitive::kFloat32: {
-            auto dist = std::uniform_real_distribution(
-                lowPrimitive.float_32(), highPrimitive.float_32());
-            val.mutable_primitive()->set_float_32(dist(gen));
-            val.mutable_data_type()->set_primitive(
-                bento::protos::Type_Primitive_FLOAT32);
-            return val;
-        }
-        case Primitive::kFloat64: {
-            auto dist = std::uniform_real_distribution(
-                lowPrimitive.float_64(), highPrimitive.float_64());
-            val.mutable_primitive()->set_float_64(dist(gen));
-            val.mutable_data_type()->set_primitive(
-                bento::protos::Type_Primitive_FLOAT64);
-            return val;
-        }
-        case Primitive::VALUE_NOT_SET: {
-            throw std::runtime_error(
-                "No value in node when attempting to execute arithmetic "
-                "operation.");
-        }
-        default: {
-            throw std::runtime_error(
-                "Random op requires floating point bounds.");
-        }
-    }
+    auto op = []<class X, class Y>(X low, Y high) {
+        typedef decltype(std::declval<X>() + std::declval<Y>()) CombinedType;
+        auto dist = std::uniform_real_distribution(
+            static_cast<CombinedType>(low), static_cast<CombinedType>(high));
+        return dist(gen);
+    };
+    return proto::runFnWithVal<proto::FLOAT32, proto::FLOAT64>(lowVal, highVal,
+                                                               op);
 }
 
 bento::protos::Value andOp(ics::ComponentStore& compStore,
@@ -389,8 +255,11 @@ bento::protos::Value andOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    validateSame(xVal, yVal);
-    validateBoolean(xVal.primitive());
+    if (!proto::isValOfType<proto::BOOL>(xVal) ||
+        !proto::isValOfType<proto::BOOL>(yVal)) {
+        throw std::domain_error(
+            "Cannot run AND operation on non-boolean values.");
+    }
 
     auto val = bento::protos::Value();
     val.mutable_primitive()->set_boolean(xVal.primitive().boolean() and
@@ -406,8 +275,11 @@ bento::protos::Value orOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    validateSame(xVal, yVal);
-    validateBoolean(xVal.primitive());
+    if (!proto::isValOfType<proto::BOOL>(xVal) ||
+        !proto::isValOfType<proto::BOOL>(yVal)) {
+        throw std::domain_error(
+            "Cannot run OR operation on non-boolean values.");
+    }
 
     auto val = bento::protos::Value();
     val.mutable_primitive()->set_boolean(xVal.primitive().boolean() or
@@ -422,7 +294,10 @@ bento::protos::Value notOp(ics::ComponentStore& compStore,
                            const bento::protos::Node_Not& node) {
     auto xVal = evaluateNode(compStore, indexStore, node.x());
 
-    validateBoolean(xVal.primitive());
+    if (!proto::isValOfType<proto::BOOL>(xVal)) {
+        throw std::domain_error(
+            "Cannot run NOT operation on non-boolean values.");
+    }
 
     auto val = bento::protos::Value();
     val.mutable_primitive()->set_boolean(!xVal.primitive().boolean());
@@ -437,11 +312,19 @@ bento::protos::Value eqOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    validateSame(xVal, yVal);
-
-    auto op = []<class C>(C x, C y) { return x == y; };
-
-    return runBoolFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x == y; };
+    if (proto::isValOfTypes<proto_NUMERIC>(xVal)) {
+        // Run the function with other possible numeric comparisons
+        return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
+    } else if (proto::isValOfType<proto::STR>(xVal)) {
+        // Run the function with only string values allowed
+        return proto::runFnWithVal<proto::STR>(xVal, yVal, op);
+    } else if (proto::isValOfType<proto::BOOL>(xVal)) {
+        return proto::runFnWithVal<proto::BOOL>(xVal, yVal, op);
+    } else {
+        throw std::domain_error(
+            "Checking equivalence between given values is not possible.");
+    }
 }
 
 bento::protos::Value gtOp(ics::ComponentStore& compStore,
@@ -450,12 +333,8 @@ bento::protos::Value gtOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    validateSame(xVal, yVal);
-    validateNumeric(xVal.primitive());
-
-    auto op = []<class C>(C x, C y) { return x > y; };
-
-    return runBoolFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x > y; };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value ltOp(ics::ComponentStore& compStore,
@@ -464,12 +343,8 @@ bento::protos::Value ltOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    validateSame(xVal, yVal);
-    validateNumeric(xVal.primitive());
-
-    auto op = []<class C>(C x, C y) { return x < y; };
-
-    return runBoolFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x < y; };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value geOp(ics::ComponentStore& compStore,
@@ -478,12 +353,8 @@ bento::protos::Value geOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    validateSame(xVal, yVal);
-    validateNumeric(xVal.primitive());
-
-    auto op = []<class C>(C x, C y) { return x >= y; };
-
-    return runBoolFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x >= y; };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 bento::protos::Value leOp(ics::ComponentStore& compStore,
@@ -492,12 +363,8 @@ bento::protos::Value leOp(ics::ComponentStore& compStore,
     auto xVal = evaluateNode(compStore, indexStore, node.x());
     auto yVal = evaluateNode(compStore, indexStore, node.y());
 
-    validateSame(xVal, yVal);
-    validateNumeric(xVal.primitive());
-
-    auto op = []<class C>(C x, C y) { return x <= y; };
-
-    return runBoolFn(op, xVal, yVal);
+    auto op = []<class X, class Y>(X x, Y y) { return x <= y; };
+    return proto::runFnWithVal<proto_NUMERIC>(xVal, yVal, op);
 }
 
 }  // namespace interpreter
