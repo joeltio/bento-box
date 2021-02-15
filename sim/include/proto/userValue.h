@@ -81,8 +81,8 @@ requires ProtobufType<T> bool isTypeOfType(
     throw std::runtime_error("Invalid protobuf type.");
 }
 
-template <class ...Ts>
-requires (proto::ProtobufType<Ts>&&...) bool isTypeOfTypes(
+template <class... Ts>
+requires(proto::ProtobufType<Ts>&&...) bool isTypeOfTypes(
     const bento::protos::Type& protoType) {
     return (proto::isTypeOfType<Ts>(protoType) || ...);
 }
