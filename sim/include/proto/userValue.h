@@ -96,6 +96,13 @@ template <class Type, class... TypeList>
 constexpr bool typeInTypes =
     std::disjunction_v<std::is_same<Type, TypeList>...>;
 
+// Runs a function with a pointer casted to the deduced type
+// For example, if `type` is an INT64, then, the lambda function will be called
+// as:
+// fn((INT64*)nullptr);
+// The type signature for the lambda is:
+// []<class X>(X* _) {};
+// In this way, the lambda can deduce the type based on the pointer provided.
 template <class... AllowedTypes, class Fn>
 void runFnWithValType(const bento::protos::Type& type, Fn fn) {
     if (type.has_array()) {
@@ -106,9 +113,11 @@ void runFnWithValType(const bento::protos::Type& type, Fn fn) {
     }
 
     bool fnCalled = false;
-    auto primitiveType = type.primitive();
     if constexpr (typeInTypes<INT32, AllowedTypes...>) {
         if (isTypeOfType<INT32>(type)) {
+            // Calling the lambda with a template parameter is not possible, so
+            // we make use of type deduction here to provide the type. We do so
+            // by using a pointer casted to the right type.
             fn((INT32*)nullptr);
             fnCalled = true;
         }
