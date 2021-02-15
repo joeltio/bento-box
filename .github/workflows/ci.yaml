@@ -139,4 +139,4 @@ jobs:
           make lint-e2e
       - name: "Run End to End Tests"
         run: |
-          make test-e2e
+          make test-e2e-docker

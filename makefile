@@ -17,7 +17,7 @@ DOCKER:=docker
 .PHONY: deps build test clean test
 build: build-sim build-sdk
 
-test: test-sim test-sdk test-e2e
+test: test-sim test-sdk test-e2e-docker
 
 clean: clean-sim clean-sdk
 
@@ -97,8 +97,8 @@ test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
 
 run-sim: build-sim
-	env BENTOBOX_SIM_PORT=$(SIM_PORT)\
-		BENTOBOX_SIM_HOST=$(SIM_HOST)
+	env ENGINE_PORT=$(SIM_PORT)\
+		ENGINE_HOST=$(SIM_HOST)
 		$(SIM_BUILD_DIR)/$(SIM_TARGET)
 
 debug-sim: build-sim
@@ -164,7 +164,7 @@ clean-sdk-docs: $(SDK_DOC_DIR)
 ## End to End tests
 E2E_TESTS:=e2e
 
-.PHONY: dep-e2e format-e2e lint-e2e test-e2e
+.PHONY: dep-e2e format-e2e lint-e2e test-e2e-docker
 
 # dep-e2e adds on to the requirements defined in  SDK's requirements-dev.txt
 dep-e2e: dep-sdk-dev
@@ -176,9 +176,13 @@ format-e2e: dep-e2e
 lint-e2e: dep-e2e
 	$(BLACK_FMT) --check $(E2E_TESTS)
 
-test-e2e: dep-e2e install-sdk build-sim-docker
+test-e2e-docker: dep-e2e install-sdk build-sim-docker
 	cd $(E2E_TESTS) && \
-		env BENTOBOX_SIM_DOCKER=$(SIM_DOCKER) $(PYTEST)
+		env ENGINE_CONTAINER=$(SIM_DOCKER) BOOT_ENGINE_CONTAINER=True $(PYTEST)
+
+test-e2e: dep-e2e install-sdk build-sim
+	cd $(E2E_TESTS) && \
+		env BOOT_ENGINE_CONTAINER=False $(PYTEST)
 
 # spellcheck bentobox codebase
 .PHONY: spellcheck autocorrect
