@@ -116,23 +116,23 @@ def sim(client):
     return sim
 
 
-def test_e2e_engine_get_version(client):
+def test_e2e_sim_get_version(client):
     # e2e test that we can obtain sim/engine's version via SDK
     repo = Repo(search_parent_directories=True)
     assert client.get_version() == repo.head.object.hexsha
 
 
-def test_e2e_engine_apply_sim(sim):
+def test_e2e_sim_apply_sim(sim):
     # check the sim's entities have populated ids
     assert len([e.id for e in sim.entities if e.id != 0]) == len(sim.entities)
 
 
-def test_e2e_engine_list_sims(sim, client):
+def test_e2e_sim_list_sims(sim, client):
     # check that sim is listed
     assert client.list_sims()[0] == sim.name
 
 
-def test_e2e_engine_get_sim(sim, client):
+def test_e2e_sim_get_sim(sim, client):
     # check that sim's can be retrieved by name
     applied_proto = client.get_sim(sim.name)
     assert to_yaml_proto(applied_proto) == to_yaml_proto(sim.build())
@@ -146,13 +146,13 @@ def test_e2e_engine_get_sim(sim, client):
     assert has_error
 
 
-def test_e2e_engine_remove(sim, client):
+def test_e2e_sim_remove(sim, client):
     # test removing simulations
     client.remove_sim(sim.name)
     assert len(client.list_sims()) == 0
 
 
-def test_e2e_engine_get_set_attr(sim, client):
+def test_e2e_sim_get_set_attr(sim, client):
     # test setting/setting attributes for every primitive data type
     controls = sim.entity(components=[Keyboard])
     controls[Keyboard].left = True
@@ -209,7 +209,7 @@ def test_e2e_engine_implict_type_convert(sim, client):
             assert actual_attr() == 1
 
 
-def test_e2e_engine_step_sim(sim, client):
+def test_e2e_sim_step(sim, client):
     # once https://github.com/joeltio/bento-box/issues/34 is fixed.
     # test init
     sim.step()
