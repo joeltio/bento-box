@@ -98,7 +98,7 @@ jobs:
   build-docs-sdk:
     needs: build-test-sdk
     runs-on: ubuntu-20.04
-    name: "Build & Push bentobox-sdk Docs"
+    name: "Build bentobox-sdk Docs"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
