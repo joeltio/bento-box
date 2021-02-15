@@ -32,6 +32,7 @@ State = ComponentDef(
     name="state",
     schema={
         "reward": types.int32,
+        "ended": types.boolean,
     },
 )
 """
