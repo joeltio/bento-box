@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>bento.example.specs API documentation</title>
-<meta name="description" content="Example ECS Component types implemented using `bento.spec.ecs.ComponentDef`" />
+<title>bento.example.mountcar API documentation</title>
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,82 +19,124 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bento.example.specs</code></h1>
+<h1 class="title">Module <code>bento.example.mountcar</code></h1>
 </header>
 <section id="section-intro">
-<p>Example ECS Component types implemented using <code><a title="bento.spec.ecs.ComponentDef" href="../spec/ecs.html#bento.spec.ecs.ComponentDef">ComponentDef</a></code></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">#
-# Bentobox
-# SDK
-# Example Specs
+# bentobox-sdk
+# mountain car example simulation
 #
-&#34;&#34;&#34;
-Example ECS Component types implemented using `bento.spec.ecs.ComponentDef`
-&#34;&#34;&#34;
 
-
-from bento.spec.ecs import ComponentDef
 from bento import types
+from bento.graph.plotter import Plotter
+from bento.spec.ecs import ComponentDef, EntityDef
 
-Position = ComponentDef(
-    name=&#34;position&#34;,
+from bento.example.specs import Velocity, Position
+from bento.sim import Simulation
+from bento.spec.sim import SimulationDef
+
+Action = ComponentDef(
+    name=&#34;action&#34;,
     schema={
-        &#34;x&#34;: types.float64,
-        &#34;y&#34;: types.float64,
+        &#34;accelerate&#34;: types.int32,
     },
 )
 &#34;&#34;&#34;
-Records the current position of an Entity
+Action allows the agent to control the car in the Simulation via its acceleration.
 
 Attributes:
-    **x** (`float64`): The position of the Entity on the x axis.
+    **accelerate** (`types.int32`): Set the acceleration of the car.
 
-    **y** (`float64`): The position of the Entity on the y axis.
+    - 0: Accelerate to the Left
+    - 1: Don&#39;t accelerate
+    - 2: Accelerate to the Right
 &#34;&#34;&#34;
 
-
-Velocity = ComponentDef(
-    name=&#34;velocity&#34;,
+State = ComponentDef(
+    name=&#34;state&#34;,
     schema={
-        &#34;x&#34;: types.float64,
-        &#34;y&#34;: types.float64,
+        &#34;reward&#34;: types.int32,
+        &#34;ended&#34;: types.boolean,
     },
 )
 &#34;&#34;&#34;
-The current velocity an Entity is moving at.
+State tracks the current state of the Simulation.
 
 Attributes:
-    **x** (`float64`): The velocity of the Entity on the x axis.
+    **reward** (`types.int32`): Reward given to agent for the current Simulation step:
 
-    **y** (`float64`): The velocity of the Entity on the y axis.
+    - Reward of 0 is awarded if the agent reached the flag (`Position.x &gt;= 0.5`) on top of the mountain.
+    - Reward of -1 is penalized if the position of the agent `Position.x &lt; 0.5`
+
+    **ended** (`types.boolean`): Whether the Simulation is has ended (`Position.x &gt; 0.5`).
+&#34;&#34;&#34;
+
+MountainCar = SimulationDef(
+    name=&#34;mountain_car&#34;,
+    components=[Velocity, Position, Action, State],
+    entities=[
+        EntityDef(components=[Velocity, Position]),
+        EntityDef(components=[Action, State]),
+    ],
+)
+&#34;&#34;&#34;
+Mountain Car Simulation implemented using `bento`
+
+A car is started at random position the bottom of a valley.
+The agent may choose to accelerate the car to the left, right or cease any acceleration.
+The objective of the Simulation is to reach the flag on top of the mountain at `Position.x &gt; 0.5`
+The simulation ends when the car&#39;s `Position.x &gt; 0.5`
 &#34;&#34;&#34;
 
 
-Speed = ComponentDef(
-    name=&#34;speed&#34;,
-    schema={
-        &#34;max_x&#34;: types.float64,
-        &#34;max_y&#34;: types.float64,
-    },
-)
+@MountainCar.init
+def init_fn(g: Plotter):
+    car = g.entity(components=[Velocity, Position])
+    car[Velocity].x = 0.0
+    car[Position].x = g.random(-0.6, -0.4)
 
-Clock = ComponentDef(
-    name=&#34;clock&#34;,
-    schema={
-        &#34;tick_ms&#34;: types.int64,
-    },
-)
+    env = g.entity(components=[Action, State])
+    env[State].reward = 0
+    env[State].ended = False
+    env[Action].accelerate = 1
 
-Keyboard = ComponentDef(
-    name=&#34;keyboard&#34;,
-    schema={
-        &#34;pressed&#34;: types.string,
-    },
-)</code></pre>
+
+@MountainCar.system
+def sim_fn(g: Plotter):
+    env = g.entity(components=[Action, State])
+    car = g.entity(components=[Velocity, Position])
+
+    # process car physics
+    # compute velocity based on acceleration action &amp; decceleration due to gravity
+    acceleration, gravity, max_speed = 0.001, 0.0025, 0.07
+    # apply acceleration based on accelerate action:
+    # 0: Accelerate to the Left
+    # 1: Don&#39;t accelerate
+    # 2: Accelerate to the Right
+    car[Velocity].x += (env[Action].accelerate - 1) * acceleration
+    # apply gravity inverse to the mountain path used by the car
+    # the mountain is defined by y = sin(3*x)
+    # as such we apply gravity inversely using y = cos(3*x)
+    # apply negative gravity as gravity works in the opposite direction of movement
+    car[Velocity].x += g.cos(3 * car[Position].x) * (-gravity)
+    car[Velocity].x = g.clip(car[Velocity].x, min_x=-max_speed, max_x=max_speed)
+
+    # compute new position from current velocity
+    min_position, max_position = -1.2, 0.6
+    car[Position].x += car[Velocity].x
+    car[Position].x = g.clip(car[Position].x, min_position, max_position)
+
+    # collision: stop car when colliding with min_position
+    if car[Position].x &lt;= min_position:
+        car[Velocity].x = 0.0
+
+    # resolve simulation state: reward and simulation completition
+    env[State].reward = 0 if car[Position].x &gt;= 0.5 else -1
+    env[State].ended = True if car[Position].x &gt; 0.5 else False</code></pre>
 </details>
 </section>
 <section>
@@ -102,19 +144,35 @@ Keyboard = ComponentDef(
 <section>
 <h2 class="section-title" id="header-variables">Global variables</h2>
 <dl>
-<dt id="bento.example.specs.Position"><code class="name">var <span class="ident">Position</span></code></dt>
+<dt id="bento.example.mountcar.Action"><code class="name">var <span class="ident">Action</span></code></dt>
 <dd>
-<div class="desc"><p>Records the current position of an Entity</p>
+<div class="desc"><p>Action allows the agent to control the car in the Simulation via its acceleration.</p>
 <h2 id="attributes">Attributes</h2>
-<p><strong>x</strong> (<code>float64</code>): The position of the Entity on the x axis.</p>
-<p><strong>y</strong> (<code>float64</code>): The position of the Entity on the y axis.</p></div>
+<p><strong>accelerate</strong> (<code>types.int32</code>): Set the acceleration of the car.</p>
+<ul>
+<li>0: Accelerate to the Left</li>
+<li>1: Don't accelerate</li>
+<li>2: Accelerate to the Right</li>
+</ul></div>
 </dd>
-<dt id="bento.example.specs.Velocity"><code class="name">var <span class="ident">Velocity</span></code></dt>
+<dt id="bento.example.mountcar.MountainCar"><code class="name">var <span class="ident">MountainCar</span></code></dt>
 <dd>
-<div class="desc"><p>The current velocity an Entity is moving at.</p>
+<div class="desc"><p>Mountain Car Simulation implemented using <code><a title="bento" href="../index.html">bento</a></code></p>
+<p>A car is started at random position the bottom of a valley.
+The agent may choose to accelerate the car to the left, right or cease any acceleration.
+The objective of the Simulation is to reach the flag on top of the mountain at <code>Position.x &gt; 0.5</code>
+The simulation ends when the car's <code>Position.x &gt; 0.5</code></p></div>
+</dd>
+<dt id="bento.example.mountcar.State"><code class="name">var <span class="ident">State</span></code></dt>
+<dd>
+<div class="desc"><p>State tracks the current state of the Simulation.</p>
 <h2 id="attributes">Attributes</h2>
-<p><strong>x</strong> (<code>float64</code>): The velocity of the Entity on the x axis.</p>
-<p><strong>y</strong> (<code>float64</code>): The velocity of the Entity on the y axis.</p></div>
+<p><strong>reward</strong> (<code>types.int32</code>): Reward given to agent for the current Simulation step:</p>
+<ul>
+<li>Reward of 0 is awarded if the agent reached the flag (<code>Position.x &gt;= 0.5</code>) on top of the mountain.</li>
+<li>Reward of -1 is penalized if the position of the agent <code>Position.x &lt; 0.5</code></li>
+</ul>
+<p><strong>ended</strong> (<code>types.boolean</code>): Whether the Simulation is has ended (<code>Position.x &gt; 0.5</code>).</p></div>
 </dd>
 </dl>
 </section>
@@ -136,8 +194,9 @@ Keyboard = ComponentDef(
 </li>
 <li><h3><a href="#header-variables">Global variables</a></h3>
 <ul class="">
-<li><code><a title="bento.example.specs.Position" href="#bento.example.specs.Position">Position</a></code></li>
-<li><code><a title="bento.example.specs.Velocity" href="#bento.example.specs.Velocity">Velocity</a></code></li>
+<li><code><a title="bento.example.mountcar.Action" href="#bento.example.mountcar.Action">Action</a></code></li>
+<li><code><a title="bento.example.mountcar.MountainCar" href="#bento.example.mountcar.MountainCar">MountainCar</a></code></li>
+<li><code><a title="bento.example.mountcar.State" href="#bento.example.mountcar.State">State</a></code></li>
 </ul>
 </li>
 </ul>

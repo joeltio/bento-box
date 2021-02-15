@@ -36,8 +36,8 @@ from collections import OrderedDict
 from typing import Any, Iterable, Union
 
 from bento.ecs.graph import GraphComponent, GraphEntity, GraphNode
-from bento.ecs.spec import ComponentDef, EntityDef
-from bento.graph.spec import Graph
+from bento.spec.ecs import ComponentDef, EntityDef
+from bento.spec.graph import Graph
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.utils import to_str_attr
@@ -169,6 +169,10 @@ class Plotter:
         x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
 
+    def clip(self, x: Any, min_x: Any, max_x: Any) -&gt; GraphNode:
+        # clip x between min_x &amp; max_x
+        return self.max(self.min(x, max_x), min_x)
+
     def abs(self, x: Any) -&gt; GraphNode:
         x = GraphNode.wrap(x)
         return GraphNode(node=Node(abs_op=Node.Abs(x=x)))
@@ -240,7 +244,7 @@ class Plotter:
 <dl>
 <dt id="bento.graph.plotter.Plotter"><code class="flex name class">
 <span>class <span class="ident">Plotter</span></span>
-<span>(</span><span>entity_defs: Iterable[<a title="bento.ecs.spec.EntityDef" href="../ecs/spec.html#bento.ecs.spec.EntityDef">EntityDef</a>] = [], component_defs: Iterable[<a title="bento.ecs.spec.ComponentDef" href="../ecs/spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>] = [])</span>
+<span>(</span><span>entity_defs: Iterable[<a title="bento.spec.ecs.EntityDef" href="../spec/ecs.html#bento.spec.ecs.EntityDef">EntityDef</a>] = [], component_defs: Iterable[<a title="bento.spec.ecs.ComponentDef" href="../spec/ecs.html#bento.spec.ecs.ComponentDef">ComponentDef</a>] = [])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Graph Plotter records operations to plot a computation <code>Graph</code>.</p>
@@ -384,6 +388,10 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code></p>
         x, y = GraphNode.wrap(x), GraphNode.wrap(y)
         return GraphNode(node=Node(min_op=Node.Min(x=x.node, y=y.node)))
 
+    def clip(self, x: Any, min_x: Any, max_x: Any) -&gt; GraphNode:
+        # clip x between min_x &amp; max_x
+        return self.max(self.min(x, max_x), min_x)
+
     def abs(self, x: Any) -&gt; GraphNode:
         x = GraphNode.wrap(x)
         return GraphNode(node=Node(abs_op=Node.Abs(x=x)))
@@ -515,6 +523,20 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code></p>
     return GraphNode(node=Node(ceil_op=Node.Ceil(x=x.node)))</code></pre>
 </details>
 </dd>
+<dt id="bento.graph.plotter.Plotter.clip"><code class="name flex">
+<span>def <span class="ident">clip</span></span>(<span>self, x: Any, min_x: Any, max_x: Any) ‑> <a title="bento.ecs.graph.GraphNode" href="../ecs/graph.html#bento.ecs.graph.GraphNode">GraphNode</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clip(self, x: Any, min_x: Any, max_x: Any) -&gt; GraphNode:
+    # clip x between min_x &amp; max_x
+    return self.max(self.min(x, max_x), min_x)</code></pre>
+</details>
+</dd>
 <dt id="bento.graph.plotter.Plotter.const"><code class="name flex">
 <span>def <span class="ident">const</span></span>(<span>self, value: Any) ‑> <a title="bento.protos.graph_pb2.Node" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Node">Node</a></span>
 </code></dt>
@@ -557,7 +579,7 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code></p>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.entity"><code class="name flex">
-<span>def <span class="ident">entity</span></span>(<span>self, components: Iterable[Union[<a title="bento.ecs.spec.ComponentDef" href="../ecs/spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>, str]]) ‑> <a title="bento.ecs.graph.GraphEntity" href="../ecs/graph.html#bento.ecs.graph.GraphEntity">GraphEntity</a></span>
+<span>def <span class="ident">entity</span></span>(<span>self, components: Iterable[Union[<a title="bento.spec.ecs.ComponentDef" href="../spec/ecs.html#bento.spec.ecs.ComponentDef">ComponentDef</a>, str]]) ‑> <a title="bento.ecs.graph.GraphEntity" href="../ecs/graph.html#bento.ecs.graph.GraphEntity">GraphEntity</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the entity with the components with the game attached.</p>
@@ -623,7 +645,7 @@ should be attached to the retrieved entity.</dd>
 </details>
 </dd>
 <dt id="bento.graph.plotter.Plotter.graph"><code class="name flex">
-<span>def <span class="ident">graph</span></span>(<span>self) ‑> <a title="bento.graph.spec.Graph" href="spec.html#bento.graph.spec.Graph">Graph</a></span>
+<span>def <span class="ident">graph</span></span>(<span>self) ‑> <a title="bento.spec.graph.Graph" href="../spec/graph.html#bento.spec.graph.Graph">Graph</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Obtains the computation graph plotted by this Plotter.</p>
@@ -842,6 +864,7 @@ operations recorded by the Plotter.</p>
 <li><code><a title="bento.graph.plotter.Plotter.arcsin" href="#bento.graph.plotter.Plotter.arcsin">arcsin</a></code></li>
 <li><code><a title="bento.graph.plotter.Plotter.arctan" href="#bento.graph.plotter.Plotter.arctan">arctan</a></code></li>
 <li><code><a title="bento.graph.plotter.Plotter.ceil" href="#bento.graph.plotter.Plotter.ceil">ceil</a></code></li>
+<li><code><a title="bento.graph.plotter.Plotter.clip" href="#bento.graph.plotter.Plotter.clip">clip</a></code></li>
 <li><code><a title="bento.graph.plotter.Plotter.const" href="#bento.graph.plotter.Plotter.const">const</a></code></li>
 <li><code><a title="bento.graph.plotter.Plotter.cos" href="#bento.graph.plotter.Plotter.cos">cos</a></code></li>
 <li><code><a title="bento.graph.plotter.Plotter.entity" href="#bento.graph.plotter.Plotter.entity">entity</a></code></li>

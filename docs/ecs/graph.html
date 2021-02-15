@@ -39,7 +39,7 @@ from typing import Any, Iterable, List, Union, FrozenSet, Dict
 from bento.types import Type
 from bento.utils import to_str_attr
 from bento.ecs.base import Component, Entity
-from bento.ecs.spec import ComponentDef, EntityDef
+from bento.spec.ecs import ComponentDef, EntityDef
 from bento.graph.value import wrap_const
 from bento.protos.graph_pb2 import Node
 from bento.protos.references_pb2 import AttributeRef
@@ -47,7 +47,7 @@ from bento.protos.values_pb2 import Value
 
 
 class GraphNode:
-    &#34;&#34;&#34;Shim that wraps a Node proto to provide operations when building a graph.
+    &#34;&#34;&#34;Shim that wraps a `bento.protos.graph_pb2.Node` proto to provide operations when building a graph.
 
     Provides operator overloads for Node proto to provide operations during
     computational graph constructions. Records the operations performed on the Node proto.
@@ -523,7 +523,7 @@ graph_ins, graph_outputs = component.inputs, component.outputs
 <h3>Static methods</h3>
 <dl>
 <dt id="bento.ecs.graph.GraphComponent.from_def"><code class="name flex">
-<span>def <span class="ident">from_def</span></span>(<span>entity_id: int, component_def: <a title="bento.ecs.spec.ComponentDef" href="spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>)</span>
+<span>def <span class="ident">from_def</span></span>(<span>entity_id: int, component_def: <a title="bento.spec.ecs.ComponentDef" href="../spec/ecs.html#bento.spec.ecs.ComponentDef">ComponentDef</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Construct a GraphComponent from a ComponentDef</p></div>
@@ -676,7 +676,7 @@ The GraphEntity's GraphComponents can be accessed via <code>.components</code>.<
 <h3>Static methods</h3>
 <dl>
 <dt id="bento.ecs.graph.GraphEntity.from_def"><code class="name flex">
-<span>def <span class="ident">from_def</span></span>(<span>entity_def: <a title="bento.ecs.spec.EntityDef" href="spec.html#bento.ecs.spec.EntityDef">EntityDef</a>, component_defs: Iterable[<a title="bento.ecs.spec.ComponentDef" href="spec.html#bento.ecs.spec.ComponentDef">ComponentDef</a>])</span>
+<span>def <span class="ident">from_def</span></span>(<span>entity_def: <a title="bento.spec.ecs.EntityDef" href="../spec/ecs.html#bento.spec.ecs.EntityDef">EntityDef</a>, component_defs: Iterable[<a title="bento.spec.ecs.ComponentDef" href="../spec/ecs.html#bento.spec.ecs.ComponentDef">ComponentDef</a>])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Construct a GraphEntity from a EntityDef</p></div>
@@ -781,7 +781,7 @@ Useful for implementing a shared inputs and outputs between multiple GraphEntiti
 <span>(</span><span>node: <a title="bento.protos.graph_pb2.Node" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Node">Node</a>)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Shim that wraps a Node proto to provide operations when building a graph.</p>
+<div class="desc"><p>Shim that wraps a <code><a title="bento.protos.graph_pb2.Node" href="../protos/graph_pb2.html#bento.protos.graph_pb2.Node">Node</a></code> proto to provide operations when building a graph.</p>
 <p>Provides operator overloads for Node proto to provide operations during
 computational graph constructions. Records the operations performed on the Node proto.</p>
 <p>The wrapped Node proto can be obtained via <code>.node</code>.</p></div>
@@ -790,7 +790,7 @@ computational graph constructions. Records the operations performed on the Node 
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class GraphNode:
-    &#34;&#34;&#34;Shim that wraps a Node proto to provide operations when building a graph.
+    &#34;&#34;&#34;Shim that wraps a `bento.protos.graph_pb2.Node` proto to provide operations when building a graph.
 
     Provides operator overloads for Node proto to provide operations during
     computational graph constructions. Records the operations performed on the Node proto.

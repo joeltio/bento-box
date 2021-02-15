@@ -35,7 +35,7 @@ import os
 from textwrap import dedent
 from typing import Callable, List
 
-from bento.ecs.spec import ComponentDef, EntityDef
+from bento.spec.ecs import ComponentDef, EntityDef
 from bento.graph.analyzers import (
     analyze_activity,
     analyze_assign,
@@ -49,7 +49,7 @@ from bento.graph.analyzers import (
 from bento.graph.ast import load_ast_module, parse_ast
 from bento.graph.plotter import Plotter
 from bento.graph.preprocessors import preprocess_augassign
-from bento.graph.spec import Graph
+from bento.spec.graph import Graph
 from bento.graph.transforms import (
     transform_build_graph,
     transform_ifelse,
@@ -200,7 +200,7 @@ def compile_graph(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="bento.graph.compile.compile_graph"><code class="name flex">
-<span>def <span class="ident">compile_graph</span></span>(<span>convert_fn: Callable[[<a title="bento.graph.plotter.Plotter" href="plotter.html#bento.graph.plotter.Plotter">Plotter</a>], NoneType], entity_defs=typing.List[bento.ecs.spec.EntityDef], component_defs=typing.List[bento.ecs.spec.ComponentDef], preprocessors: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function preprocess_augassign&gt;], analyzers: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function analyze_parent&gt;, &lt;function analyze_func&gt;, &lt;function analyze_convert_fn&gt;, &lt;function analyze_symbol&gt;, &lt;function analyze_assign&gt;, &lt;function resolve_symbol&gt;, &lt;function analyze_block&gt;, &lt;function analyze_activity&gt;], linters: List[Callable[[_ast.AST], NoneType]] = [], transforms: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function transform_build_graph&gt;, &lt;function transform_ternary&gt;, &lt;function transform_ifelse&gt;]) ‑> <a title="bento.graph.spec.Graph" href="spec.html#bento.graph.spec.Graph">Graph</a></span>
+<span>def <span class="ident">compile_graph</span></span>(<span>convert_fn: Callable[[<a title="bento.graph.plotter.Plotter" href="plotter.html#bento.graph.plotter.Plotter">Plotter</a>], NoneType], entity_defs=typing.List[bento.spec.ecs.EntityDef], component_defs=typing.List[bento.spec.ecs.ComponentDef], preprocessors: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function preprocess_augassign&gt;], analyzers: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function analyze_parent&gt;, &lt;function analyze_func&gt;, &lt;function analyze_convert_fn&gt;, &lt;function analyze_symbol&gt;, &lt;function analyze_assign&gt;, &lt;function resolve_symbol&gt;, &lt;function analyze_block&gt;, &lt;function analyze_activity&gt;], linters: List[Callable[[_ast.AST], NoneType]] = [], transforms: List[Callable[[_ast.AST], _ast.AST]] = [&lt;function transform_build_graph&gt;, &lt;function transform_ternary&gt;, &lt;function transform_ifelse&gt;]) ‑> <a title="bento.spec.graph.Graph" href="../spec/graph.html#bento.spec.graph.Graph">Graph</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Compiles the given <code>convert_fn</code> into a computation Graph running the given sim.</p>

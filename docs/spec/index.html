@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>bento.example.specs API documentation</title>
-<meta name="description" content="Example ECS Component types implemented using `bento.spec.ecs.ComponentDef`" />
+<title>bento.spec API documentation</title>
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,104 +19,28 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bento.example.specs</code></h1>
+<h1 class="title">Module <code>bento.spec</code></h1>
 </header>
 <section id="section-intro">
-<p>Example ECS Component types implemented using <code><a title="bento.spec.ecs.ComponentDef" href="../spec/ecs.html#bento.spec.ecs.ComponentDef">ComponentDef</a></code></p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">#
-# Bentobox
-# SDK
-# Example Specs
-#
-&#34;&#34;&#34;
-Example ECS Component types implemented using `bento.spec.ecs.ComponentDef`
-&#34;&#34;&#34;
-
-
-from bento.spec.ecs import ComponentDef
-from bento import types
-
-Position = ComponentDef(
-    name=&#34;position&#34;,
-    schema={
-        &#34;x&#34;: types.float64,
-        &#34;y&#34;: types.float64,
-    },
-)
-&#34;&#34;&#34;
-Records the current position of an Entity
-
-Attributes:
-    **x** (`float64`): The position of the Entity on the x axis.
-
-    **y** (`float64`): The position of the Entity on the y axis.
-&#34;&#34;&#34;
-
-
-Velocity = ComponentDef(
-    name=&#34;velocity&#34;,
-    schema={
-        &#34;x&#34;: types.float64,
-        &#34;y&#34;: types.float64,
-    },
-)
-&#34;&#34;&#34;
-The current velocity an Entity is moving at.
-
-Attributes:
-    **x** (`float64`): The velocity of the Entity on the x axis.
-
-    **y** (`float64`): The velocity of the Entity on the y axis.
-&#34;&#34;&#34;
-
-
-Speed = ComponentDef(
-    name=&#34;speed&#34;,
-    schema={
-        &#34;max_x&#34;: types.float64,
-        &#34;max_y&#34;: types.float64,
-    },
-)
-
-Clock = ComponentDef(
-    name=&#34;clock&#34;,
-    schema={
-        &#34;tick_ms&#34;: types.int64,
-    },
-)
-
-Keyboard = ComponentDef(
-    name=&#34;keyboard&#34;,
-    schema={
-        &#34;pressed&#34;: types.string,
-    },
-)</code></pre>
-</details>
 </section>
 <section>
-</section>
-<section>
-<h2 class="section-title" id="header-variables">Global variables</h2>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt id="bento.example.specs.Position"><code class="name">var <span class="ident">Position</span></code></dt>
+<dt><code class="name"><a title="bento.spec.ecs" href="ecs.html">bento.spec.ecs</a></code></dt>
 <dd>
-<div class="desc"><p>Records the current position of an Entity</p>
-<h2 id="attributes">Attributes</h2>
-<p><strong>x</strong> (<code>float64</code>): The position of the Entity on the x axis.</p>
-<p><strong>y</strong> (<code>float64</code>): The position of the Entity on the y axis.</p></div>
+<div class="desc"></div>
 </dd>
-<dt id="bento.example.specs.Velocity"><code class="name">var <span class="ident">Velocity</span></code></dt>
+<dt><code class="name"><a title="bento.spec.graph" href="graph.html">bento.spec.graph</a></code></dt>
 <dd>
-<div class="desc"><p>The current velocity an Entity is moving at.</p>
-<h2 id="attributes">Attributes</h2>
-<p><strong>x</strong> (<code>float64</code>): The velocity of the Entity on the x axis.</p>
-<p><strong>y</strong> (<code>float64</code>): The velocity of the Entity on the y axis.</p></div>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="bento.spec.sim" href="sim.html">bento.spec.sim</a></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
+</section>
+<section>
 </section>
 <section>
 </section>
@@ -131,13 +55,14 @@ Keyboard = ComponentDef(
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="bento.example" href="index.html">bento.example</a></code></li>
+<li><code><a title="bento" href="../index.html">bento</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-variables">Global variables</a></h3>
-<ul class="">
-<li><code><a title="bento.example.specs.Position" href="#bento.example.specs.Position">Position</a></code></li>
-<li><code><a title="bento.example.specs.Velocity" href="#bento.example.specs.Velocity">Velocity</a></code></li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="bento.spec.ecs" href="ecs.html">bento.spec.ecs</a></code></li>
+<li><code><a title="bento.spec.graph" href="graph.html">bento.spec.graph</a></code></li>
+<li><code><a title="bento.spec.sim" href="sim.html">bento.spec.sim</a></code></li>
 </ul>
 </li>
 </ul>

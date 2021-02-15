@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>bento.ecs.spec API documentation</title>
+<title>bento.spec.ecs API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bento.ecs.spec</code></h1>
+<h1 class="title">Module <code>bento.spec.ecs</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -32,10 +32,11 @@
 # Specifying ECS Definitions
 #
 
-from bento.types import Type
-from bento.protos import ecs_pb2
-from bento.graph.spec import Graph
 from typing import Dict, Iterable, List, Union
+
+from bento.protos import ecs_pb2
+from bento.spec.graph import Graph
+from bento.types import Type
 
 
 class ComponentDef:
@@ -57,7 +58,7 @@ class ComponentDef:
     @classmethod
     def from_proto(cls, proto: ecs_pb2.ComponentDef):
         &#34;&#34;&#34;Create a ComponentDef from a ComponentDef Proto&#34;&#34;&#34;
-        return cls(name=proto.name, schema=proto.schema)
+        return cls(name=proto.name, schema=dict(proto.schema))
 
     @property
     def name(self) -&gt; str:
@@ -67,7 +68,7 @@ class ComponentDef:
     @property
     def schema(self) -&gt; Dict[str, Type]:
         &#34;&#34;&#34;Get the schema of Component defined in this ComponentDef&#34;&#34;&#34;
-        return self.proto.schema
+        return dict(self.proto.schema)
 
     def __repr__(self):
         return self.proto.name
@@ -107,10 +108,15 @@ class EntityDef:
         &#34;&#34;&#34;Get the id of this entity&#34;&#34;&#34;
         return self.proto.id
 
+    @id.setter
+    def id(self, entity_id: int):
+        &#34;&#34;&#34;Set the id of this entity&#34;&#34;&#34;
+        self.proto.id = entity_id
+
     @property
     def components(self) -&gt; List[str]:
         &#34;&#34;&#34;Get the names of the components attached to the ECS entity defined in this EntityDef&#34;&#34;&#34;
-        return self.proto.components
+        return list(self.proto.components)
 
     def __repr__(self):
         # default id to ? if not yet set by engine
@@ -170,7 +176,7 @@ class SystemDef:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="bento.ecs.spec.ComponentDef"><code class="flex name class">
+<dt id="bento.spec.ecs.ComponentDef"><code class="flex name class">
 <span>class <span class="ident">ComponentDef</span></span>
 <span>(</span><span>name: str, schema: Dict[str, <a title="bento.protos.types_pb2.Type" href="../protos/types_pb2.html#bento.protos.types_pb2.Type">Type</a>])</span>
 </code></dt>
@@ -210,7 +216,7 @@ unique for each schema.</dd>
     @classmethod
     def from_proto(cls, proto: ecs_pb2.ComponentDef):
         &#34;&#34;&#34;Create a ComponentDef from a ComponentDef Proto&#34;&#34;&#34;
-        return cls(name=proto.name, schema=proto.schema)
+        return cls(name=proto.name, schema=dict(proto.schema))
 
     @property
     def name(self) -&gt; str:
@@ -220,7 +226,7 @@ unique for each schema.</dd>
     @property
     def schema(self) -&gt; Dict[str, Type]:
         &#34;&#34;&#34;Get the schema of Component defined in this ComponentDef&#34;&#34;&#34;
-        return self.proto.schema
+        return dict(self.proto.schema)
 
     def __repr__(self):
         return self.proto.name
@@ -230,7 +236,7 @@ unique for each schema.</dd>
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="bento.ecs.spec.ComponentDef.from_proto"><code class="name flex">
+<dt id="bento.spec.ecs.ComponentDef.from_proto"><code class="name flex">
 <span>def <span class="ident">from_proto</span></span>(<span>proto: <a title="bento.protos.ecs_pb2.ComponentDef" href="../protos/ecs_pb2.html#bento.protos.ecs_pb2.ComponentDef">ComponentDef</a>)</span>
 </code></dt>
 <dd>
@@ -242,13 +248,13 @@ unique for each schema.</dd>
 <pre><code class="python">@classmethod
 def from_proto(cls, proto: ecs_pb2.ComponentDef):
     &#34;&#34;&#34;Create a ComponentDef from a ComponentDef Proto&#34;&#34;&#34;
-    return cls(name=proto.name, schema=proto.schema)</code></pre>
+    return cls(name=proto.name, schema=dict(proto.schema))</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="bento.ecs.spec.ComponentDef.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dt id="bento.spec.ecs.ComponentDef.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
 <dd>
 <div class="desc"><p>Get the name of Component defined in this ComponentDef</p></div>
 <details class="source">
@@ -261,7 +267,7 @@ def name(self) -&gt; str:
     return self.proto.name</code></pre>
 </details>
 </dd>
-<dt id="bento.ecs.spec.ComponentDef.schema"><code class="name">var <span class="ident">schema</span> : Dict[str, <a title="bento.protos.types_pb2.Type" href="../protos/types_pb2.html#bento.protos.types_pb2.Type">Type</a>]</code></dt>
+<dt id="bento.spec.ecs.ComponentDef.schema"><code class="name">var <span class="ident">schema</span> : Dict[str, <a title="bento.protos.types_pb2.Type" href="../protos/types_pb2.html#bento.protos.types_pb2.Type">Type</a>]</code></dt>
 <dd>
 <div class="desc"><p>Get the schema of Component defined in this ComponentDef</p></div>
 <details class="source">
@@ -271,14 +277,14 @@ def name(self) -&gt; str:
 <pre><code class="python">@property
 def schema(self) -&gt; Dict[str, Type]:
     &#34;&#34;&#34;Get the schema of Component defined in this ComponentDef&#34;&#34;&#34;
-    return self.proto.schema</code></pre>
+    return dict(self.proto.schema)</code></pre>
 </details>
 </dd>
 </dl>
 </dd>
-<dt id="bento.ecs.spec.EntityDef"><code class="flex name class">
+<dt id="bento.spec.ecs.EntityDef"><code class="flex name class">
 <span>class <span class="ident">EntityDef</span></span>
-<span>(</span><span>components: Iterable[Union[<a title="bento.ecs.spec.ComponentDef" href="#bento.ecs.spec.ComponentDef">ComponentDef</a>, str]], entity_id: int = 0)</span>
+<span>(</span><span>components: Iterable[Union[<a title="bento.spec.ecs.ComponentDef" href="#bento.spec.ecs.ComponentDef">ComponentDef</a>, str]], entity_id: int = 0)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Specifies a ECS entity by defining its components.
@@ -328,10 +334,15 @@ to the ECS entity defined by this EntityDef.</dd>
         &#34;&#34;&#34;Get the id of this entity&#34;&#34;&#34;
         return self.proto.id
 
+    @id.setter
+    def id(self, entity_id: int):
+        &#34;&#34;&#34;Set the id of this entity&#34;&#34;&#34;
+        self.proto.id = entity_id
+
     @property
     def components(self) -&gt; List[str]:
         &#34;&#34;&#34;Get the names of the components attached to the ECS entity defined in this EntityDef&#34;&#34;&#34;
-        return self.proto.components
+        return list(self.proto.components)
 
     def __repr__(self):
         # default id to ? if not yet set by engine
@@ -343,7 +354,7 @@ to the ECS entity defined by this EntityDef.</dd>
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="bento.ecs.spec.EntityDef.from_proto"><code class="name flex">
+<dt id="bento.spec.ecs.EntityDef.from_proto"><code class="name flex">
 <span>def <span class="ident">from_proto</span></span>(<span>proto: <a title="bento.protos.ecs_pb2.EntityDef" href="../protos/ecs_pb2.html#bento.protos.ecs_pb2.EntityDef">EntityDef</a>)</span>
 </code></dt>
 <dd>
@@ -361,7 +372,7 @@ def from_proto(cls, proto: ecs_pb2.EntityDef):
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="bento.ecs.spec.EntityDef.components"><code class="name">var <span class="ident">components</span> : List[str]</code></dt>
+<dt id="bento.spec.ecs.EntityDef.components"><code class="name">var <span class="ident">components</span> : List[str]</code></dt>
 <dd>
 <div class="desc"><p>Get the names of the components attached to the ECS entity defined in this EntityDef</p></div>
 <details class="source">
@@ -371,10 +382,10 @@ def from_proto(cls, proto: ecs_pb2.EntityDef):
 <pre><code class="python">@property
 def components(self) -&gt; List[str]:
     &#34;&#34;&#34;Get the names of the components attached to the ECS entity defined in this EntityDef&#34;&#34;&#34;
-    return self.proto.components</code></pre>
+    return list(self.proto.components)</code></pre>
 </details>
 </dd>
-<dt id="bento.ecs.spec.EntityDef.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
+<dt id="bento.spec.ecs.EntityDef.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
 <dd>
 <div class="desc"><p>Get the id of this entity</p></div>
 <details class="source">
@@ -389,9 +400,9 @@ def id(self) -&gt; int:
 </dd>
 </dl>
 </dd>
-<dt id="bento.ecs.spec.SystemDef"><code class="flex name class">
+<dt id="bento.spec.ecs.SystemDef"><code class="flex name class">
 <span>class <span class="ident">SystemDef</span></span>
-<span>(</span><span>graph: <a title="bento.graph.spec.Graph" href="../graph/spec.html#bento.graph.spec.Graph">Graph</a>, system_id: int = 0)</span>
+<span>(</span><span>graph: <a title="bento.spec.graph.Graph" href="graph.html#bento.spec.graph.Graph">Graph</a>, system_id: int = 0)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Specifies a ECS system by defining its computational graph.
@@ -451,7 +462,7 @@ defined by this SystemDef.</dd>
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="bento.ecs.spec.SystemDef.from_proto"><code class="name flex">
+<dt id="bento.spec.ecs.SystemDef.from_proto"><code class="name flex">
 <span>def <span class="ident">from_proto</span></span>(<span>proto: <a title="bento.protos.ecs_pb2.SystemDef" href="../protos/ecs_pb2.html#bento.protos.ecs_pb2.SystemDef">SystemDef</a>)</span>
 </code></dt>
 <dd>
@@ -469,7 +480,7 @@ def from_proto(cls, proto: ecs_pb2.SystemDef):
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="bento.ecs.spec.SystemDef.graph"><code class="name">var <span class="ident">graph</span> : <a title="bento.graph.spec.Graph" href="../graph/spec.html#bento.graph.spec.Graph">Graph</a></code></dt>
+<dt id="bento.spec.ecs.SystemDef.graph"><code class="name">var <span class="ident">graph</span> : <a title="bento.spec.graph.Graph" href="graph.html#bento.spec.graph.Graph">Graph</a></code></dt>
 <dd>
 <div class="desc"><p>Get the computational graph of ECS system defined in this SystemDef</p></div>
 <details class="source">
@@ -482,7 +493,7 @@ def graph(self) -&gt; Graph:
     return Graph.from_proto(self.proto.graph)</code></pre>
 </details>
 </dd>
-<dt id="bento.ecs.spec.SystemDef.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
+<dt id="bento.spec.ecs.SystemDef.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
 <dd>
 <div class="desc"><p>Get the id of this system</p></div>
 <details class="source">
@@ -508,33 +519,33 @@ def id(self) -&gt; int:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="bento.ecs" href="index.html">bento.ecs</a></code></li>
+<li><code><a title="bento.spec" href="index.html">bento.spec</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="bento.ecs.spec.ComponentDef" href="#bento.ecs.spec.ComponentDef">ComponentDef</a></code></h4>
+<h4><code><a title="bento.spec.ecs.ComponentDef" href="#bento.spec.ecs.ComponentDef">ComponentDef</a></code></h4>
 <ul class="">
-<li><code><a title="bento.ecs.spec.ComponentDef.from_proto" href="#bento.ecs.spec.ComponentDef.from_proto">from_proto</a></code></li>
-<li><code><a title="bento.ecs.spec.ComponentDef.name" href="#bento.ecs.spec.ComponentDef.name">name</a></code></li>
-<li><code><a title="bento.ecs.spec.ComponentDef.schema" href="#bento.ecs.spec.ComponentDef.schema">schema</a></code></li>
+<li><code><a title="bento.spec.ecs.ComponentDef.from_proto" href="#bento.spec.ecs.ComponentDef.from_proto">from_proto</a></code></li>
+<li><code><a title="bento.spec.ecs.ComponentDef.name" href="#bento.spec.ecs.ComponentDef.name">name</a></code></li>
+<li><code><a title="bento.spec.ecs.ComponentDef.schema" href="#bento.spec.ecs.ComponentDef.schema">schema</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="bento.ecs.spec.EntityDef" href="#bento.ecs.spec.EntityDef">EntityDef</a></code></h4>
+<h4><code><a title="bento.spec.ecs.EntityDef" href="#bento.spec.ecs.EntityDef">EntityDef</a></code></h4>
 <ul class="">
-<li><code><a title="bento.ecs.spec.EntityDef.components" href="#bento.ecs.spec.EntityDef.components">components</a></code></li>
-<li><code><a title="bento.ecs.spec.EntityDef.from_proto" href="#bento.ecs.spec.EntityDef.from_proto">from_proto</a></code></li>
-<li><code><a title="bento.ecs.spec.EntityDef.id" href="#bento.ecs.spec.EntityDef.id">id</a></code></li>
+<li><code><a title="bento.spec.ecs.EntityDef.components" href="#bento.spec.ecs.EntityDef.components">components</a></code></li>
+<li><code><a title="bento.spec.ecs.EntityDef.from_proto" href="#bento.spec.ecs.EntityDef.from_proto">from_proto</a></code></li>
+<li><code><a title="bento.spec.ecs.EntityDef.id" href="#bento.spec.ecs.EntityDef.id">id</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="bento.ecs.spec.SystemDef" href="#bento.ecs.spec.SystemDef">SystemDef</a></code></h4>
+<h4><code><a title="bento.spec.ecs.SystemDef" href="#bento.spec.ecs.SystemDef">SystemDef</a></code></h4>
 <ul class="">
-<li><code><a title="bento.ecs.spec.SystemDef.from_proto" href="#bento.ecs.spec.SystemDef.from_proto">from_proto</a></code></li>
-<li><code><a title="bento.ecs.spec.SystemDef.graph" href="#bento.ecs.spec.SystemDef.graph">graph</a></code></li>
-<li><code><a title="bento.ecs.spec.SystemDef.id" href="#bento.ecs.spec.SystemDef.id">id</a></code></li>
+<li><code><a title="bento.spec.ecs.SystemDef.from_proto" href="#bento.spec.ecs.SystemDef.from_proto">from_proto</a></code></li>
+<li><code><a title="bento.spec.ecs.SystemDef.graph" href="#bento.spec.ecs.SystemDef.graph">graph</a></code></li>
+<li><code><a title="bento.spec.ecs.SystemDef.id" href="#bento.spec.ecs.SystemDef.id">id</a></code></li>
 </ul>
 </li>
 </ul>
