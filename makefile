@@ -97,8 +97,8 @@ test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
 
 run-sim: build-sim
-	env ENGINE_PORT=$(SIM_PORT)\
-		ENGINE_HOST=$(SIM_HOST)
+	env ENGINE_PORT=$(SIM_PORT) \
+		ENGINE_HOST=$(SIM_HOST) \
 		$(SIM_BUILD_DIR)/$(SIM_TARGET)
 
 debug-sim: build-sim
