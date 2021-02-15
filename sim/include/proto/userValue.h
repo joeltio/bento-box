@@ -8,6 +8,9 @@
 // Macros for template parameter packs
 #define proto_NUMERIC \
     ::proto::INT32, ::proto::INT64, ::proto::FLOAT32, ::proto::FLOAT64
+#define proto_ANY                                                       \
+    ::proto::INT32, ::proto::INT64, ::proto::FLOAT32, ::proto::FLOAT64, \
+        ::proto::STR, ::proto::BOOL
 
 namespace proto {
 
@@ -65,11 +68,23 @@ requires ProtobufType<T> bool isValOfType(
 }
 
 // Validate if the given val matches one of the listed protobuf types
-template <class... AllowedTypes>
+template <class... Ts>
 // This fold expression validates that each type given is a protobuf type
-requires(proto::ProtobufType<AllowedTypes>&&...) bool isValOfTypes(
+requires(proto::ProtobufType<Ts>&&...) bool isValOfTypes(
     const bento::protos::Value& val) {
-    return (proto::isValOfType<AllowedTypes>(val) || ...);
+    return (proto::isValOfType<Ts>(val) || ...);
+}
+
+template <class T>
+requires ProtobufType<T> bool isTypeOfType(
+    const bento::protos::Type& protoType) {
+    throw std::runtime_error("Invalid protobuf type.");
+}
+
+template <class ...Ts>
+requires (proto::ProtobufType<Ts>&&...) bool isTypeOfTypes(
+    const bento::protos::Type& protoType) {
+    return (proto::isTypeOfType<Ts>(protoType) || ...);
 }
 
 // Validates if a given type is in a list of types
@@ -80,6 +95,61 @@ requires(proto::ProtobufType<AllowedTypes>&&...) bool isValOfTypes(
 template <class Type, class... TypeList>
 constexpr bool typeInTypes =
     std::disjunction_v<std::is_same<Type, TypeList>...>;
+
+template <class... AllowedTypes, class Fn>
+void runFnWithValType(const bento::protos::Type& type, Fn fn) {
+    if (type.has_array()) {
+        // TODO(joeltio): This has been left out since there is no single
+        // representation for array-like types in C++
+        throw std::logic_error(
+            "Type deduction for array type has not been implemented.");
+    }
+
+    bool fnCalled = false;
+    auto primitiveType = type.primitive();
+    if constexpr (typeInTypes<INT32, AllowedTypes...>) {
+        if (isTypeOfType<INT32>(type)) {
+            fn((INT32*)nullptr);
+            fnCalled = true;
+        }
+    }
+    if constexpr (typeInTypes<INT64, AllowedTypes...>) {
+        if (isTypeOfType<INT64>(type)) {
+            fn((INT64*)nullptr);
+            fnCalled = true;
+        }
+    }
+    if constexpr (typeInTypes<FLOAT32, AllowedTypes...>) {
+        if (isTypeOfType<FLOAT32>(type)) {
+            fn((FLOAT32*)nullptr);
+            fnCalled = true;
+        }
+    }
+    if constexpr (typeInTypes<FLOAT64, AllowedTypes...>) {
+        if (isTypeOfType<FLOAT64>(type)) {
+            fn((FLOAT64*)nullptr);
+            fnCalled = true;
+        }
+    }
+    if constexpr (typeInTypes<STR, AllowedTypes...>) {
+        if (isTypeOfType<STR>(type)) {
+            fn((STR*)nullptr);
+            fnCalled = true;
+        }
+    }
+    if constexpr (typeInTypes<BOOL, AllowedTypes...>) {
+        if (isTypeOfType<BOOL>(type)) {
+            fn((BOOL*)nullptr);
+            fnCalled = true;
+        }
+    }
+
+    if (!fnCalled) {
+        throw std::runtime_error(
+            "Unhandled or unrepresentable type found when deducing type "
+            "for a protos::Type.");
+    }
+}
 
 // Runs a function on the given Value after figuring out its type.
 // For example, if `x` is an INT64, then, the lambda function will be called as:
@@ -176,6 +246,8 @@ bento::protos::Value runFnWithVal(const bento::protos::Value& x,
 
     return val;
 }
+
+bool valHasCorrectDataType(const bento::protos::Value& val);
 
 }  // namespace proto
 
