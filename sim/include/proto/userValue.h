@@ -64,66 +64,22 @@ requires ProtobufType<T> bool isValOfType(
     throw std::runtime_error("Invalid protobuf type.");
 }
 
-namespace {
-// Do not export this function. Only isValOfTypes should be used.
-// isValOfTypes does not have the additional N non-type template parameter
-// making invocation simpler.
-template <size_t N = 0, class... AllowedTypes>
-requires(proto::ProtobufType<AllowedTypes>&&...) bool _isValOfTypes(
-    const bento::protos::Value& val) {
-    if constexpr (N == sizeof...(AllowedTypes)) {
-        // Finished looping and no valid types were found
-        return false;
-    } else {
-        // This else statement is required because the compiler seems to
-        // evaluate this typedef first, which will cause an index error
-        // on the iteration where the N == sizeof...(AllowedTypes)
-        typedef std::tuple_element_t<N, std::tuple<AllowedTypes...>>
-            CurrentType;
-        // It matches one of the types
-        if (proto::isValOfType<CurrentType>(val)) {
-            return true;
-        }
-
-        // It doesn't match any type, recurse and get the next type
-        return _isValOfTypes<N + 1, AllowedTypes...>(val);
-    }
-};
-}  // namespace
-
 // Validate if the given val matches one of the listed protobuf types
 template <class... AllowedTypes>
 // This fold expression validates that each type given is a protobuf type
 requires(proto::ProtobufType<AllowedTypes>&&...) bool isValOfTypes(
     const bento::protos::Value& val) {
-    return _isValOfTypes<0, AllowedTypes...>(val);
+    return (proto::isValOfType<AllowedTypes>(val) || ...);
 }
-
-namespace {
-template <size_t N = 0, class Type, class... TypeList>
-constexpr bool _typeInTypes() {
-    if constexpr (N == sizeof...(TypeList)) {
-        return false;
-    } else {
-        typedef std::tuple_element_t<N, std::tuple<TypeList...>> CurrentType;
-        if constexpr (std::is_same_v<Type, CurrentType>) {
-            return true;
-        }
-
-        return _typeInTypes<N + 1, Type, TypeList...>();
-    }
-}
-}  // namespace
 
 // Validates if a given type is in a list of types
 // For example:
-// typeInTypes<int, bool, char>() == false
-// typeInTypes<int, bool, char, int>() == true
-// typeInTypes<std::string, bool, char, int>() == true
+// typeInTypes<int, bool, char> == false
+// typeInTypes<int, bool, char, int> == true
+// typeInTypes<std::string, bool, char, int> == true
 template <class Type, class... TypeList>
-constexpr bool typeInTypes() {
-    return _typeInTypes<0, Type, TypeList...>();
-}
+constexpr bool typeInTypes =
+    std::disjunction_v<std::is_same<Type, TypeList>...>;
 
 // Runs a function on the given Value after figuring out its type.
 // For example, if `x` is an INT64, then, the lambda function will be called as:
@@ -148,37 +104,37 @@ bento::protos::Value runFnWithVal(const bento::protos::Value& x, Fn fn) {
     // may be run with getVal<STR>(x);
     // Therefore, these code paths need to be removed at compile-time so that
     // C++ knows that we will never have a case we will run fn(getVal<STR>(x))
-    if constexpr (typeInTypes<INT32, AllowedTypes...>()) {
+    if constexpr (typeInTypes<INT32, AllowedTypes...>) {
         if (isValOfType<INT32>(x)) {
             setVal(val, fn(getVal<INT32>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<INT64, AllowedTypes...>()) {
+    if constexpr (typeInTypes<INT64, AllowedTypes...>) {
         if (isValOfType<INT64>(x)) {
             setVal(val, fn(getVal<INT64>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<FLOAT32, AllowedTypes...>()) {
+    if constexpr (typeInTypes<FLOAT32, AllowedTypes...>) {
         if (isValOfType<FLOAT32>(x)) {
             setVal(val, fn(getVal<FLOAT32>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<FLOAT64, AllowedTypes...>()) {
+    if constexpr (typeInTypes<FLOAT64, AllowedTypes...>) {
         if (isValOfType<FLOAT64>(x)) {
             setVal(val, fn(getVal<FLOAT64>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<STR, AllowedTypes...>()) {
+    if constexpr (typeInTypes<STR, AllowedTypes...>) {
         if (isValOfType<STR>(x)) {
             setVal(val, fn(getVal<STR>(x)));
             valSet = true;
         }
     }
-    if constexpr (typeInTypes<BOOL, AllowedTypes...>()) {
+    if constexpr (typeInTypes<BOOL, AllowedTypes...>) {
         if (isValOfType<BOOL>(x)) {
             setVal(val, fn(getVal<BOOL>(x)));
             valSet = true;
