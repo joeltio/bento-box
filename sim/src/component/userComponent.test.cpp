@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #define TEST_SUITE UserComponent
+#include <proto/userValue.h>
 
 using namespace ics::component;
 
@@ -57,13 +58,38 @@ TEST(TEST_SUITE, SetValueRequiresCorrectDataType) {
     // No data type
     ASSERT_ANY_THROW(comp.setValue("height", height));
 
-    // Incorrect data type
+    // Data type and stored type mismatch
     height.mutable_data_type()->set_primitive(
-        bento::protos::Type_Primitive_FLOAT32);
+        bento::protos::Type_Primitive_STRING);
+    ASSERT_ANY_THROW(comp.setValue("height", height));
+
+    // Completely incorrect data type (cannot be converted)
+    height.mutable_primitive()->set_str_val("hello");
     ASSERT_ANY_THROW(comp.setValue("height", height));
 
     // Correct data type
+    height.mutable_primitive()->set_int_64(30);
     height.mutable_data_type()->set_primitive(
         bento::protos::Type_Primitive_INT64);
+    comp.setValue("height", height);
     ASSERT_NO_THROW(comp.setValue("height", height));
+}
+
+TEST(TEST_SUITE, SetValueImplicitCast) {
+    TestComponent comp;
+    auto height = bento::protos::Value();
+    height.mutable_primitive()->set_int_32(30);
+    height.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_INT32);
+
+    comp.setValue("height", height);
+
+    ASSERT_EQ(comp.getValue("height").primitive().int_64(), 30);
+
+    height.mutable_primitive()->set_float_32(20.0f);
+    height.mutable_data_type()->set_primitive(
+        bento::protos::Type_Primitive_FLOAT32);
+
+    comp.setValue("height", height);
+    ASSERT_EQ(comp.getValue("height").primitive().int_64(), 20);
 }
