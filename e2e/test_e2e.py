@@ -35,14 +35,14 @@ Meta = ComponentDef(
     name="meta",
     schema={
         "name": types.string,
-        "id": types.int32,
+        "id": types.int64,
         "version": types.int32,
     },
 )
 Movement = ComponentDef(
     name="movement",
     schema={
-        "rotation": types.float64,
+        "rotation": types.float32,
         "speed": types.float64,
     },
 )
@@ -220,7 +220,8 @@ def test_e2e_engine_get_set_attr(sim, client):
     assert car[Meta].version == 10
 
     car[Movement].rotation = -134.2
-    assert car[Movement].rotation == -134.2
+    # rounding required due to loss of precision when using float32
+    assert round(car[Movement].rotation, 4) == -134.2
     car[Movement].speed = 23.5
     assert car[Movement].speed == 23.5
 
@@ -249,15 +250,16 @@ def test_e2e_engine_implict_type_convert(sim, client):
         other_dtypes = [t for t in dtype_attrs.keys() if t != dtype]
         for other_dtype in other_dtypes:
             value_attr = dtype_attrs[other_dtype]
-            if dtype == types.int64:
+            if dtype == "types.int64":
                 car[Meta].id = value_attr()
-            elif dtype == types.int32:
+            elif dtype == "types.int32":
                 car[Meta].version = value_attr()
-            elif dtype == types.float64:
+            elif dtype == "types.float64":
                 car[Movement].speed = value_attr()
-            elif dtype == types.float32:
+            elif dtype == "types.float32":
                 car[Movement].rotation = value_attr()
-
+            else:
+                raise ValueError(f"Data type case not handled: {dtype}")
             actual_attr = dtype_attrs[dtype]
             assert actual_attr() == 1
 
@@ -277,6 +279,7 @@ def test_e2e_engine_step_sim(sim, client):
     car = sim.entity(components=[Movement, Velocity, Position, Meta])
     assert car[Meta].name == "beetle"
     assert car[Meta].version == 2
+    assert car[Meta].id == 512
     assert car[Movement].speed == 0.0
     assert car[Movement].rotation == 90.0
     assert car[Velocity].x == 0.0
