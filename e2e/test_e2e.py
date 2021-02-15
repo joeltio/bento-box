@@ -35,14 +35,14 @@ Meta = ComponentDef(
     name="meta",
     schema={
         "name": types.string,
-        "id": types.int32,
+        "id": types.int64,
         "version": types.int32,
     },
 )
 Movement = ComponentDef(
     name="movement",
     schema={
-        "rotation": types.float64,
+        "rotation": types.float32,
         "speed": types.float64,
     },
 )
@@ -54,6 +54,7 @@ Keyboard = ComponentDef(
         "down": types.boolean,
         "left": types.boolean,
         "right": types.boolean,
+        "key": types.byte,
     },
 )
 
@@ -117,6 +118,7 @@ def sim(client):
         controls[Keyboard].right = False
         controls[Keyboard].up = False
         controls[Keyboard].down = False
+        controls[Keyboard].key = 0
 
         car = g.entity(components=[Movement, Velocity, Position, Meta])
         car[Meta].name = "beetle"
@@ -150,6 +152,10 @@ def sim(client):
         elif controls[Keyboard].down:
             car[Movement].speed = g.max(car[Movement].speed - acceleration, 0.0)
             controls[Keyboard].down = False
+        elif controls[Keyboard].key == ord(" "):
+            # handbrake on space: slow down twice as fast
+            car[Movement].speed = g.max(car[Movement].speed - 2 * acceleration, 0.0)
+            controls[Keyboard].key = 0
 
     @sim.system
     def physics_sys(g: Plotter):
@@ -243,21 +249,25 @@ def test_e2e_engine_implict_type_convert(sim, client):
         "types.int32": (lambda: car[Meta].version),
         "types.float64": (lambda: car[Movement].speed),
         "types.float32": (lambda: car[Movement].rotation),
+        "types.byte": (lambda: controls[Keyboard].key),
     }
 
     for dtype in dtype_attrs.keys():
         other_dtypes = [t for t in dtype_attrs.keys() if t != dtype]
         for other_dtype in other_dtypes:
             value_attr = dtype_attrs[other_dtype]
-            if dtype == types.int64:
+            if dtype == "types.int64":
                 car[Meta].id = value_attr()
-            elif dtype == types.int32:
+            elif dtype == "types.int32":
                 car[Meta].version = value_attr()
-            elif dtype == types.float64:
+            elif dtype == "types.float64":
                 car[Movement].speed = value_attr()
-            elif dtype == types.float32:
+            elif dtype == "types.float32":
                 car[Movement].rotation = value_attr()
-
+            elif dtype == "type.byte":
+                controls[Keyboard].key = value_attr()
+            else:
+                raise ValueError(f"Data type case not handled: {dtype}")
             actual_attr = dtype_attrs[dtype]
             assert actual_attr() == 1
 
@@ -273,6 +283,7 @@ def test_e2e_engine_step_sim(sim, client):
     assert controls[Keyboard].right == False
     assert controls[Keyboard].up == False
     assert controls[Keyboard].left == False
+    assert controls[Keyboard].key == 0
 
     car = sim.entity(components=[Movement, Velocity, Position, Meta])
     assert car[Meta].name == "beetle"
