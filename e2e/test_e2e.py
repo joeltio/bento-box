@@ -279,6 +279,7 @@ def test_e2e_engine_step_sim(sim, client):
     car = sim.entity(components=[Movement, Velocity, Position, Meta])
     assert car[Meta].name == "beetle"
     assert car[Meta].version == 2
+    assert car[Meta].id  == 512
     assert car[Movement].speed == 0.0
     assert car[Movement].rotation == 90.0
     assert car[Velocity].x == 0.0
