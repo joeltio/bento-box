@@ -69,7 +69,7 @@ The simulation ends when the car's `Position.x > 0.5`
 def init_fn(g: Plotter):
     car = g.entity(components=[Velocity, Position])
     car[Velocity].x = 0.0
-    car[Position].x = 0.0
+    car[Position].x = g.random(-0.6, -0.4)
 
     env = g.entity(components=[Action, State])
     env[State].reward = 0
