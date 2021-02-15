@@ -5,7 +5,7 @@
 #
 
 
-from typing import Iterable, List
+from typing import Iterable, List, Optional
 from bento.graph.compile import ConvertFn, compile_graph
 
 from bento.protos import sim_pb2
@@ -14,14 +14,11 @@ from bento.spec.graph import Graph
 
 
 class SimulationDef:
-    """Specifies a Simulation by defining its entities, components & systems.
+    """Provides a Specification for a `bento.sim.Simulation`.
 
-    The `SimulationDef` can be 'rehydrated' in an actual `bento.sim.Simulation` by::
+    The `SimulationDef` can be hydrated in an actual `bento.sim.Simulation` by:
 
-        sim = Simulation.from_def(sim_def)
-
-    SimulationDef provides a thin wrapper around the the SimulationDef proto which
-    can be accessed via the `.proto` attribute.
+        sim = Simulation.from_def(sim_def, client)
     """
 
     def __init__(
@@ -29,81 +26,46 @@ class SimulationDef:
         name: str,
         components: Iterable[ComponentDef],
         entities: Iterable[EntityDef],
-        systems: Iterable[SystemDef] = [],
-        init_graph: Graph = Graph(),
+        system_fns: Iterable[ConvertFn] = [],
+        init_fn: Optional[ConvertFn] = None,
     ):
-        """Create a SimulationDef with the given name
+        """Create a SimulationDef that specifies a Simulation given name.
+        `bento.sim.Simulation`s hydrated from this SimulationDef will have the given attributes.
 
         Args:
-            name: Name to use for the defined Simulation. The name should be
+            name: Name to use for the specified Simulation. The name should be
                 unique among registered simulations.
-            entities: List of entities in use in the simulation.
-            components: List of component types in use in the simulation.
-            systems: List of systems to run in this simulation.
-            init_graph: The init graph to use to initialize attribute values.
+            entities: List of entities to use in the specified simulation.
+            components: List of component types in use in the specified simulation.
+            system_fns: List of `bento.graph.compile.compile_graph()` compilable
+                function implemnting the systems to run in the specified simulation.
+            init_fn: The `bento.graph.compile.compile_graph()` compilable
+                function containing the init code for the specified simulation
+                that runs the specified Simulation is registered/applied.
         """
-        self.proto = sim_pb2.SimulationDef(
-            name=name,
-            entities=[e.proto for e in entities],
-            components=[c.proto for c in components],
-            systems=[s.proto for s in systems],
-            init_graph=init_graph.proto,
-        )
-
-    @classmethod
-    def from_proto(cls, proto: sim_pb2.SimulationDef):
-        """Create a SimulationDef from a `bento.protos.sim_pb2.SimulationDef` Proto"""
-        return cls(
-            name=proto.name,
-            entities=[EntityDef.from_proto(c) for c in proto.entities],
-            components=[ComponentDef.from_proto(c) for c in proto.components],
-            systems=[SystemDef.from_proto(s) for s in proto.systems],
-            init_graph=Graph.from_proto(proto.init_graph),
-        )
-
-    @property
-    def name(self) -> str:
-        """Get the name of Simulation defined by this SimulationDef"""
-        return self.proto.name
-
-    @property
-    def components(self) -> List[ComponentDef]:
-        """Get the component types in the Simulation defined by this SimulationDef"""
-        return [ComponentDef.from_proto(c) for c in self.proto.components]
-
-    @property
-    def entities(self) -> List[EntityDef]:
-        """Get the entities in the Simulation defined by this SimulationDef"""
-        return [EntityDef.from_proto(e) for e in self.proto.entities]
+        self.name = name
+        self.component_defs = list(components)
+        self.entity_defs = list(entities)
+        self.system_fns = list(system_fns)
+        self.init_fn = init_fn
 
     def system(self, system_fn: ConvertFn):
         """Register a ECS system with the given system_fn in this SimulationDef
+        `bento.sim.Simulation`s hydrated from this SimulationDef will have the given ECS system.
         See `bento.sim.Simulation.system()` for more information.
         """
-        systems = self.systems
-        del self.proto.systems[:]
-        graph = compile_graph(system_fn, self.entities, self.components)
-        systems.append(SystemDef(graph))
-        self.proto.systems.extend([s.proto for s in systems])
-
-    @property
-    def systems(self) -> List[SystemDef]:
-        """Get the systems running in the Simulation defined by this SimulationDef"""
-        return [SystemDef.from_proto(s) for s in self.proto.systems]
+        self.system_fns.append(system_fn)
 
     def init(self, init_fn: ConvertFn):
         """Register given init_fn as the init graph for this SimulationDef
+        `bento.sim.Simulation`s hydrated from this SimulationDef will have the given
+        `init_fn` as its init graph.
         See `bento.sim.Simulation.init()` for more information.
         """
-        graph = compile_graph(init_fn, self.entities, self.components)
-
-    @property
-    def init_graph(self) -> Graph:
-        """Get the init graph used in the Simulation defined by this SimulationDef"""
-        return Graph.from_proto(self.proto.init_graph)
+        self.init_fn = init_fn
 
     def __repr__(self):
-        return self.proto.name
+        return f"{type(self).__name__}<{self.name}>"
 
     def __hash__(self):
-        return hash(self.proto.name)
+        return hash(self.name)

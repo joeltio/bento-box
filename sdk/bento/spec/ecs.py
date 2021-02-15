@@ -80,6 +80,11 @@ class EntityDef:
         """Get the id of this entity"""
         return self.proto.id
 
+    @id.setter
+    def id(self, entity_id: int):
+        """Set the id of this entity"""
+        self.proto.id = entity_id
+
     @property
     def components(self) -> List[str]:
         """Get the names of the components attached to the ECS entity defined in this EntityDef"""
