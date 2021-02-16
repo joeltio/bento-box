@@ -58,6 +58,7 @@ jobs:
   publish-engine:
     runs-on: ubuntu-20.04
     name: "Publish bentobox-engine container to Github Container Registry"
+    steps:
     - uses: actions/checkout@v2
       with:
         # fetch all history for all branches and tags
