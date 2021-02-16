@@ -6,25 +6,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bentobox-engine
-  labels:
-    app: bentobox-engine
-    part-of: bentobox
+  name: engine
 spec:
-  selector:
-    matchLabels:
-      app: bentobox-engine
-      part-of: bentobox
   replicas: 1
   template:
-    metadata:
-      labels:
-        part-of: bentobox
-        app: bentobox-engine
     spec:
       containers:
-      - name: bentobox-engine
-        image: ghcr.io/bentobox-dev/bentobox-engine:89e17a3
+      - name: engine
+        image: bentobox-engine
         env:
         # listen on all addresses, not just localhost
         - name: "BENTOBOX_SIM_HOST"
