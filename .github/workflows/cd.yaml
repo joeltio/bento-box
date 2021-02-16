@@ -72,6 +72,7 @@ jobs:
       name: "Resolve bentobox-engine container tag"
       run: |
         DOCKER_TAG=ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)
+        echo $DOCKER_TAG
         echo "::set-output name=container-tag::${DOCKER_TAG}"
     - name: "Build bentobox-engine"
       run: |
@@ -114,7 +115,5 @@ jobs:
       - name: Publish bentobox-sdk to Test PyPI
         uses: pypa/gh-action-pypi-publish@v1.4.2 
         with:
-          # TODO(mrzzy): publish this to actual pypi
-          password: ${{ secrets.TEST_PYPI_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_TOKEN }}
           packages_dir: sdk/dist/
