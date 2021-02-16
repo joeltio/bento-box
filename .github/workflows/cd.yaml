@@ -6,8 +6,9 @@
 name: "CD Pipeline"
 on:
   push:
-    branches:
-      - master
+    branches: {}
+        # TODO(mrzzy): remove this before commit
+        # - master
 jobs:
   # builds & publishes docs for the sdk component to Github
   publish-docs-sdk:
@@ -56,3 +57,19 @@ jobs:
 
           # Publish changes by pushing to Github
           git push
+
+    # build and publish the engine component on github container registry
+    publish-engine:
+      - uses: actions/checkout@v2
+        with:
+          # fetch all history for all branches and tags
+          fetch-depth: 0
+      - name: "Build bentobox-sim"
+        run: |
+          # build container tagged version given by git describe
+          VERSION=$(git describe --always)
+          make \
+            SIM_BUILD_TYPE=Release \
+            SIM_DOCKER_STAGE=release \
+            SIM_DOCKER=gcr.io/joeltio/bento-box/engine:$(VERSION) \
+            build-sim-docker
