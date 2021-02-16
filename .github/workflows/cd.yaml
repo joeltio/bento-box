@@ -101,6 +101,8 @@ jobs:
         run: |
           # build dist bentobox package to sdk/dist
           make build-sdk
+          # display built artifacts
+          ls sdk/dist/
       - name: Publish bentobox-sdk to Test PyPI
         uses: pypa/gh-action-pypi-publish@v1.4.2 
         with:
