@@ -42,10 +42,7 @@ jobs:
           git add docs
 
           # check for staged changes to SDK docs
-          if git diff --staged --quiet
-          then
-            echo "No SDK Docs changes to commit."
-            exit 0
+          if git diff --staged --quiet then echo "No SDK Docs changes to commit." exit 0
           fi
 
           # Commit changes as Github Actions bot
@@ -57,18 +54,20 @@ jobs:
           # Publish changes by pushing to Github
           git push
 
-    # build and publish the engine component on github container registry
-    publish-engine:
-      - uses: actions/checkout@v2
-        with:
-          # fetch all history for all branches and tags
-          fetch-depth: 0
-      - name: "Build bentobox-sim"
-        run: |
-          # build container tagged version given by git describe
-          VERSION=$(git describe --always)
-          make \
-            SIM_BUILD_TYPE=Release \
-            SIM_DOCKER_STAGE=release \
-            SIM_DOCKER=gcr.io/joeltio/bento-box/engine:$(VERSION) \
-            build-sim-docker
+  # build and publish the engine component on github container registry
+  publish-engine:
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-engine container to Github Container Registry"
+    - uses: actions/checkout@v2
+      with:
+        # fetch all history for all branches and tags
+        fetch-depth: 0
+    - name: "Build bentobox-sim"
+      run: |
+        # build container tagged version given by git describe
+        VERSION=$(git describe --always)
+        make \
+          SIM_BUILD_TYPE=Release \
+          SIM_DOCKER_STAGE=release \
+          SIM_DOCKER=gcr.io/joeltio/bento-box/engine:$(VERSION) \
+          build-sim-docker
