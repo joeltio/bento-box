@@ -99,10 +99,11 @@ jobs:
           python-version: 3.7
       - name: "Build bentobox-sdk"
         run: |
-          # build dist bentobox package to dist/
+          # build dist bentobox package to sdk/dist
           make build-sdk
       - name: Publish bentobox-sdk to Test PyPI
         uses: pypa/gh-action-pypi-publish@v1.4.2 
         with:
           password: ${{ secrets.TEST_PYPI_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
+          packages_dir: sdk/dist/
