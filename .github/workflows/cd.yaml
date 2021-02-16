@@ -4,11 +4,10 @@
 #
 
 name: "CD Pipeline"
-on:
-  push:
-    branches: {}
-        # TODO(mrzzy): remove this before commit
-        # - master
+on: push
+# TODO(mrzzy): remove this before commit
+# branches:
+# - master
 jobs:
   # builds & publishes docs for the sdk component to Github
   publish-docs-sdk:
