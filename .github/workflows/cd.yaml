@@ -61,15 +61,22 @@ jobs:
   publish-engine:
     runs-on: ubuntu-20.04
     name: "Publish bentobox-engine container to Github Container Registry"
+    outputs:
+      container-tag: ${{ steps.resolve-tag.outputs.container-tag }}
     steps:
     - uses: actions/checkout@v2
       with:
         # fetch all history for all branches and tags
         fetch-depth: 0
-    - name: "Build bentobox-sim"
+    - id: resolve-tag
+      name: "Resolve bentobox-engine container tag"
+      run: |
+        DOCKER_TAG=ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)
+        echo "::set-output name=container-tag::${DOCKER_TAG}"
+    - name: "Build bentobox-engine"
       run: |
         # build container tagged version given by git describe
-        DOCKER_TAG="ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)"
+        DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
         make \
           SIM_BUILD_TYPE=Release \
           SIM_DOCKER_STAGE=release \
@@ -83,9 +90,10 @@ jobs:
         echo $GHCR_TOKEN | docker login ghcr.io --username $GHCR_USER --password-stdin
     - name: "Push bentobox-engine container to Github Container Registry"
       run: |
-        DOCKER_TAG="ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)"
+        DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
         docker push $DOCKER_TAG
         
+  # build and publish the engine component on github container registry
   publish-sdk:
     runs-on: ubuntu-20.04
     name: "Publish bentobox-sdk package to Pypi"
@@ -106,6 +114,7 @@ jobs:
       - name: Publish bentobox-sdk to Test PyPI
         uses: pypa/gh-action-pypi-publish@v1.4.2 
         with:
+          # TODO(mrzzy): publish this to actual pypi
           password: ${{ secrets.TEST_PYPI_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
           packages_dir: sdk/dist/
