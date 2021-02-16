@@ -4,10 +4,10 @@
 #
 
 name: "CD Pipeline"
-on: push
-# TODO(mrzzy): remove this before commit
-# branches:
-# - master
+on: 
+  push:
+    branches:
+      - master
 jobs:
   # builds & publishes docs for the sdk component to Github
   publish-docs-sdk:
@@ -93,7 +93,46 @@ jobs:
       run: |
         DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
         docker push $DOCKER_TAG
-        
+
+  # deploy the engine component on GKE using the currently built image
+  deploy-engine:
+    needs: publish-engine
+    runs-on: ubuntu-20.04
+    name: "Deploy bentobox-engine on GKE k8s (bento.mrzzy.co:54242)"
+    env:
+      PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+      GKE_CLUSTER: k8s-bentobox-demo
+      GKE_ZONE: asia-southeast1-c 
+    steps:
+    - uses: actions/checkout@v2
+    # init gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
+    # Get the GKE kubeconfig containing required to deploy to cluster
+    - uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+        credentials: ${{ secrets.GKE_SA_KEY }}
+    # Install kustomize
+    - name: Install Kustomize
+      run: |
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+        chmod u+x ./kustomize
+        mv kustomize -t infra/kustomize/engine/
+    - name: Deploy bentobox-engine to GKE
+      run: |
+        # apply bentobox-engine Container Tag to manfiests
+        DOCKER_TAG=${{ needs.publish-engine.outputs.container-tag }}
+        cd infra/kustomize/engine/
+        ./kustomize edit set image bentobox-engine=$DOCKER_TAG
+        # show the changes made by kustomize
+        git diff
+        # deploy using kubectl
+        ./kustomize build . | kubectl apply -f -
+      
   # build and publish the engine component on github container registry
   publish-sdk:
     runs-on: ubuntu-20.04

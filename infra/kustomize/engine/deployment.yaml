@@ -1,0 +1,24 @@
+#
+# bentobox engine
+# k8s deployment
+# 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: engine
+        image: bentobox-engine
+        env:
+        # listen on all addresses, not just localhost
+        - name: "BENTOBOX_SIM_HOST"
+          value: "0.0.0.0"
+        - name: "BENTOBOX_SIM_PORT"
+          value: "54242"
+        ports:
+        - containerPort: 54242
