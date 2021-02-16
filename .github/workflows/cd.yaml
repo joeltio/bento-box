@@ -125,7 +125,8 @@ jobs:
     - name: Apply bentobox-engine Container Tag 
       run: |
         DOCKER_TAG=${{ needs.publish-engine.outputs.container-tag }}
-        cd /infra/kustomize/engine/ && ./kustomize edit set image bentobox-engine=$DOCKER_TAG
+        cd infra/kustomize/engine/
+        ./kustomize edit set image bentobox-engine=$DOCKER_TAG
         # show the changes made by kustomize
         git diff
 
