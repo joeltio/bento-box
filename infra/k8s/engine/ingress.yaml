@@ -1,0 +1,21 @@
+#
+# bentobox engine
+# k8s service
+# 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: bentobox-engine
+  labels:
+    app: bentobox-engine
+    part-of: bentobox
+spec:
+  type: LoadBalancer
+  selector:
+    app: bentobox-engine
+    part-of: bentobox
+  ports:
+  - port: 54242
+    targetPort: 54242
+    protocol: TCP
