@@ -42,7 +42,10 @@ jobs:
           git add docs
 
           # check for staged changes to SDK docs
-          if git diff --staged --quiet then echo "No SDK Docs changes to commit." exit 0
+          if git diff --staged --quiet
+          then
+            echo "No SDK Docs changes to commit."
+            exit 0
           fi
 
           # Commit changes as Github Actions bot
@@ -66,9 +69,25 @@ jobs:
     - name: "Build bentobox-sim"
       run: |
         # build container tagged version given by git describe
-        VERSION=$(git describe --always)
+        VERSION=$(git describe --long --always)
         make \
           SIM_BUILD_TYPE=Release \
           SIM_DOCKER_STAGE=release \
-          SIM_DOCKER=gcr.io/joeltio/bento-box/engine:$(VERSION) \
+          SIM_DOCKER="gcr.io/joeltio/bento-box/engine:${VERSION}" \
           build-sim-docker
+
+  publish-sdk:
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-sdk package to Pypi"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # fetch all history for all branches and tags
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Build bentobox-sdk"
+        run: |
+          # build dist bentobox package to dist/
+          make build-sdk
