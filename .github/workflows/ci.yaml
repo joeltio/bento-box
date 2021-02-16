@@ -4,11 +4,7 @@
 #
 
 name: "CI Pipeline"
-on:
-  push:
-    branches:
-        # TODO(mrzzy): remove this before commit
-      - match-nothing
+on: push
 jobs:
   # quick check that protos can be compiled by protoc
   # and lint proto formatting

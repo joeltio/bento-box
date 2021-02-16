@@ -4,10 +4,10 @@
 #
 
 name: "CD Pipeline"
-on: push
-# TODO(mrzzy): remove this before commit
-# branches:
-# - master
+on: 
+  push:
+    branches:
+      - master
 jobs:
   # builds & publishes docs for the sdk component to Github
   publish-docs-sdk:
@@ -122,14 +122,17 @@ jobs:
         curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
         chmod u+x ./kustomize
         mv kustomize -t infra/kustomize/engine/
-    - name: Apply bentobox-engine Container Tag 
+    - name: Deploy bentobox-engine to GKE
       run: |
+        # apply bentobox-engine Container Tag to manfiests
         DOCKER_TAG=${{ needs.publish-engine.outputs.container-tag }}
         cd infra/kustomize/engine/
         ./kustomize edit set image bentobox-engine=$DOCKER_TAG
         # show the changes made by kustomize
         git diff
-
+        # deploy using kubectl
+        ./kustomize build . | kubectl apply -f -
+      
   # build and publish the engine component on github container registry
   publish-sdk:
     runs-on: ubuntu-20.04
