@@ -82,7 +82,6 @@ jobs:
       run: |
         echo $GHCR_TOKEN | docker login ghcr.io --username $GHCR_USER --password-stdin
     - name: "Push bentobox-engine container to Github Container Registry"
-      env:
       run: |
         DOCKER_TAG="ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)"
         docker push $DOCKER_TAG
