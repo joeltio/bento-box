@@ -69,13 +69,24 @@ jobs:
     - name: "Build bentobox-sim"
       run: |
         # build container tagged version given by git describe
-        VERSION=$(git describe --long --always)
+        DOCKER_TAG="ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)"
         make \
           SIM_BUILD_TYPE=Release \
           SIM_DOCKER_STAGE=release \
-          SIM_DOCKER="gcr.io/joeltio/bento-box/engine:${VERSION}" \
+          SIM_DOCKER=${DOCKER_TAG} \
           build-sim-docker
-
+    - name: "Authenticate with Github Container Registry"
+      env:
+        GHCR_USER: ${{secrets.GHCR_USER}}
+        GHCR_TOKEN: ${{secrets.GHCR_TOKEN}}
+      run: |
+        echo $GHCR_TOKEN | docker login ghcr.io --username $GHCR_USER --password-stdin
+    - name: "Push bentobox-engine container to Github Container Registry"
+      env:
+      run: |
+        DOCKER_TAG="ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)"
+        docker push $DOCKER_TAG
+        
   publish-sdk:
     runs-on: ubuntu-20.04
     name: "Publish bentobox-sdk package to Pypi"
