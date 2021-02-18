@@ -63,6 +63,7 @@ jobs:
     name: "Publish bentobox-engine container to Github Container Registry"
     outputs:
       container-tag: ${{ steps.resolve-tag.outputs.container-tag }}
+      container-repo: ${{ steps.resolve-tag.outputs.container-repo }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -71,8 +72,10 @@ jobs:
     - id: resolve-tag
       name: "Resolve bentobox-engine container tag"
       run: |
-        DOCKER_TAG=ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)
+        DOCKER_REPO=ghcr.io/bentobox-dev/bentobox-engine
+        DOCKER_TAG=$DOCKER_REPO:$(git describe --long --always)
         echo $DOCKER_TAG
+        echo "::set-output name=container-repo::${DOCKER_REPO}"
         echo "::set-output name=container-tag::${DOCKER_TAG}"
     - name: "Pull existing latest bentobox-engine to utilize layers as cache"
       run: |
@@ -95,8 +98,11 @@ jobs:
         echo $GHCR_TOKEN | docker login ghcr.io --username $GHCR_USER --password-stdin
     - name: "Push bentobox-engine container to Github Container Registry"
       run: |
+        # push with both latest and versioned tag
+        DOCKER_REPO=${{ steps.resolve-tag.outputs.container-repo }}
         DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
         docker push $DOCKER_TAG
+        docker push "${DOCKER_REPO]:latest"
 
   # deploy the engine component on GKE using the currently built image
   deploy-engine:
