@@ -4,7 +4,7 @@
 # Base classes
 #
 
-from typing import List, Any, Set, Union
+from typing import FrozenSet, List, Any, Set, Union
 from abc import ABC, abstractmethod, abstractproperty
 
 from bento.spec.ecs import ComponentDef
@@ -76,7 +76,7 @@ class Entity(ABC):
         pass
 
     @abstractproperty
-    def components(self) -> Set[Component]:  # type: ignore
+    def components(self) -> FrozenSet[Component]:  # type: ignore
         """Get the components attached to this Entity"""
         pass
 

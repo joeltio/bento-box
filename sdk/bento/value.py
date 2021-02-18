@@ -3,7 +3,7 @@
 # SDK - Value
 #
 
-import numpy as np
+import numpy as np  # type: ignore
 from typing import Any
 from inspect import isgenerator
 from bento import types

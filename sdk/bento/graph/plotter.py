@@ -40,7 +40,8 @@ class Plotter:
         # collects the graph nodes from operations performed on GraphComponent
         # use OrderedDict to preserve order of operations recorded.
         # key: str attribute ref => value: graph node
-        self.inputs, self.outputs = OrderedDict(), OrderedDict()
+        self.inputs = OrderedDict()  # type: OrderedDict
+        self.outputs = OrderedDict()  # type: OrderedDict
 
         # map component name set to entity
         self.entity_map = {}

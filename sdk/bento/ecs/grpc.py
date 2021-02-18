@@ -5,7 +5,7 @@
 #
 
 
-from typing import Any, Set, List
+from typing import Any, FrozenSet, Set, List
 
 from bento.ecs import base
 from bento.types import Type
@@ -91,5 +91,5 @@ class Entity(base.Entity):
         return self.entity_id
 
     @property
-    def components(self) -> Set[Component]:
+    def components(self) -> FrozenSet[Component]:
         return frozenset(self.component_map.values())

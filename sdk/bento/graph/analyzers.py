@@ -11,11 +11,10 @@ from copy import deepcopy
 from collections import deque
 from collections.abc import Iterable
 from math import inf
-from typing import List
 from gast import (
     AST,
     Constant,
-    List,
+    ListAST,
     Tuple,
     Pass,
     FunctionDef,
@@ -133,7 +132,7 @@ def analyze_assign(ast: AST) -> AST:
     assign_asts = [n for n in gast.walk(ast) if isinstance(n, assign_types)]
 
     for assign_ast in assign_asts:
-        iterable_types = (List, Tuple)
+        iterable_types = (ListAST, Tuple)
         assign_ast.is_unpack, assign_ast.is_multi = False, False
         if isinstance(assign_ast, Assign):
             # check if this unpacking assignment
@@ -191,7 +190,7 @@ def analyze_const(ast: AST) -> AST:
 
     # recursively walk AST to search for constants
     def walk_const(ast, part_of=None):
-        iterable_types = (List, Tuple)
+        iterable_types = (ListAST, Tuple)
         ignore_types = (Load, Store, Del)
 
         ast.is_constant = False
