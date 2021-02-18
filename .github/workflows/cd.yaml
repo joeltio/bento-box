@@ -4,7 +4,7 @@
 #
 
 name: "CD Pipeline"
-on: 
+on:
   push:
     branches:
       - master
@@ -74,6 +74,10 @@ jobs:
         DOCKER_TAG=ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)
         echo $DOCKER_TAG
         echo "::set-output name=container-tag::${DOCKER_TAG}"
+    - name: "Pull existing latest bentobox-engine to utilize layers as cache"
+      run: |
+        DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
+        docker pull $DOCKER_TAG
     - name: "Build bentobox-engine"
       run: |
         # build container tagged version given by git describe
@@ -102,7 +106,7 @@ jobs:
     env:
       PROJECT_ID: ${{ secrets.GKE_PROJECT }}
       GKE_CLUSTER: k8s-bentobox-demo
-      GKE_ZONE: asia-southeast1-c 
+      GKE_ZONE: asia-southeast1-c
     steps:
     - uses: actions/checkout@v2
     # init gcloud CLI
@@ -132,7 +136,7 @@ jobs:
         git diff
         # deploy using kubectl
         ./kustomize build . | kubectl apply -f -
-      
+
   # build and publish the engine component on github container registry
   publish-sdk:
     runs-on: ubuntu-20.04
@@ -152,7 +156,7 @@ jobs:
           # display built artifacts
           ls sdk/dist/
       - name: Publish bentobox-sdk to Test PyPI
-        uses: pypa/gh-action-pypi-publish@v1.4.2 
+        uses: pypa/gh-action-pypi-publish@v1.4.2
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           packages_dir: sdk/dist/
