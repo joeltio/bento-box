@@ -120,6 +120,7 @@ lint-sim: .clang-format
 SDK_SRC:=sdk
 PYTHON:=python
 BLACK_FMT:=python -m black
+MYPY:=python -m mypy
 PYTEST:=python -m pytest -vv
 PDOC:=python -m pdoc --force
 PIP=python -m pip
@@ -139,6 +140,7 @@ format-sdk: dep-sdk-dev
 lint-sdk: dep-sdk-dev
 	$(BLACK_FMT) --check $(SDK_SRC)/bento
 	$(BLACK_FMT) --check $(SDK_SRC)/tests
+	$(MYPY) --config-file $(SDK_SRC)/mypy.ini $(SDK_SRC)/bento
 
 install-sdk:
 	$(PIP) install -e $(SDK_SRC)
