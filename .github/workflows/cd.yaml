@@ -79,9 +79,6 @@ jobs:
         DOCKER_TAG=$DOCKER_REPO:$(git describe --long --always)
         echo $DOCKER_TAG
         echo "::set-output name=container-tag::${DOCKER_TAG}"
-    - name: "Pull existing latest bentobox-Engine to utilize layers as cache"
-      run: |
-        docker pull "$DOCKER_REPO:latest"
     - name: "Build bentobox-engine"
       run: |
         # build container tagged version given by git describe
@@ -89,6 +86,7 @@ jobs:
         make \
           SIM_BUILD_TYPE=Release \
           SIM_DOCKER_STAGE=release \
+          SIM_DOCKER_CACHE_FROM="${DOCKER_REPO}:latest" \
           SIM_DOCKER=${DOCKER_TAG} \
           build-sim-docker
     - name: "Authenticate with Github Container Registry"
