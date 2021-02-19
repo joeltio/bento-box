@@ -74,6 +74,9 @@ FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 SIM_BUILD_TYPE:=Debug
 SIM_DOCKER:=bentobox-sim
 SIM_DOCKER_STAGE:=release
+SIM_DOCKER_CACHE_FROM:=
+SIM_DOCKER_FLAGS:=$(if $(SIM_DOCKER_CACHE_FROM),--cache-from=$(SIM_DOCKER_CACHE_FROM),) \
+	--build-arg BUILDKIT_INLINE_CACHE=1
 SIM_PORT:=54242
 SIM_HOST:=0.0.0.0
 CMAKE_GENERATOR:=Ninja
@@ -91,7 +94,8 @@ build-sim: dep-sim
 		--target $(SIM_TARGET) --target $(SIM_TEST)
 
 build-sim-docker:
-	$(DOCKER) build --target $(SIM_DOCKER_STAGE) -t $(SIM_DOCKER) -f infra/docker/sim/Dockerfile .
+	$(DOCKER) build --target $(SIM_DOCKER_STAGE) $(SIM_DOCKER_FLAGS) \
+		-t $(SIM_DOCKER) -f infra/docker/sim/Dockerfile .
 
 test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
