@@ -3,6 +3,7 @@
 # SDK - Value
 #
 
+# type ignore required here as numpy does not have type stubs yet
 import numpy as np  # type: ignore
 from typing import Any
 from inspect import isgenerator

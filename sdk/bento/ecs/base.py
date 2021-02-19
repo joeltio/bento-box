@@ -71,14 +71,14 @@ class Entity(ABC):
         pass
 
     @abstractproperty
-    def id(self) -> int:  # type: ignore
+    def id(self) -> int:
         """Get the id of this Entity"""
-        pass
+        return 0  # placeholder to statisfy type checking
 
     @abstractproperty
-    def components(self) -> FrozenSet[Component]:  # type: ignore
+    def components(self) -> FrozenSet[Component]:
         """Get the components attached to this Entity"""
-        pass
+        return FrozenSet()  # placeholder to statisfy type checking
 
     def __getitem__(self, name: Union[str, ComponentDef]) -> Component:
         """Alias for get_component()"""

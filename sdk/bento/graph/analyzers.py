@@ -14,7 +14,7 @@ from math import inf
 from gast import (
     AST,
     Constant,
-    ListAST,
+    List as ListAST,
     Tuple,
     Pass,
     FunctionDef,
