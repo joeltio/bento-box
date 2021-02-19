@@ -151,7 +151,7 @@ lint-sdk: dep-sdk-dev
 		--mypy_grpc_out=$(SDK_SRC)
 	cd $(SDK_SRC) && $(MYPY) --config-file mypy.ini bento
 
-install-sdk:
+install-sdk: dep-sdk-dev
 	$(PIP) install -e $(SDK_SRC)
 
 test-sdk: dep-sdk-dev install-sdk
