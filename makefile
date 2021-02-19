@@ -140,6 +140,11 @@ format-sdk: dep-sdk-dev
 lint-sdk: dep-sdk-dev
 	$(BLACK_FMT) --check $(SDK_SRC)/bento
 	$(BLACK_FMT) --check $(SDK_SRC)/tests
+	# mypy requires the type stubs be generated for python protobuf bindings
+	$(FIND_PROTO_SRC) | xargs $(PROTOC) \
+		-I$(PROTO_SRC) \
+		--mypy_out=$(SDK_SRC) \
+		--mypy_grpc_out=$(SDK_SRC)
 	$(MYPY) --config-file $(SDK_SRC)/mypy.ini $(SDK_SRC)/bento
 
 install-sdk:
