@@ -12,6 +12,7 @@ name: "CD Pipeline"
 on: push
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
+  DOCKER_BUILDKIT: 1
 jobs:
   # builds & publishes docs for the sdk component to Github
   publish-docs-sdk:

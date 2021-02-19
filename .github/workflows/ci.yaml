@@ -7,6 +7,7 @@ name: "CI Pipeline"
 on: push
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
+  DOCKER_BUILDKIT: 1
 jobs:
   # quick check that protos can be compiled by protoc
   # and lint proto formatting
