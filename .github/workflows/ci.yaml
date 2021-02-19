@@ -5,6 +5,8 @@
 
 name: "CI Pipeline"
 on: push
+env:
+  DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
 jobs:
   # quick check that protos can be compiled by protoc
   # and lint proto formatting
@@ -57,8 +59,7 @@ jobs:
           make lint-sim
       - name: "Pull existing latest bentobox-engine to utilize layers as cache"
         run: |
-          DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
-          docker pull $DOCKER_TAG
+          docker pull "$DOCKER_REPO:latest"
       - name: "Build bentobox-sim"
         run: |
           # stop at 'build' build stage as it contains the dev tools required to run tests
@@ -134,8 +135,7 @@ jobs:
           make dep-e2e
       - name: "Pull existing latest bentobox-engine to utilize layers as cache"
         run: |
-          DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
-          docker pull $DOCKER_TAG
+          docker pull "$DOCKER_REPO:latest"
       - name: "Build bentobox-engine"
         run: |
           make SIM_BUILD_TYPE=Release SIM_DOCKER_STAGE=release build-sim-docker
