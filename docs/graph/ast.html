@@ -275,7 +275,7 @@ def load_ast_module(ast: AST, remove_src: bool = True) -&gt; Union[Any, Tuple[An
         # import the source as a module
         mod_spec = spec_from_file_location(&#34;compiled&#34;, f.name)
         module = module_from_spec(mod_spec)
-        mod_spec.loader.exec_module(module)
+        mod_spec.loader.exec_module(module)  # type: ignore
     # delete the temporary file manually as NamedTemporaryFile runs into
     # permission issues trying to remove it on Windows.
     if remove_src:
@@ -476,7 +476,7 @@ the loaded module and a path to the intermediate source file.</p></div>
         # import the source as a module
         mod_spec = spec_from_file_location(&#34;compiled&#34;, f.name)
         module = module_from_spec(mod_spec)
-        mod_spec.loader.exec_module(module)
+        mod_spec.loader.exec_module(module)  # type: ignore
     # delete the temporary file manually as NamedTemporaryFile runs into
     # permission issues trying to remove it on Windows.
     if remove_src:

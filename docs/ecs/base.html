@@ -32,7 +32,7 @@
 # Base classes
 #
 
-from typing import List, Any, Set, Union
+from typing import FrozenSet, List, Any, Set, Union
 from abc import ABC, abstractmethod, abstractproperty
 
 from bento.spec.ecs import ComponentDef
@@ -99,14 +99,14 @@ class Entity(ABC):
         pass
 
     @abstractproperty
-    def id(self) -&gt; int:  # type: ignore
+    def id(self) -&gt; int:
         &#34;&#34;&#34;Get the id of this Entity&#34;&#34;&#34;
-        pass
+        return 0  # placeholder to statisfy type checking
 
     @abstractproperty
-    def components(self) -&gt; Set[Component]:  # type: ignore
+    def components(self) -&gt; FrozenSet[Component]:
         &#34;&#34;&#34;Get the components attached to this Entity&#34;&#34;&#34;
-        pass
+        return FrozenSet()  # placeholder to statisfy type checking
 
     def __getitem__(self, name: Union[str, ComponentDef]) -&gt; Component:
         &#34;&#34;&#34;Alias for get_component()&#34;&#34;&#34;
@@ -301,14 +301,14 @@ def set_attr(self, name: str, value: Any):
         pass
 
     @abstractproperty
-    def id(self) -&gt; int:  # type: ignore
+    def id(self) -&gt; int:
         &#34;&#34;&#34;Get the id of this Entity&#34;&#34;&#34;
-        pass
+        return 0  # placeholder to statisfy type checking
 
     @abstractproperty
-    def components(self) -&gt; Set[Component]:  # type: ignore
+    def components(self) -&gt; FrozenSet[Component]:
         &#34;&#34;&#34;Get the components attached to this Entity&#34;&#34;&#34;
-        pass
+        return FrozenSet()  # placeholder to statisfy type checking
 
     def __getitem__(self, name: Union[str, ComponentDef]) -&gt; Component:
         &#34;&#34;&#34;Alias for get_component()&#34;&#34;&#34;
@@ -328,7 +328,7 @@ def set_attr(self, name: str, value: Any):
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="bento.ecs.base.Entity.components"><code class="name">var <span class="ident">components</span> : Set[<a title="bento.ecs.base.Component" href="#bento.ecs.base.Component">Component</a>]</code></dt>
+<dt id="bento.ecs.base.Entity.components"><code class="name">var <span class="ident">components</span> : FrozenSet[<a title="bento.ecs.base.Component" href="#bento.ecs.base.Component">Component</a>]</code></dt>
 <dd>
 <div class="desc"><p>Get the components attached to this Entity</p></div>
 <details class="source">
@@ -336,9 +336,9 @@ def set_attr(self, name: str, value: Any):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@abstractproperty
-def components(self) -&gt; Set[Component]:  # type: ignore
+def components(self) -&gt; FrozenSet[Component]:
     &#34;&#34;&#34;Get the components attached to this Entity&#34;&#34;&#34;
-    pass</code></pre>
+    return FrozenSet()  # placeholder to statisfy type checking</code></pre>
 </details>
 </dd>
 <dt id="bento.ecs.base.Entity.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
@@ -349,9 +349,9 @@ def components(self) -&gt; Set[Component]:  # type: ignore
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@abstractproperty
-def id(self) -&gt; int:  # type: ignore
+def id(self) -&gt; int:
     &#34;&#34;&#34;Get the id of this Entity&#34;&#34;&#34;
-    pass</code></pre>
+    return 0  # placeholder to statisfy type checking</code></pre>
 </details>
 </dd>
 </dl>

@@ -73,8 +73,6 @@ def raise_native(err: RpcError):
         raise LookupError(err.details())
     elif status == StatusCode.ALREADY_EXISTS:
         raise FileExistsError(err.details())
-    elif status == StatusCode.OUT_OF_RANGE:
-        raise IndexError(err.details())
     else:
         raise RuntimeError(err.details())
 
@@ -171,7 +169,7 @@ class Client:
             response = self.sim_grpc.ListSimulation(ListSimulationReq())
         except RpcError as e:
             raise_native(e)
-        return response.sim_names
+        return list(response.sim_names)
 
     def remove_sim(self, name: str):
         &#34;&#34;&#34;Remove the simulation with the given name.
@@ -273,8 +271,6 @@ class Client:
         raise LookupError(err.details())
     elif status == StatusCode.ALREADY_EXISTS:
         raise FileExistsError(err.details())
-    elif status == StatusCode.OUT_OF_RANGE:
-        raise IndexError(err.details())
     else:
         raise RuntimeError(err.details())</code></pre>
 </details>
@@ -397,7 +393,7 @@ between native and Protobuf objects used by gRPC.</p>
             response = self.sim_grpc.ListSimulation(ListSimulationReq())
         except RpcError as e:
             raise_native(e)
-        return response.sim_names
+        return list(response.sim_names)
 
     def remove_sim(self, name: str):
         &#34;&#34;&#34;Remove the simulation with the given name.
@@ -672,7 +668,7 @@ or if no such attribute exists for the given attr_ref.</dd>
         response = self.sim_grpc.ListSimulation(ListSimulationReq())
     except RpcError as e:
         raise_native(e)
-    return response.sim_names</code></pre>
+    return list(response.sim_names)</code></pre>
 </details>
 </dd>
 <dt id="bento.client.Client.remove_sim"><code class="name flex">

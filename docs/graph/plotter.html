@@ -68,7 +68,8 @@ class Plotter:
         # collects the graph nodes from operations performed on GraphComponent
         # use OrderedDict to preserve order of operations recorded.
         # key: str attribute ref =&gt; value: graph node
-        self.inputs, self.outputs = OrderedDict(), OrderedDict()
+        self.inputs = OrderedDict()  # type: OrderedDict
+        self.outputs = OrderedDict()  # type: OrderedDict
 
         # map component name set to entity
         self.entity_map = {}
@@ -287,7 +288,8 @@ which can be obtained from <code>graph()</code> as a <code>Graph</code></p>
         # collects the graph nodes from operations performed on GraphComponent
         # use OrderedDict to preserve order of operations recorded.
         # key: str attribute ref =&gt; value: graph node
-        self.inputs, self.outputs = OrderedDict(), OrderedDict()
+        self.inputs = OrderedDict()  # type: OrderedDict
+        self.outputs = OrderedDict()  # type: OrderedDict
 
         # map component name set to entity
         self.entity_map = {}
