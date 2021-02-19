@@ -76,12 +76,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: "Install protoc & Add ~/.local/bin to PATH"
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Install protoc"
         run: |
           mkdir bin
           make BIN_DIR=bin dep-protoc
-          # required to place pip bins (ie protoc-gen-mypy) in path for protoc
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: "Lint bentobox-sdk"
         run: |
           make lint-sdk PROTOC=./bin/protoc
