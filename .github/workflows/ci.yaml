@@ -70,6 +70,7 @@ jobs:
 
   # lint the SDK component
   lint-sdk:
+    name: "Lint bentobox-sdk"
     needs: check-protos
     runs-on: ubuntu-20.04
     steps:
