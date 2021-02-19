@@ -134,7 +134,7 @@ PIP=python -m pip
 dep-sdk-dev:
 	$(PIP) install -r $(SDK_SRC)/requirements-dev.txt
 
-build-sdk: dep-sdk-dev lint-sdk
+build-sdk: dep-sdk-dev
 	cd $(SDK_SRC) && $(PYTHON) setup.py sdist bdist_wheel
 
 format-sdk: dep-sdk-dev

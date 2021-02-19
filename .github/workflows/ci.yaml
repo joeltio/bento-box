@@ -86,6 +86,9 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.python}}
+      - name: "Install protoc"
+        run: |
+          make dep-protoc
       - name: "Pull dependencies"
         run: |
           make dep-sdk-dev
