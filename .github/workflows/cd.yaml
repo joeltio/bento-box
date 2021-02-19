@@ -4,12 +4,10 @@
 #
 
 name: "CD Pipeline"
-# TODO(mrzzy): remove this before commit
-#on:
-#  push:
-#    branches:
-#      - master
-on: push
+on:
+  push:
+    branches:
+      - master
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
   DOCKER_BUILDKIT: 1

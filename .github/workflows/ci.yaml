@@ -58,9 +58,6 @@ jobs:
       - name: "Lint bentobox-sim"
         run: |
           make lint-sim
-      - name: "Pull existing latest bentobox-engine to utilize layers as cache"
-        run: |
-          docker pull "$DOCKER_REPO:latest"
       - name: "Build bentobox-sim"
         run: |
           # stop at 'build' build stage as it contains the dev tools required to run tests
