@@ -120,7 +120,7 @@ lint-sim: .clang-format
 SDK_SRC:=sdk
 PYTHON:=python
 BLACK_FMT:=python -m black
-MYPY:=mypy
+MYPY:=python -m mypy
 PYTEST:=python -m pytest -vv
 PDOC:=python -m pdoc --force
 PIP=python -m pip

@@ -31,7 +31,5 @@ typed-ast==1.4.1
 typing-extensions==3.7.4.3
 zipp==3.4.0
 mypy-protobuf==2.4
-types-protobuf==0.1.1
 twine==3.3.0
-mypy==0.800
 grpc-stubs==1.24.5
