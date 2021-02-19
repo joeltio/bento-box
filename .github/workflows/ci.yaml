@@ -68,6 +68,20 @@ jobs:
         run: |
           docker run bentobox-sim make test-sim
 
+  # lint the SDK component
+  lint-sdk:
+    needs: check-protos
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Install protoc"
+        run: |
+          mkdir bin
+          make BIN_DIR=bin dep-protoc
+      - name: "Lint bentobox-sdk"
+        run: |
+          make lint-sdk PROTOC=./bin/protoc
+
   # build & unit tests sdk component
   build-test-sdk:
     needs: check-protos
@@ -92,9 +106,6 @@ jobs:
       - name: "Pull dependencies"
         run: |
           make dep-sdk-dev
-      - name: "Lint bentobox-sdk"
-        run: |
-          make lint-sdk
       - name: "Build bentobox-sdk"
         run: |
           make build-sdk
