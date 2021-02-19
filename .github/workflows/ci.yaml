@@ -86,6 +86,9 @@ jobs:
         run: |
           mkdir bin
           make BIN_DIR=bin dep-protoc
+      - name: "Install bentobox-sdk"
+        run: |
+          make install-sdk
       - name: "Lint bentobox-sdk"
         run: |
           make lint-sdk PROTOC=./bin/protoc
