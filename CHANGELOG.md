@@ -1,0 +1,68 @@
+# Changelog
+
+## [v0.1.0](https://github.com/bentobox-dev/bento-box/tree/v0.1.0) (2021-02-20)
+
+[Full Changelog](https://github.com/bentobox-dev/bento-box/compare/84f9d1f6f8f61ea6d545e7a3598b8423d80b496e...v0.1.0)
+
+**Fixed bugs:**
+
+- Engine: Detect when retrieving an Unset Attribute and throw an Error [\#55](https://github.com/bentobox-dev/bento-box/issues/55)
+- Engine: Implicit Type Conversion not done when assigning attribute with MutateOp [\#54](https://github.com/bentobox-dev/bento-box/issues/54)
+- Primitive Datatype Mismatch on when using Negate Operation [\#53](https://github.com/bentobox-dev/bento-box/issues/53)
+- Engine: Missing Data Type in Values returned when Getting Numeric Attributes [\#45](https://github.com/bentobox-dev/bento-box/issues/45)
+- CI: Clang format detects lens.h as Objective-C [\#42](https://github.com/bentobox-dev/bento-box/issues/42)
+- SDK: transform\_ifelse\(\) generates code that evaluates the condition after tracing the if/else function blocks [\#41](https://github.com/bentobox-dev/bento-box/issues/41)
+- SDK: Graph Compiler does not preserve order of execution in compiled Graph [\#40](https://github.com/bentobox-dev/bento-box/issues/40)
+- SDK: GraphComponent does not preserve already build graph when getting Attribute [\#39](https://github.com/bentobox-dev/bento-box/issues/39)
+- SDK: Graph Compiler's transform\_ifelse generates functions with invalid arguments [\#37](https://github.com/bentobox-dev/bento-box/issues/37)
+- SDK: Graph Compiler fails to compile if statement with AugAssign [\#35](https://github.com/bentobox-dev/bento-box/issues/35)
+- SDK: Graph Compiler fails to compile when components are used inside if/else statements [\#30](https://github.com/bentobox-dev/bento-box/issues/30)
+- Fix SDK Doc misrendering [\#18](https://github.com/bentobox-dev/bento-box/issues/18)
+- CI: CI bentobox-sim build not properly taking advantage of Docker Layer caching [\#12](https://github.com/bentobox-dev/bento-box/issues/12)
+- Engine: Allow implicit type conversion for mutateOp, add existence check before retrieving component value [\#56](https://github.com/bentobox-dev/bento-box/pull/56) ([joeltio](https://github.com/joeltio))
+- Engine: Set data\_type for all protobuf values [\#47](https://github.com/bentobox-dev/bento-box/pull/47) ([joeltio](https://github.com/joeltio))
+- Engine: Execute init graph on apply [\#46](https://github.com/bentobox-dev/bento-box/pull/46) ([joeltio](https://github.com/joeltio))
+- feat: Creating, Using Simulations using SDK & Fixing the Graph Compiler [\#28](https://github.com/bentobox-dev/bento-box/pull/28) ([mrzzy](https://github.com/mrzzy))
+- fix\(doc\): Fix SDK Documentation Rendering in existing SDK Docs [\#25](https://github.com/bentobox-dev/bento-box/pull/25) ([mrzzy](https://github.com/mrzzy))
+- ci: Fix bentobox-sim build not properly taking advantage of Docker Layer caching [\#13](https://github.com/bentobox-dev/bento-box/pull/13) ([mrzzy](https://github.com/mrzzy))
+- feat\(sdk\): Add ability to compile If statements and ternary expressions to graph [\#8](https://github.com/bentobox-dev/bento-box/pull/8) ([mrzzy](https://github.com/mrzzy))
+- feat\(sdk\): Add Graph Compiler to compile basic arithmetic expressions [\#7](https://github.com/bentobox-dev/bento-box/pull/7) ([mrzzy](https://github.com/mrzzy))
+
+**Closed issues:**
+
+- Implement E2E Tests to prove that SDK works with Engine for v0.1 Functionality [\#36](https://github.com/bentobox-dev/bento-box/issues/36)
+- Engine: Implement Implicit Type Casting [\#48](https://github.com/bentobox-dev/bento-box/issues/48)
+- Proto/API: Unable to run Init Graph without triggering Systems [\#34](https://github.com/bentobox-dev/bento-box/issues/34)
+- feat\(sdk\): Implement Mountain Car Simulation [\#31](https://github.com/bentobox-dev/bento-box/issues/31)
+- CD Pipeline: Automated Release Process [\#29](https://github.com/bentobox-dev/bento-box/issues/29)
+- Graph Interpreter to run graphs on engine [\#23](https://github.com/bentobox-dev/bento-box/issues/23)
+- Writing built-in components for Engine [\#22](https://github.com/bentobox-dev/bento-box/issues/22)
+- ICS Entity Index [\#20](https://github.com/bentobox-dev/bento-box/issues/20)
+- Implement SDK Engine Client, Creating Simulations [\#17](https://github.com/bentobox-dev/bento-box/issues/17)
+- Implement Engine CRUD [\#16](https://github.com/bentobox-dev/bento-box/issues/16)
+- Setup GRPC networking between SDK and Engine [\#15](https://github.com/bentobox-dev/bento-box/issues/15)
+
+**Merged pull requests:**
+
+- Add Mypy Static Type Checking to SDK & Pull latest bentobox-engine image as build cache [\#61](https://github.com/bentobox-dev/bento-box/pull/61) ([mrzzy](https://github.com/mrzzy))
+- CD: Automatically Deploy Bentobox Engine to GKE K8s [\#60](https://github.com/bentobox-dev/bento-box/pull/60) ([mrzzy](https://github.com/mrzzy))
+- CD Pipeline: Automate Publish Bentobox SDK to Pypi and Bentobox Engine Container to GHCR [\#59](https://github.com/bentobox-dev/bento-box/pull/59) ([mrzzy](https://github.com/mrzzy))
+- chore\(e2e\): Improve E2E coverage by testing more data types [\#58](https://github.com/bentobox-dev/bento-box/pull/58) ([mrzzy](https://github.com/mrzzy))
+- feat\(sdk\): Implement Mountain Car as Example Simulation in the SDK [\#57](https://github.com/bentobox-dev/bento-box/pull/57) ([mrzzy](https://github.com/mrzzy))
+- Engine: Implicit Type Conversion [\#51](https://github.com/bentobox-dev/bento-box/pull/51) ([joeltio](https://github.com/joeltio))
+- chore\(e2e\): Implement E2E tests for Get/Set Attribute & Stepping Simulations [\#44](https://github.com/bentobox-dev/bento-box/pull/44) ([mrzzy](https://github.com/mrzzy))
+- Engine GRPC with tests [\#27](https://github.com/bentobox-dev/bento-box/pull/27) ([joeltio](https://github.com/joeltio))
+- feat: Setup GRPC networking between SDK and Sim Engine, Add End to End Tests [\#26](https://github.com/bentobox-dev/bento-box/pull/26) ([mrzzy](https://github.com/mrzzy))
+- Graph Interpreter [\#24](https://github.com/bentobox-dev/bento-box/pull/24) ([joeltio](https://github.com/joeltio))
+- ICS Entity Index [\#21](https://github.com/bentobox-dev/bento-box/pull/21) ([joeltio](https://github.com/joeltio))
+- ci: Add clang-format to Lint and Format bentobox-sim and Protobuf Definitions [\#19](https://github.com/bentobox-dev/bento-box/pull/19) ([mrzzy](https://github.com/mrzzy))
+- feat\(sdk\): Preprocess AugAssign into separate Assignment and Binary Operation [\#14](https://github.com/bentobox-dev/bento-box/pull/14) ([mrzzy](https://github.com/mrzzy))
+- feat\(ci\): Add caching of docker layers to speed up CI build of bentobox-sim container. [\#11](https://github.com/bentobox-dev/bento-box/pull/11) ([mrzzy](https://github.com/mrzzy))
+- feat\(cd\): Automate build and deployment of bentobox-sdk docs on Github Pages [\#10](https://github.com/bentobox-dev/bento-box/pull/10) ([mrzzy](https://github.com/mrzzy))
+- feat\(ci\): Add automatic spellcheck on codebase to CI [\#9](https://github.com/bentobox-dev/bento-box/pull/9) ([mrzzy](https://github.com/mrzzy))
+- Complete Core ICS  🎉 [\#6](https://github.com/bentobox-dev/bento-box/pull/6) ([joeltio](https://github.com/joeltio))
+- Bootstrap SDK Component [\#5](https://github.com/bentobox-dev/bento-box/pull/5) ([mrzzy](https://github.com/mrzzy))
+- Bootstrap gRPC/Protobuf API for Simulation Service [\#4](https://github.com/bentobox-dev/bento-box/pull/4) ([mrzzy](https://github.com/mrzzy))
+- Sim: Support for  building with gRPC/Protobuf & Dependency cleanup [\#3](https://github.com/bentobox-dev/bento-box/pull/3) ([mrzzy](https://github.com/mrzzy))
+- Incomplete Index Component System \(ICS\) [\#2](https://github.com/bentobox-dev/bento-box/pull/2) ([joeltio](https://github.com/joeltio))
+- Sim: Bootstrap Test framework & CI Pipeline [\#1](https://github.com/bentobox-dev/bento-box/pull/1) ([mrzzy](https://github.com/mrzzy))
