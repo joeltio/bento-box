@@ -74,7 +74,7 @@ jobs:
     - id: resolve-tag
       name: "Resolve bentobox-engine container tag"
       run: |
-        DOCKER_TAG=$DOCKER_REPO:$(git describe --long --always)
+        DOCKER_TAG=$DOCKER_REPO:$(git describe --always)
         echo $DOCKER_TAG
         echo "::set-output name=container-tag::${DOCKER_TAG}"
     - name: "Build bentobox-engine"
