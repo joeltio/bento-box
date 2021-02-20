@@ -4,10 +4,13 @@
 #
 
 name: "CD Pipeline"
-on: 
+on:
   push:
     branches:
       - master
+env:
+  DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
+  DOCKER_BUILDKIT: 1
 jobs:
   # builds & publishes docs for the sdk component to Github
   publish-docs-sdk:
@@ -71,7 +74,7 @@ jobs:
     - id: resolve-tag
       name: "Resolve bentobox-engine container tag"
       run: |
-        DOCKER_TAG=ghcr.io/bentobox-dev/bentobox-engine:$(git describe --long --always)
+        DOCKER_TAG=$DOCKER_REPO:$(git describe --long --always)
         echo $DOCKER_TAG
         echo "::set-output name=container-tag::${DOCKER_TAG}"
     - name: "Build bentobox-engine"
@@ -81,6 +84,7 @@ jobs:
         make \
           SIM_BUILD_TYPE=Release \
           SIM_DOCKER_STAGE=release \
+          SIM_DOCKER_CACHE_FROM="${DOCKER_REPO}:latest" \
           SIM_DOCKER=${DOCKER_TAG} \
           build-sim-docker
     - name: "Authenticate with Github Container Registry"
@@ -91,8 +95,11 @@ jobs:
         echo $GHCR_TOKEN | docker login ghcr.io --username $GHCR_USER --password-stdin
     - name: "Push bentobox-engine container to Github Container Registry"
       run: |
+        # push with both latest and versioned tag
         DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
         docker push $DOCKER_TAG
+        docker tag $DOCKER_TAG "${DOCKER_REPO}:latest"
+        docker push "${DOCKER_REPO}:latest"
 
   # deploy the engine component on GKE using the currently built image
   deploy-engine:
@@ -102,7 +109,7 @@ jobs:
     env:
       PROJECT_ID: ${{ secrets.GKE_PROJECT }}
       GKE_CLUSTER: k8s-bentobox-demo
-      GKE_ZONE: asia-southeast1-c 
+      GKE_ZONE: asia-southeast1-c
     steps:
     - uses: actions/checkout@v2
     # init gcloud CLI
@@ -132,7 +139,7 @@ jobs:
         git diff
         # deploy using kubectl
         ./kustomize build . | kubectl apply -f -
-      
+
   # build and publish the engine component on github container registry
   publish-sdk:
     runs-on: ubuntu-20.04
@@ -152,7 +159,7 @@ jobs:
           # display built artifacts
           ls sdk/dist/
       - name: Publish bentobox-sdk to Test PyPI
-        uses: pypa/gh-action-pypi-publish@v1.4.2 
+        uses: pypa/gh-action-pypi-publish@v1.4.2
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           packages_dir: sdk/dist/

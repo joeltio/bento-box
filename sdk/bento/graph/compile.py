@@ -149,7 +149,7 @@ def compile_graph(
     compiled, src_path = load_ast_module(ast, remove_src=False)
     # allow the use of globals symbols with respect to convert_fn function
     # to be used during graph plotting
-    compiled.build_graph.__globals__.update(convert_fn.__globals__)
+    compiled.build_graph.__globals__.update(convert_fn.__globals__)  # type: ignore
 
     # run build graph function with plotter to build final computation graph
     g = Plotter(entity_defs, component_defs)

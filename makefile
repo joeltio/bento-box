@@ -74,6 +74,9 @@ FIND_SIM_SRC:=$(FIND) $(SIM_SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.h" \)
 SIM_BUILD_TYPE:=Debug
 SIM_DOCKER:=bentobox-sim
 SIM_DOCKER_STAGE:=release
+SIM_DOCKER_CACHE_FROM:=
+SIM_DOCKER_FLAGS:=$(if $(SIM_DOCKER_CACHE_FROM),--cache-from=$(SIM_DOCKER_CACHE_FROM),) \
+	--build-arg BUILDKIT_INLINE_CACHE=1
 SIM_PORT:=54242
 SIM_HOST:=0.0.0.0
 CMAKE_GENERATOR:=Ninja
@@ -91,7 +94,8 @@ build-sim: dep-sim
 		--target $(SIM_TARGET) --target $(SIM_TEST)
 
 build-sim-docker:
-	$(DOCKER) build --target $(SIM_DOCKER_STAGE) -t $(SIM_DOCKER) -f infra/docker/sim/Dockerfile .
+	$(DOCKER) build --target $(SIM_DOCKER_STAGE) $(SIM_DOCKER_FLAGS) \
+		-t $(SIM_DOCKER) -f infra/docker/sim/Dockerfile .
 
 test-sim: build-sim
 	$(SIM_BUILD_DIR)/$(SIM_TEST)
@@ -120,6 +124,7 @@ lint-sim: .clang-format
 SDK_SRC:=sdk
 PYTHON:=python
 BLACK_FMT:=python -m black
+MYPY:=python -m mypy
 PYTEST:=python -m pytest -vv
 PDOC:=python -m pdoc --force
 PIP=python -m pip
@@ -129,7 +134,7 @@ PIP=python -m pip
 dep-sdk-dev:
 	$(PIP) install -r $(SDK_SRC)/requirements-dev.txt
 
-build-sdk: dep-sdk-dev lint-sdk
+build-sdk: dep-sdk-dev
 	cd $(SDK_SRC) && $(PYTHON) setup.py sdist bdist_wheel
 
 format-sdk: dep-sdk-dev
@@ -139,8 +144,14 @@ format-sdk: dep-sdk-dev
 lint-sdk: dep-sdk-dev
 	$(BLACK_FMT) --check $(SDK_SRC)/bento
 	$(BLACK_FMT) --check $(SDK_SRC)/tests
+	# mypy requires the type stubs be generated for python protobuf bindings
+	$(FIND_PROTO_SRC) | xargs $(PROTOC) \
+		-I$(PROTO_SRC) \
+		--mypy_out=$(SDK_SRC) \
+		--mypy_grpc_out=$(SDK_SRC)
+	cd $(SDK_SRC) && $(MYPY) --config-file mypy.ini bento
 
-install-sdk:
+install-sdk: dep-sdk-dev
 	$(PIP) install -e $(SDK_SRC)
 
 test-sdk: dep-sdk-dev install-sdk

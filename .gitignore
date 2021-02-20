@@ -341,3 +341,4 @@ sdk/ChangeLog
 sdk/AUTHORS
 sdk/bento/protos/
 sdk/docs/
+sdk/grpc/

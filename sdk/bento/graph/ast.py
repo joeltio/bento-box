@@ -247,7 +247,7 @@ def load_ast_module(ast: AST, remove_src: bool = True) -> Union[Any, Tuple[Any, 
         # import the source as a module
         mod_spec = spec_from_file_location("compiled", f.name)
         module = module_from_spec(mod_spec)
-        mod_spec.loader.exec_module(module)
+        mod_spec.loader.exec_module(module)  # type: ignore
     # delete the temporary file manually as NamedTemporaryFile runs into
     # permission issues trying to remove it on Windows.
     if remove_src:

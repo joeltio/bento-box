@@ -45,8 +45,6 @@ def raise_native(err: RpcError):
         raise LookupError(err.details())
     elif status == StatusCode.ALREADY_EXISTS:
         raise FileExistsError(err.details())
-    elif status == StatusCode.OUT_OF_RANGE:
-        raise IndexError(err.details())
     else:
         raise RuntimeError(err.details())
 
@@ -143,7 +141,7 @@ class Client:
             response = self.sim_grpc.ListSimulation(ListSimulationReq())
         except RpcError as e:
             raise_native(e)
-        return response.sim_names
+        return list(response.sim_names)
 
     def remove_sim(self, name: str):
         """Remove the simulation with the given name.
