@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - master
+      - release/*
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
   DOCKER_BUILDKIT: 1
