@@ -8,7 +8,9 @@ on:
   push:
     branches:
       - master
-      - release/*
+    tags:
+        # match semantic version tags signifying versioned releases
+        - "v[0.9]+.v[0.9]+.v[0.9]+*"
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
   DOCKER_BUILDKIT: 1
