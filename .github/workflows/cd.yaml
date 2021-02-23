@@ -104,35 +104,31 @@ jobs:
         docker tag $DOCKER_TAG "${DOCKER_REPO}:latest"
         docker push "${DOCKER_REPO}:latest"
 
-  # deploy the engine component on GKE using the currently built image
+  # deploy the engine component on DigitalOcean K8s using the currently built image
   deploy-engine:
     needs: publish-engine
     runs-on: ubuntu-20.04
-    name: "Deploy bentobox-engine on GKE k8s (bento.mrzzy.co:54242)"
+    name: "Deploy bentobox-engine on DigitalOcean k8s (bento.mrzzy.co:54242)"
     env:
-      PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-      GKE_CLUSTER: k8s-bentobox-demo
-      GKE_ZONE: asia-southeast1-c
+      DIGITALOCEAN_K8S_CLUSTER: 572b7e1e-f59f-4100-821b-344c2d30407
     steps:
     - uses: actions/checkout@v2
-    # init gcloud CLI
-    - uses: google-github-actions/setup-gcloud@v0.2.0
+    # Init doctl CLI
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
       with:
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
-        project_id: ${{ secrets.GKE_PROJECT }}
-    # Get the GKE kubeconfig containing required to deploy to cluster
-    - uses: google-github-actions/get-gke-credentials@v0.2.1
-      with:
-        cluster_name: ${{ env.GKE_CLUSTER }}
-        location: ${{ env.GKE_ZONE }}
-        credentials: ${{ secrets.GKE_SA_KEY }}
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    # Get the kubeconfig containing the credentials required to deploy to k8s cluster
+    - name: Get Kubeconfig Credentials for DigitalOcean K8s Cluster
+      run: |
+        doctl kubernetes cluster kubeconfig save $DIGITALOCEAN_K8S_CLUSTER
     # Install kustomize
     - name: Install Kustomize
       run: |
         curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
         chmod u+x ./kustomize
         mv kustomize -t infra/kustomize/engine/
-    - name: Deploy bentobox-engine to GKE
+    - name: Deploy bentobox-engine to DigitalOcean K8s Cluster
       run: |
         # apply bentobox-engine Container Tag to manfiests
         DOCKER_TAG=${{ needs.publish-engine.outputs.container-tag }}
