@@ -5,11 +5,9 @@
 
 name: "CD Pipeline (Master)"
 on:
-  push
-  # TODO(mrzzy): remove this before merge
-  #push:
-  #  branches:
-  #    - master
+  push:
+    branches:
+      - master
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
   DOCKER_BUILDKIT: 1
