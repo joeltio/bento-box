@@ -1,15 +1,15 @@
 #
 # bento-box
-# continuous deployment (cd) pipeline
+# continuous deployment (cd) pipeline for release branches
 #
 
-name: "CD Pipeline"
+name: "CD Pipeline (Release)"
 on:
   push:
     branches:
       - "release/*"
-  release:
-    types: [published]
+    tags:
+       - "v[0-9]+.v[0-9]+.v[0-9]+*"
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
   DOCKER_BUILDKIT: 1
