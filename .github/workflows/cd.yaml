@@ -7,7 +7,9 @@ name: "CD Pipeline"
 on:
   push:
     branches:
-      - master
+      - "*"
+    # TODO(mrzzy): remove this before merge
+    # - master
     tags:
         # match semantic version tags signifying versioned releases
         - "v[0.9]+.v[0.9]+.v[0.9]+*"
