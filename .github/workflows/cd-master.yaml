@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-20.04
     name: "Deploy bentobox-engine on DigitalOcean k8s (bento.mrzzy.co:54242)"
     env:
-      DIGITALOCEAN_K8S_CLUSTER: do-sgp1-do-k8s-sg
+      DIGITALOCEAN_K8S_CLUSTER: do-k8s-sg
     steps:
     - uses: actions/checkout@v2
     # Init doctl CLI
