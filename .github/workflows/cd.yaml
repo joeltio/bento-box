@@ -12,7 +12,7 @@ on:
     # - master
     tags:
         # match semantic version tags signifying versioned releases
-        - "v[0.9]+.v[0.9]+.v[0.9]+*"
+        - "v[0-9]+.v[0-9]+.v[0-9]+*"
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
   DOCKER_BUILDKIT: 1
@@ -119,7 +119,7 @@ jobs:
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:
-        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        token: ${{ secrets.DIGITALOCEAN_TOKEN }}
     # Get the kubeconfig containing the credentials required to deploy to k8s cluster
     - name: Get Kubeconfig Credentials for DigitalOcean K8s Cluster
       run: |
