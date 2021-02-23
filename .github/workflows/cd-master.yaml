@@ -1,0 +1,161 @@
+#
+# bento-box
+# continuous deployment (cd) pipeline for the master branch
+#
+
+name: "CD Pipeline (Master)"
+on:
+  push:
+    branches:
+      - master
+env:
+  DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
+  DOCKER_BUILDKIT: 1
+jobs:
+  # builds & publishes docs for the sdk component to Github
+  publish-docs-sdk:
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-sdk Docs to Github Pages"
+    env:
+      SDK_DOC_DIR: /tmp/docs
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # fetch all history for all branches and tags
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Pull dependencies"
+        run: |
+          make dep-sdk-dev
+      - name: "Build bentobox-sdk"
+        run: |
+          make build-sdk
+      - name: "Build bentobox-sdk Docs"
+        run: |
+          make build-sdk-docs SDK_DOC_DIR=${SDK_DOC_DIR}
+      - name: "Publish bentobox-sdk Docs to Github Pages"
+        run: |
+          git checkout gh-pages
+          # move generated docs to top level docs/ and stage changes
+          rm -rf docs
+          mv -f ${SDK_DOC_DIR}/bento docs
+          git add docs
+
+          # check for staged changes to SDK docs
+          if git diff --staged --quiet
+          then
+            echo "No SDK Docs changes to commit."
+            exit 0
+          fi
+
+          # Commit changes as Github Actions bot
+          git config user.name 'github-actions'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          GIT_REF_NAME="$(echo ${GITHUB_REF} | sed -e "s|\w*/\w*/||")"
+          git commit -a -m "CI: Update docs built from ${GIT_REF_NAME} commit: ${GITHUB_SHA}"
+
+          # Publish changes by pushing to Github
+          git push
+
+  # build and publish the engine component on github container registry
+  publish-engine:
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-engine container to Github Container Registry"
+    outputs:
+      container-tag: ${{ steps.resolve-tag.outputs.container-tag }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # fetch all history for all branches and tags
+        fetch-depth: 0
+    - id: resolve-tag
+      name: "Resolve bentobox-engine container tag"
+      run: |
+        DOCKER_TAG=$DOCKER_REPO:$(git describe --always)
+        echo $DOCKER_TAG
+        echo "::set-output name=container-tag::${DOCKER_TAG}"
+    - name: "Build bentobox-engine"
+      run: |
+        # build container tagged version given by git describe
+        DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
+        make \
+          SIM_BUILD_TYPE=Release \
+          SIM_DOCKER_STAGE=release \
+          SIM_DOCKER_CACHE_FROM="${DOCKER_REPO}:latest" \
+          SIM_DOCKER=${DOCKER_TAG} \
+          build-sim-docker
+    - name: "Authenticate with Github Container Registry"
+      env:
+        GHCR_USER: ${{secrets.GHCR_USER}}
+        GHCR_TOKEN: ${{secrets.GHCR_TOKEN}}
+      run: |
+        echo $GHCR_TOKEN | docker login ghcr.io --username $GHCR_USER --password-stdin
+    - name: "Push bentobox-engine container to Github Container Registry"
+      run: |
+        # push with both latest and versioned tag
+        DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
+        docker push $DOCKER_TAG
+        docker tag $DOCKER_TAG "${DOCKER_REPO}:latest"
+        docker push "${DOCKER_REPO}:latest"
+
+  # deploy the engine component on DigitalOcean K8s using the currently built image
+  deploy-engine:
+    needs: publish-engine
+    runs-on: ubuntu-20.04
+    name: "Deploy bentobox-engine on DigitalOcean k8s (bento.mrzzy.co:54242)"
+    env:
+      DIGITALOCEAN_K8S_CLUSTER: 572b7e1e-f59f-4100-821b-344c2d30407
+    steps:
+    - uses: actions/checkout@v2
+    # Init doctl CLI
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_TOKEN }}
+    # Get the kubeconfig containing the credentials required to deploy to k8s cluster
+    - name: Get Kubeconfig Credentials for DigitalOcean K8s Cluster
+      run: |
+        doctl kubernetes cluster kubeconfig save $DIGITALOCEAN_K8S_CLUSTER
+    # Install kustomize
+    - name: Install Kustomize
+      run: |
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+        chmod u+x ./kustomize
+        mv kustomize -t infra/kustomize/engine/
+    - name: Deploy bentobox-engine to DigitalOcean K8s Cluster
+      run: |
+        # apply bentobox-engine Container Tag to manfiests
+        DOCKER_TAG=${{ needs.publish-engine.outputs.container-tag }}
+        cd infra/kustomize/engine/
+        ./kustomize edit set image bentobox-engine=$DOCKER_TAG
+        # show the changes made by kustomize
+        git diff
+        # deploy using kubectl
+        ./kustomize build . | kubectl apply -f -
+
+  # build and publish the engine component on github container registry
+  publish-sdk:
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-sdk package to Pypi"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # fetch all history for all branches and tags
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Build bentobox-sdk"
+        run: |
+          # build dist bentobox package to sdk/dist
+          make build-sdk
+          # display built artifacts
+          ls sdk/dist/
+      - name: Publish bentobox-sdk to Test PyPI
+        uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          packages_dir: sdk/dist/

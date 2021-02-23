@@ -7,7 +7,6 @@ name: "CD Pipeline"
 on:
   push:
     branches:
-      - master
       - "release/*"
   release:
     types: [published]
@@ -15,54 +14,6 @@ env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
   DOCKER_BUILDKIT: 1
 jobs:
-  # builds & publishes docs for the sdk component to Github
-  publish-docs-sdk:
-    runs-on: ubuntu-20.04
-    name: "Publish bentobox-sdk Docs to Github Pages"
-    env:
-      SDK_DOC_DIR: /tmp/docs
-      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # fetch all history for all branches and tags
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: "Pull dependencies"
-        run: |
-          make dep-sdk-dev
-      - name: "Build bentobox-sdk"
-        run: |
-          make build-sdk
-      - name: "Build bentobox-sdk Docs"
-        run: |
-          make build-sdk-docs SDK_DOC_DIR=${SDK_DOC_DIR}
-      - name: "Publish bentobox-sdk Docs to Github Pages"
-        run: |
-          git checkout gh-pages
-          # move generated docs to top level docs/ and stage changes
-          rm -rf docs
-          mv -f ${SDK_DOC_DIR}/bento docs
-          git add docs
-
-          # check for staged changes to SDK docs
-          if git diff --staged --quiet
-          then
-            echo "No SDK Docs changes to commit."
-            exit 0
-          fi
-
-          # Commit changes as Github Actions bot
-          git config user.name 'github-actions'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          GIT_REF_NAME="$(echo ${GITHUB_REF} | sed -e "s|\w*/\w*/||")"
-          git commit -a -m "CI: Update docs built from ${GIT_REF_NAME} commit: ${GITHUB_SHA}"
-
-          # Publish changes by pushing to Github
-          git push
-
   # build and publish the engine component on github container registry
   publish-engine:
     runs-on: ubuntu-20.04
@@ -103,41 +54,6 @@ jobs:
         docker push $DOCKER_TAG
         docker tag $DOCKER_TAG "${DOCKER_REPO}:latest"
         docker push "${DOCKER_REPO}:latest"
-
-  # deploy the engine component on DigitalOcean K8s using the currently built image
-  deploy-engine:
-    needs: publish-engine
-    runs-on: ubuntu-20.04
-    name: "Deploy bentobox-engine on DigitalOcean k8s (bento.mrzzy.co:54242)"
-    env:
-      DIGITALOCEAN_K8S_CLUSTER: 572b7e1e-f59f-4100-821b-344c2d30407
-    steps:
-    - uses: actions/checkout@v2
-    # Init doctl CLI
-    - name: Install doctl
-      uses: digitalocean/action-doctl@v2
-      with:
-        token: ${{ secrets.DIGITALOCEAN_TOKEN }}
-    # Get the kubeconfig containing the credentials required to deploy to k8s cluster
-    - name: Get Kubeconfig Credentials for DigitalOcean K8s Cluster
-      run: |
-        doctl kubernetes cluster kubeconfig save $DIGITALOCEAN_K8S_CLUSTER
-    # Install kustomize
-    - name: Install Kustomize
-      run: |
-        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-        chmod u+x ./kustomize
-        mv kustomize -t infra/kustomize/engine/
-    - name: Deploy bentobox-engine to DigitalOcean K8s Cluster
-      run: |
-        # apply bentobox-engine Container Tag to manfiests
-        DOCKER_TAG=${{ needs.publish-engine.outputs.container-tag }}
-        cd infra/kustomize/engine/
-        ./kustomize edit set image bentobox-engine=$DOCKER_TAG
-        # show the changes made by kustomize
-        git diff
-        # deploy using kubectl
-        ./kustomize build . | kubectl apply -f -
 
   # build and publish the engine component on github container registry
   publish-sdk:
