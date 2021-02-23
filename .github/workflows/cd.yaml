@@ -10,9 +10,9 @@ on:
       - "*"
     # TODO(mrzzy): remove this before merge
     # - master
-    tags:
-        # match semantic version tags signifying versioned releases
-        - "v[0-9]+.v[0-9]+.v[0-9]+*"
+    # - "release/*"
+  release:
+    types: [published]
 env:
   DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
   DOCKER_BUILDKIT: 1
