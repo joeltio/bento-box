@@ -7,10 +7,8 @@ name: "CD Pipeline"
 on:
   push:
     branches:
-      - "*"
-    # TODO(mrzzy): remove this before merge
-    # - master
-    # - "release/*"
+      - master
+      - "release/*"
   release:
     types: [published]
 env:
