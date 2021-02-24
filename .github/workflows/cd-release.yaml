@@ -49,11 +49,9 @@ jobs:
         echo $GHCR_TOKEN | docker login ghcr.io --username $GHCR_USER --password-stdin
     - name: "Push bentobox-engine container to Github Container Registry"
       run: |
-        # push with both latest and versioned tag
+        # push with versioned tag
         DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
         docker push $DOCKER_TAG
-        docker tag $DOCKER_TAG "${DOCKER_REPO}:latest"
-        docker push "${DOCKER_REPO}:latest"
 
   # build and publish the engine component on github container registry
   publish-sdk:
