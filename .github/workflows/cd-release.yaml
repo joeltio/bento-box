@@ -6,8 +6,6 @@
 name: "CD Pipeline (Release)"
 on:
   push:
-    branches:
-      - "release/*"
     tags:
        - "v[0-9]+.v[0-9]+.v[0-9]+*"
 env:
