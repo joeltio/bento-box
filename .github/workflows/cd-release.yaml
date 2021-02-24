@@ -1,0 +1,78 @@
+#
+# bento-box
+# continuous deployment (cd) pipeline for release branches
+#
+
+name: "CD Pipeline (Release)"
+on:
+  push:
+    branches:
+      - "release/*"
+    tags:
+       - "v[0-9]+.v[0-9]+.v[0-9]+*"
+env:
+  DOCKER_REPO: ghcr.io/bentobox-dev/bentobox-engine
+  DOCKER_BUILDKIT: 1
+jobs:
+  # build and publish the engine component on github container registry
+  publish-engine:
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-engine container to Github Container Registry"
+    outputs:
+      container-tag: ${{ steps.resolve-tag.outputs.container-tag }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # fetch all history for all branches and tags
+        fetch-depth: 0
+    - id: resolve-tag
+      name: "Resolve bentobox-engine container tag"
+      run: |
+        DOCKER_TAG=$DOCKER_REPO:$(git describe --always)
+        echo $DOCKER_TAG
+        echo "::set-output name=container-tag::${DOCKER_TAG}"
+    - name: "Build bentobox-engine"
+      run: |
+        # build container tagged version given by git describe
+        DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
+        make \
+          SIM_BUILD_TYPE=Release \
+          SIM_DOCKER_STAGE=release \
+          SIM_DOCKER_CACHE_FROM="${DOCKER_REPO}:latest" \
+          SIM_DOCKER=${DOCKER_TAG} \
+          build-sim-docker
+    - name: "Authenticate with Github Container Registry"
+      env:
+        GHCR_USER: ${{secrets.GHCR_USER}}
+        GHCR_TOKEN: ${{secrets.GHCR_TOKEN}}
+      run: |
+        echo $GHCR_TOKEN | docker login ghcr.io --username $GHCR_USER --password-stdin
+    - name: "Push bentobox-engine container to Github Container Registry"
+      run: |
+        # push with versioned tag
+        DOCKER_TAG=${{ steps.resolve-tag.outputs.container-tag }}
+        docker push $DOCKER_TAG
+
+  # build and publish the engine component on github container registry
+  publish-sdk:
+    runs-on: ubuntu-20.04
+    name: "Publish bentobox-sdk package to Pypi"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # fetch all history for all branches and tags
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Build bentobox-sdk"
+        run: |
+          # build dist bentobox package to sdk/dist
+          make build-sdk
+          # display built artifacts
+          ls sdk/dist/
+      - name: Publish bentobox-sdk to Test PyPI
+        uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          packages_dir: sdk/dist/
