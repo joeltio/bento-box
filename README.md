@@ -7,6 +7,7 @@
 - Write simulations in clean &amp; compact Python code using bentobox-sdk
 - Run the simulations fast on the **bentobox-engine** C++ runtime
 - Enforce good software architecture using the Entity Component System (ECS) to structure code
+- Decouple simulation definition from execution, making it easy to scale simulations using cloud computing.
 
 ## Introduction
 
