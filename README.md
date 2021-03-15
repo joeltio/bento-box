@@ -86,8 +86,8 @@ with sim:
 
 ## Setup
 ### Install bentobox-sdk
-Requires: Python 3.6 and above
-Installing **bentobox-sdk** is simple:
+Requires: Python 3.6 and above.
+Install **bentobox-sdk** using `pip`:
 ```sh
 pip install bentobox
 ```
