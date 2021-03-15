@@ -1,10 +1,12 @@
 # bento-box
+[![Build Status](https://img.shields.io/github/workflow/status/bentobox-dev/bento-box/CI%20Pipeline)](https://github.com/bentobox-dev/bento-box/actions/workflows/ci.yaml)
+[![SDK Version](https://img.shields.io/pypi/v/bentobox)](https://pypi.org/project/bentobox/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 **bento-box** makes building performant and maintainable simulations simple:
 - Write simulations in clean &amp; compact Python code using bentobox-sdk
 - Run the simulations fast on the **bentobox-engine** C++ runtime
 - Enforce good software architecture using the Entity Component System (ECS) to structure code
-
 
 ## Introduction
 
@@ -19,8 +21,6 @@ typically have to make a trade off between simplicity and performance:
 Computation Graph which can than be executed on the **bentobox-engine** C++ runtime.
 This (theorically) should give the best of both worlds, allowing simulation code
 to remain simple and maintainable while running fast on the C++ runtime.
-
-
 
 ## Example
 1. Develop your simulation using **bentobox-sdk**. This example simulates a AND logic gate.
