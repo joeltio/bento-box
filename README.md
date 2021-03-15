@@ -80,7 +80,7 @@ with sim:
     sim[Pin].second_input = True
     # run on step of the simulation
     sim.step()
-    # access componet values transparently
+    # access component values transparently
     assert sim[Pin].output == True
 ```
 
