@@ -3,4 +3,4 @@ This project aims to develop a game engine that can simulate multiple environmen
 
 To demonstrate an application on simulations offered by the game engine, we will train an agent powered by a reinforcement learning model to accomplish the task defined by the simulation.
 
-![High-level System Architecture](./images/architecture.png)
+![High-level System Architecture](./images/architecture.jpg)
