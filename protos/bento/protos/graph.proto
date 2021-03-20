@@ -22,8 +22,8 @@ message Node {
   /* Component access, mutation */
   // Retrieve - node that retrieves a value from an entity's component
   message Retrieve {
-    // Reference to the attribute to retrieve
-    AttributeRef retrieve_attr = 1;
+    // Reference to the value to retrieve
+    ValueRef retrieve_value = 1;
   }
 
   // Mutate - node mutate the value in an entity's component based
@@ -33,8 +33,8 @@ message Node {
     // attribute's value to
     Node to_node = 1;
 
-    // Reference to the attribute to mutate with value
-    AttributeRef mutate_attr = 2;
+    // Reference to the value to mutate
+    ValueRef mutate_ref = 2;
   }
 
   /* Control flow */

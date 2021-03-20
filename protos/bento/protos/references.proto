@@ -7,14 +7,16 @@
 syntax = "proto3";
 package bento.protos;
 
-// Fully-qualified reference to an component's attribute
+// Fully-qualified reference to a value stored in a component
 // Assumes that the component is bound the entity and attribute exists in the
 // component type
-message AttributeRef {
-  // id of the entity to the retrieve from
+message ValueRef {
+  // id of the entity to retrieve from
   uint32 entity_id = 1;
   // Name of the component type to retrieve from entity
   string component = 2;
   // Name of the attribute to retrieve from component
   string attribute = 3;
+  // A list of indexes
+  repeated int64 attr_indexes = 4;
 }
