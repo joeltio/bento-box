@@ -38,6 +38,7 @@ add_library(core-test
     src/ics/util/composable.test.cpp
     src/ics/util/setIntersection.test.cpp
     src/ics/util/typeMap.test.cpp
+    src/optics/lens.test.cpp
 )
 target_link_libraries(core-test
     PRIVATE core
